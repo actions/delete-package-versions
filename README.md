@@ -2,7 +2,7 @@
 
 This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). 
 
-__What It Can Do:__
+## What It Can Do
 
 * Delete a single version
 * Delete multiple versions
@@ -11,21 +11,42 @@ __What It Can Do:__
 * Delete version(s) from a package that is hosted in the same repo that is executing the workflow
 * Delete version(s) from a package that is hosted in a different repo than the one executing the workflow
 
-<table>
-  <tr>
-    <th><a href="#usage">Usage</a></th>
-  </tr>
-  <tr>
-    <th><a href="#scenarios">Scenarios</a></th>
-  </tr>
-    <tr>
-    <th><a href="#license">License</a></th>
-  </tr> 
-</table>
-
-_*Note: [GitHub Packages](https://github.com/features/packages) does not currently support deleting an entire package at once. To effectively delete an entire package all versions of the package must be deleted individually._
-
 # Usage
+
+```yaml
+- uses: actions/delete-package-versions@v1
+	with:
+		# Can be a single package version id, or a comma separated list of package version ids.
+		# Defaults to an empty string.
+		package-version-ids:
+		
+		# Owner of the repo hosting the package.
+		# Defaults to the owner of the repo executing the workflow.
+		# Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
+		owner:
+		
+		# Repo hosting the package.
+		# Defaults to the repo executing the workflow.
+		# Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
+		repo:
+		
+		# Name of the package.
+		# Defaults to an empty string.
+		# Required if `package-version-ids` input is not given.
+		package-name:
+		
+		# The number of old versions to delete starting from the oldest version.
+		# Defaults to 1.
+		num-old-versions-to-delete:
+		
+		# The token used to authenticate with GitHub Packages.
+		# Defaults to github.token.
+		# Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
+		#   If `package-version-ids` is given the token only needs the delete packages scope.
+		#   If `package-version-ids` is not given the token needs the delete packages scope and the read packages scope
+		token:
+		
+```
 
 
 
@@ -33,7 +54,7 @@ _*Note: [GitHub Packages](https://github.com/features/packages) does not current
 
 # Scenarios
 
-
+* [Delete a specific single version]
 
 ## Delete a single version
 
