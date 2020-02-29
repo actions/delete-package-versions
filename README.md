@@ -64,7 +64,7 @@ Package version ids can be retrieved via the [GitHub GraphQL API][api].
     package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3'
 ```
 
-<br>
+
 
 ### Delete a specific version from a package hosted in a different repo than the workflow
 
