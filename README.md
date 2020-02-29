@@ -53,10 +53,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * [Delete a specific version from a package hosted in a different repo than the workflow](#delete-a-specific-version-from-a-package-hosted-in-a-different-repo-than-the-workflow)
 
 <table>
-  
+  <th></th>
 </table>
-
-
 
 
 
