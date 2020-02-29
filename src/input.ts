@@ -40,7 +40,7 @@ export class Input {
       this.owner &&
       this.repo &&
       this.packageName &&
-      this.numOldVersionsToDelete &&
+      this.numOldVersionsToDelete != null &&
       this.token
     )
   }
