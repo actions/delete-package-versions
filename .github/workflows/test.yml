@@ -17,6 +17,7 @@ jobs:
 #    - run: npm run pack
 
   smoke-test: # make sure the action works on a clean machine without building
+    name: Smoke Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

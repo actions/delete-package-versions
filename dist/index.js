@@ -13925,7 +13925,7 @@ class Input {
         return !!(this.owner &&
             this.repo &&
             this.packageName &&
-            this.numOldVersionsToDelete > 0 &&
+            this.numOldVersionsToDelete &&
             this.token);
     }
 }
