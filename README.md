@@ -91,7 +91,7 @@ To delete multiple specifc versions of a package set __package-version-ids__ to 
     package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzQ5, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzUw'
 ```
 
-
+<br>
 
 ### Delete multiple specific versions from a package hosted in a different repo than the workflow
 
