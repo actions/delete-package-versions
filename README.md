@@ -51,13 +51,10 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 * [Delete a specific version from a package hosted in the same repo that is executing the workflow](#delete-a-specific-version-from-a-package-hosted-in-the-same-repo-that-is-executing-the-workflow)
 
-### Delete a specific version from a package hosted in the same repo that is executing the workflow
-
----
+## Delete a specific version from a package hosted in the same repo that is executing the workflow
 
 ```yaml
 - uses: actions/delete-package-versions@v1
-
 ```
 
 
