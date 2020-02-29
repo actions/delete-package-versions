@@ -56,7 +56,19 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 ### Delete a specific version from a package hosted in the same repo as the workflow
 
-&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;&oline;
+
+
+| __Test__ |
+| -------- |
+|          |
+
+
+
+| Delete a specific version from a package hosted in the same repo as the workflo |      |
+| ------------------------------------------------------------ | ---- |
+|                                                              |      |
+
+
 
 Package version ids can be retrieved via the [GitHub GraphQL API](https://developer.github.com/v4/previews/#github-packages).
 
