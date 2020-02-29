@@ -9,12 +9,15 @@ on: # rebuild any PRs and main branch changes
 
 jobs:
 
-#  build: # make sure build/ci work properly
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v2
-#    - run: npm install
-#    - run: npm run pack
+  package: # make sure build/ci work properly
+    name: Package
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: npm install
+      name: NPM Install
+    - run: npm run pack
+      name: Format Check, Lint, Unit Tests, Build and Package
 
   smoke-test: # make sure the action works on a clean machine without building
     name: Smoke Test
@@ -22,6 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: ./
+      name: actions/delete-package-versions
       with:
         package-name: 'com.github.actions.test-package'
         num-old-versions-to-delete: 0
