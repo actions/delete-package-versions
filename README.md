@@ -81,5 +81,5 @@ The token input is required to delete a version of a package hosted in a differe
 
 The scripts and documentation in this project are released under the [MIT License](https://github.com/actions/delete-package-versions/blob/master/LICENSE)
 
-[token]: (https://help.github.com/en/packages/publishing-and-managing-packages/about-github-packages#about-tokens)
+[token]: https://help.github.com/en/packages/publishing-and-managing-packages/about-github-packages#about-tokens
 
