@@ -2,7 +2,7 @@
 
 This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). 
 
-### What It Can Do
+## What It Can Do
 
 * Delete a single version
 * Delete multiple versions
@@ -10,6 +10,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete oldest version(s)
 * Delete version(s) from a package that is hosted in the same repo that is executing the workflow
 * Delete version(s) from a package that is hosted in a different repo than the one executing the workflow
+
+See [Usage](#usage) and [Scenarios](#scenarios) for more details.
 
 # Usage
 
