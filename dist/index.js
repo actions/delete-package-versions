@@ -13925,7 +13925,7 @@ class Input {
         return !!(this.owner &&
             this.repo &&
             this.packageName &&
-            this.numOldVersionsToDelete != null &&
+            this.numOldVersionsToDelete > 0 &&
             this.token);
     }
 }
@@ -15768,9 +15768,12 @@ function getVersionIds(input) {
 }
 exports.getVersionIds = getVersionIds;
 function deleteVersions(input) {
-    console.log(`input: ${JSON.stringify(input)}`);
     if (!input.token) {
         return rxjs_1.throwError('No token found');
+    }
+    if (input.numOldVersionsToDelete <= 0) {
+        console.log('Number of old versions to delete input is 0 or less, no versions will be deleted');
+        return rxjs_1.of(true);
     }
     return getVersionIds(input).pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
 }

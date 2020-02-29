@@ -24,9 +24,15 @@ export function getVersionIds(input: Input): Observable<string[]> {
 }
 
 export function deleteVersions(input: Input): Observable<boolean> {
-  console.log(`input: ${JSON.stringify(input)}`)
   if (!input.token) {
     return throwError('No token found')
+  }
+
+  if (input.numOldVersionsToDelete <= 0) {
+    console.log(
+      'Number of old versions to delete input is 0 or less, no versions will be deleted'
+    )
+    return of(true)
   }
 
   return getVersionIds(input).pipe(
