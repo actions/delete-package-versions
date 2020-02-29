@@ -66,7 +66,7 @@ Package version ids can be retrieved via the [GitHub GraphQL API](https://develo
 
 ### Delete a specific version from a package hosted in a different repo than the workflow
 
-To delete a version of a package hosted in a different than the workflow the token input is required. The token only needs the delete packages scope. It is recommended [to store the token as a secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets). In this example the token was stored as a secret named __GITHUB_PAT__.
+The token input is required to delete a version of a package hosted in a different repo than the workflow. The [token][token] only needs the delete packages scope. It is recommended [to store the token as a secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets). In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
 
 ```yaml
 - uses: actions/delete-package-versions@v1
@@ -80,4 +80,6 @@ To delete a version of a package hosted in a different than the workflow the tok
 # License
 
 The scripts and documentation in this project are released under the [MIT License](https://github.com/actions/delete-package-versions/blob/master/LICENSE)
+
+[token]: (https://help.github.com/en/packages/publishing-and-managing-packages/about-github-packages#about-tokens)
 
