@@ -19,7 +19,7 @@ export function getVersionIds(input: Input): Observable<string[]> {
   }
 
   return throwError(
-    "Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input or provide the 'package-name' and 'delete-oldest' inputs to dynamically retrieve oldest versions"
+    "Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input or provide the 'package-name' and 'num-old-versions-to-delete' inputs to dynamically retrieve oldest versions"
   )
 }
 
