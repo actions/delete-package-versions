@@ -29,23 +29,22 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Defaults to the repo executing the workflow.
   # Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
   repo:
-		
+
   # Name of the package.
   # Defaults to an empty string.
   # Required if `package-version-ids` input is not given.
   package-name:
-		
+
   # The number of old versions to delete starting from the oldest version.
   # Defaults to 1.
   num-old-versions-to-delete:
-		
+
   # The token used to authenticate with GitHub Packages.
   # Defaults to github.token.
   # Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
   #   If `package-version-ids` is given the token only needs the delete packages scope.
   #   If `package-version-ids` is not given the token needs the delete packages scope and the read packages scope
-  token: ''
-		
+  token:
 ```
 
 
