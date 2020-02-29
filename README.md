@@ -50,6 +50,9 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 # Scenarios
 
 * [Delete a specific version from a package hosted in the same repo as the workflow](#delete-a-specific-version-from-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete a specific version from a package hosted in a different repo than the workflow](#delete-a-specific-version-from-a-package-hosted-in-a-different-repo-than-the-workflow)
+
+
 
 ### Delete a specific version from a package hosted in the same repo as the workflow
 
@@ -62,6 +65,17 @@ Package version ids can be retrieved via the [GitHub GraphQL API](https://develo
 ```
 
 
+
+### Delete a specific version from a package hosted in a different repo than the workflow
+
+To delete a version of a package hosted in a different than the workflow the token input is required. The token only needs the delete packages scope. It is recommended [to store the token as a secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets). In this example the token was stored as a secret named __GITHUB_PAT__.
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with:
+    package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3'
+    token: ${{ secrets.GITHUB_PAT }}
+```
 
 
 
