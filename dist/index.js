@@ -15768,6 +15768,7 @@ function getVersionIds(input) {
 }
 exports.getVersionIds = getVersionIds;
 function deleteVersions(input) {
+    console.log(`input: ${input}`);
     if (!input.token) {
         return rxjs_1.throwError('No token found');
     }
