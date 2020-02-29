@@ -24,7 +24,7 @@ export function getVersionIds(input: Input): Observable<string[]> {
 }
 
 export function deleteVersions(input: Input): Observable<boolean> {
-  console.log(`input: ${input}`)
+  console.log(`input: ${JSON.stringify(input)}`)
   if (!input.token) {
     return throwError('No token found')
   }
