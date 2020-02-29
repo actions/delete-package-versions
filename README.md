@@ -51,8 +51,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 * [Delete a specific version from a package hosted in the same repo as the workflow](#delete-a-specific-version-from-a-package-hosted-in-the-same-repo-as-the-workflow)
 * [Delete a specific version from a package hosted in a different repo than the workflow](#delete-a-specific-version-from-a-package-hosted-in-a-different-repo-than-the-workflow)
-* [Delete multiple specific versions from a package hosted in the same repo as the workflow](delete-multiple-specific-versions-from-a-package-hosted-in-the-same-repo-as-the-workflow)
-* [Delete multiple specific versions from a package hosted in a different repo than the workflow](delete-multiple-specific-versions-from-a-package-hosted-in-a-different-repo-than-the-workflow)
+* [Delete multiple specific versions from a package hosted in the same repo as the workflow](#delete-multiple-specific-versions-from-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete multiple specific versions from a package hosted in a different repo than the workflow](#delete-multiple-specific-versions-from-a-package-hosted-in-a-different-repo-than-the-workflow)
 
 
 
