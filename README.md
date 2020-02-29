@@ -2,7 +2,7 @@
 
 This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). 
 
-## What It Can Do
+### What It Can Do
 
 * Delete a single version
 * Delete multiple versions
