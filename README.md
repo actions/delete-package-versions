@@ -15,10 +15,10 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 ```yaml
 - uses: actions/delete-package-versions@v1
-	with:
-		# Can be a single package version id, or a comma separated list of package version ids.
-		# Defaults to an empty string.
-		package-version-ids: ''
+  with:
+  # Can be a single package version id, or a comma separated list of package version ids.
+  # Defaults to an empty string.
+  package-version-ids:
 		
 		# Owner of the repo hosting the package.
 		# Defaults to the owner of the repo executing the workflow.
