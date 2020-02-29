@@ -5,7 +5,8 @@
     "parserOptions": {
       "ecmaVersion": 9,
       "sourceType": "module",
-      "project": "./tsconfig.json"
+      "project": "./tsconfig.json",
+      "createDefaultProgram": true
     },
     "rules": {
       "eslint-comments/no-use": "off",
@@ -48,7 +49,8 @@
       "semi": "off",
       "@typescript-eslint/semi": ["error", "never"],
       "@typescript-eslint/type-annotation-spacing": "error",
-      "@typescript-eslint/unbound-method": "error"
+      "@typescript-eslint/unbound-method": "error",
+      "no-console": "off"
     },
     "env": {
       "node": true,
