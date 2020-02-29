@@ -52,7 +52,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 ```yaml
 - uses: test
-	with: 'hey'
+  with: 'hey'
 ```
 
 
