@@ -51,6 +51,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 * [Delete a specific version from a package hosted in the same repo as the workflow](#delete-a-specific-version-from-a-package-hosted-in-the-same-repo-as-the-workflow)
 * [Delete a specific version from a package hosted in a different repo than the workflow](#delete-a-specific-version-from-a-package-hosted-in-a-different-repo-than-the-workflow)
+* [Delete multiple specific versions from a package hosted in the same repo as the workflow](delete-multiple-specific-versions-from-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete multiple specific versions from a package hosted in a different repo than the workflow](delete-multiple-specific-versions-from-a-package-hosted-in-a-different-repo-than-the-workflow)
 
 
 
@@ -68,12 +70,37 @@ Package version ids can be retrieved via the [GitHub GraphQL API][api].
 
 ### Delete a specific version from a package hosted in a different repo than the workflow
 
-The token input is required to delete a version of a package hosted in a different repo than the workflow. The [token][token] only needs the delete packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
+Package version ids can be retrieved via the [GitHub GraphQL API][api]. The token input is required to delete a version of a package hosted in a different repo than the workflow. The [token][token] only needs the delete packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
 
 ```yaml
 - uses: actions/delete-package-versions@v1
   with:
     package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3'
+    token: ${{ secrets.GITHUB_PAT }}
+```
+
+
+
+### Delete multiple specific versions from a package hosted in the same repo as the workflow
+
+To delete multiple specifc versions of a package set __package-version-ids__ to a comma separated string of package version ids. Package version ids can be retrieved via the [GitHub GraphQL API][api].
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with:
+    package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzQ5, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzUw'
+```
+
+
+
+### Delete multiple specific versions from a package hosted in a different repo than the workflow
+
+To delete multiple specifc versions of a package set __package-version-ids__ to a comma separated string of package version ids. Package version ids can be retrieved via the [GitHub GraphQL API][api]. The token input is required to delete a version of a package hosted in a different repo than the workflow. The [token][token] only needs the delete packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with:
+    package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzQ5, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzUw'
     token: ${{ secrets.GITHUB_PAT }}
 ```
 
