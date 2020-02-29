@@ -2,10 +2,10 @@ name: Package and Smoke Test
 
 on: # rebuild any PRs and main branch changes
   pull_request:
-  push:
-    branches:
-      - master
-      - 'releases/*'
+#  push:
+#    branches:
+#      - master
+#      - 'releases/*'
 
 jobs:
 

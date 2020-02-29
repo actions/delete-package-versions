@@ -1,117 +1,53 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# Delete Package Versions
 
-# Create a JavaScript Action using TypeScript
+This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). 
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+__What It Can Do:__
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+* Delete a single version
+* Delete multiple versions
+* Delete specific version(s) 
+* Delete oldest version(s)
+* Delete version(s) from a package that is hosted in the same repo that is executing the workflow
+* Delete version(s) from a package that is hosted in a different repo than the one executing the workflow
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+<table>
+  <tr>
+    <th><a href="#usage">Usage</a></th>
+  </tr>
+  <tr>
+    <th><a href="#scenarios">Scenarios</a></th>
+  </tr>
+    <tr>
+    <th><a href="#license">License</a></th>
+  </tr> 
+</table>
 
-## Create an action from this template
+_*Note: [GitHub Packages](https://github.com/features/packages) does not currently support deleting an entire package at once. To effectively delete an entire package all versions of the package must be deleted individually._
 
-Click the `Use this Template` and provide the new repo details for your action
+# Usage
 
-## Code in Master
 
-Install the dependencies  
-```bash
-$ npm install
-```
 
-Build the typescript
-```bash
-$ npm run build
-```
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+# Scenarios
 
-...
-```
 
-## Change action.yml
 
-The action.yml contains defines the inputs and output for your action.
+## Delete a single version
 
-Update the action.yml with your name, description, inputs and outputs for your action.
+### Delete 
 
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
 
-## Change the Code
 
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
+## Delete a specific single version by Id from a package hosted in the same repo that is executing the workflow
 
-```javascript
-import * as core from '@actions/core';
-...
 
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
 
-run()
-```
 
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
 
-## Publish to a distribution branch
+# License
 
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
+The scripts and documentation in this project are released under the [MIT License](https://github.com/actions/delete-package-versions/blob/master/LICENSE)
 
-Comment out node_modules in .gitignore and create a releases/v1 branch
-```bash
-# comment out in distribution branches
-# node_modules/
-```
-
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
-
-```bash
-$ npm prune --production
-$ git add node_modules
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
-
-```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
-```
-
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
-
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
-
-```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
-```
