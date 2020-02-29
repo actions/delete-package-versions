@@ -1,4 +1,4 @@
-name: Build and Smoke Test
+name: Package and Smoke Test
 
 on: # rebuild any PRs and main branch changes
   pull_request:
@@ -14,18 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      name: Checkout Delete Package Versions Repo
     - run: npm install
       name: NPM Install
     - run: npm run pack
-      name: Format Check, Lint, Unit Tests, Build and Package
+      name: Check Format, Lint, Run Unit Tests, Build and Package
 
   smoke-test: # make sure the action works on a clean machine without building
     name: Smoke Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      name: Checkout Delete Package Versions Repo
     - uses: ./
-      name: actions/delete-package-versions
+      name: Smoke Test Delete Package Versions Action
       with:
         package-name: 'com.github.actions.test-package'
         num-old-versions-to-delete: 0
