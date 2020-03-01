@@ -59,7 +59,9 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 ### Delete a specific version from a package hosted in the same repo as the workflow
 
-To delete a specific version from a package that is hosted in the same repo that is executing the workflow the __package-version-ids__ input is required. 
+__Required Inputs__
+
+* package-version-ids
 
 Package version ids can be retrieved via the [GitHub GraphQL API][api].
 
