@@ -59,8 +59,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 ### Delete a specific version from a package hosted in the same repo as the workflow
 
-<table style="text-align:left">
-	<tr><th style="text-align:left">Required Inputs</th></tr>
+<table>
+	<tr><th align="left">Required Inputs</th></tr>
   <tr><td>package-version-ids</td></tr>
 </table>
 
