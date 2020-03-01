@@ -5,13 +5,12 @@
   "description": "TypeScript template action",
   "main": "lib/main.js",
   "scripts": {
-    "build": "tsc",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "pack": "ncc build",
     "test": "jest",
-    "all": "npm run build && npm run format && npm run lint && npm run pack && npm test"
+    "build": "npm run format-check && npm run lint && npm run test && tsc",
+    "pack": "rm -rf ./lib ./dist && npm run build && ncc build"
   },
   "repository": {
     "type": "git",
@@ -25,7 +24,9 @@
   "author": "YourNameOrOrganization",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0"
+    "@actions/core": "^1.2.0",
+    "@actions/github": "^2.1.1",
+    "rxjs": "^6.5.4"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",

@@ -1,19 +1,35 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import {getInput, setFailed} from '@actions/core'
+import {context} from '@actions/github'
+import {Input} from './input'
+import {Observable, throwError} from 'rxjs'
+import {deleteVersions} from './delete'
+import {catchError} from 'rxjs/operators'
 
-async function run(): Promise<void> {
+function getActionInput(): Input {
+  return new Input({
+    packageVersionIds: getInput('package-version-ids')
+      ? getInput('package-version-ids').split(',')
+      : [],
+    owner: getInput('owner') ? getInput('owner') : context.repo.owner,
+    repo: getInput('repo') ? getInput('repo') : context.repo.repo,
+    packageName: getInput('package-name'),
+    numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),
+    token: getInput('token')
+  })
+}
+
+function run(): Observable<boolean> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    return deleteVersions(getActionInput()).pipe(
+      catchError(err => throwError(err))
+    )
   } catch (error) {
-    core.setFailed(error.message)
+    return throwError(error.message)
   }
 }
 
-run()
+run().subscribe({
+  error: err => {
+    setFailed(err)
+  }
+})
