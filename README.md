@@ -79,6 +79,8 @@ Package version ids can be retrieved via the [GitHub GraphQL API][api].
 
 The [token][token] only needs the delete packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
 
+__Example__
+
 ```yaml
 - uses: actions/delete-package-versions@v1
   with:
@@ -93,6 +95,8 @@ The [token][token] only needs the delete packages scope. It is recommended [to s
 To delete multiple specifc versions from a package that is hosted in the same repo that is executing the workflow the __package-version-ids__ input is required. 
 
 The __package-version-ids__ input should be a comma separated string of package version ids. Package version ids can be retrieved via the [GitHub GraphQL API][api].
+
+__Example__
 
 ```yaml
 - uses: actions/delete-package-versions@v1
@@ -110,6 +114,8 @@ The __package-version-ids__ input should be a comma separated string of package 
 
 The [token][token] only needs the delete packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
 
+__Example__
+
 ```yaml
 - uses: actions/delete-package-versions@v1
   with:
@@ -122,6 +128,8 @@ The [token][token] only needs the delete packages scope. It is recommended [to s
 ### Delete oldest version from a package hosted in the same repo as the workflow
 
 To delete the oldest version from a package that is hosted in the same repo that is executing the workflow the __package-name__ input is required.
+
+__Example__
 
 ```yaml
 - uses: actions/delete-package-versions@v1
@@ -136,6 +144,8 @@ To delete the oldest version from a package that is hosted in the same repo that
 To delete the oldest version from a package that is hosted in a different repo than the one executing the workflow the __package-name__, __owner__, __repo__, and __token__ inputs are required.
 
 The [token][token] needs the delete packages and read packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
+
+__Example__
 
 ```yaml
 - uses: actions/delete-package-versions@v1
