@@ -55,7 +55,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * [Delete multiple specific versions from a package hosted in a different repo than the workflow](#delete-multiple-specific-versions-from-a-package-hosted-in-a-different-repo-than-the-workflow)
 * [Delete oldest version from a package hosted in the same repo as the workflow](#delete-oldest-version-from-a-package-hosted-in-the-same-repo-as-the-workflow)
 
-## Delete a specific version from a package hosted in the same repo as the workflowRequired Inputs
+### Delete a specific version from a package hosted in the same repo as the workflowRequired Inputs
 
 ### Required Inputs
 
