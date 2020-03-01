@@ -62,8 +62,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 <table>
   <tr><td><b>Required Inputs</b></td></tr>
   <tr>
-    <td>&#8627; package-version-ids</td>
-    <td>Package version ids can be retrieved via the [GitHub GraphQL API][api].</td>
+    <td>&#8627; package-version-ids Package version ids can be retrieved via the [GitHub GraphQL API][api].</td>
   </tr>
 </table>
 
