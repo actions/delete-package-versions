@@ -8,8 +8,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete multiple versions
 * Delete specific version(s) 
 * Delete oldest version(s)
-* Delete version(s) from a package that is hosted in the same repo that is executing the workflow
-* Delete version(s) from a package that is hosted in a different repo than the one executing the workflow
+* Delete version(s) of a package that is hosted in the same repo that is executing the workflow
+* Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
 
 # Usage
 
@@ -49,15 +49,17 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 # Scenarios
 
-* [Delete a specific version from a package hosted in the same repo as the workflow](#delete-a-specific-version-from-a-package-hosted-in-the-same-repo-as-the-workflow)
-* [Delete a specific version from a package hosted in a different repo than the workflow](#delete-a-specific-version-from-a-package-hosted-in-a-different-repo-than-the-workflow)
-* [Delete multiple specific versions from a package hosted in the same repo as the workflow](#delete-multiple-specific-versions-from-a-package-hosted-in-the-same-repo-as-the-workflow)
-* [Delete multiple specific versions from a package hosted in a different repo than the workflow](#delete-multiple-specific-versions-from-a-package-hosted-in-a-different-repo-than-the-workflow)
-* [Delete oldest version from a package hosted in the same repo as the workflow](#delete-oldest-version-from-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete a specific version of a package hosted in the same repo as the workflow](#delete-a-specific-version-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete a specific version of a package hosted in a different repo than the workflow](#delete-a-specific-version-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+* [Delete multiple specific versions of a package hosted in the same repo as the workflow](#delete-multiple-specific-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete multiple specific versions of a package hosted in a different repo than the workflow](#delete-multiple-specific-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+* [Delete oldest version of a package hosted in the same repo as the workflow](#delete-oldest-version-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete oldest x number of versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+* [Delete oldest x number of versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
 
-### Delete a specific version from a package hosted in the same repo as the workflow
+### Delete a specific version of a package hosted in the same repo as the workflow
 
-To delete a specific version from a package that is hosted in the same repo as the one executing the workflow the __package-version-ids__ input is required.
+To delete a specific version of a package that is hosted in the same repo as the one executing the workflow the __package-version-ids__ input is required.
 
 Package version ids can be retrieved via the [GitHub GraphQL API][api]
 
@@ -71,9 +73,9 @@ __Example__
 
 <br>
 
-### Delete a specific version from a package hosted in a different repo than the workflow
+### Delete a specific version of a package hosted in a different repo than the workflow
 
-To delete a specific version from a package that is hosted in a different repo than the one executing the workflow the __package-version-ids__, and __token__ inputs are required.
+To delete a specific version of a package that is hosted in a different repo than the one executing the workflow the __package-version-ids__, and __token__ inputs are required.
 
 Package version ids can be retrieved via the [GitHub GraphQL API][api]. 
 
@@ -90,9 +92,9 @@ __Example__
 
 <br>
 
-### Delete multiple specific versions from a package hosted in the same repo as the workflow
+### Delete multiple specific versions of a package hosted in the same repo as the workflow
 
-To delete multiple specifc versions from a package that is hosted in the same repo that is executing the workflow the __package-version-ids__ input is required. 
+To delete multiple specifc versions of a package that is hosted in the same repo that is executing the workflow the __package-version-ids__ input is required. 
 
 The __package-version-ids__ input should be a comma separated string of package version ids. Package version ids can be retrieved via the [GitHub GraphQL API][api].
 
@@ -106,9 +108,9 @@ __Example__
 
 <br>
 
-### Delete multiple specific versions from a package hosted in a different repo than the workflow
+### Delete multiple specific versions of a package hosted in a different repo than the workflow
 
-To delete multiple specifc versions from a package that is hosted in a different repo than the one executing the workflow the __package-version-ids__, and __token__ inputs are required. 
+To delete multiple specifc versions of a package that is hosted in a different repo than the one executing the workflow the __package-version-ids__, and __token__ inputs are required. 
 
 The __package-version-ids__ input should be a comma separated string of package version ids. Package version ids can be retrieved via the [GitHub GraphQL API][api].
 
@@ -125,9 +127,9 @@ __Example__
 
 <br>
 
-### Delete oldest version from a package hosted in the same repo as the workflow
+### Delete oldest version of a package hosted in the same repo as the workflow
 
-To delete the oldest version from a package that is hosted in the same repo that is executing the workflow the __package-name__ input is required.
+To delete the oldest version of a package that is hosted in the same repo that is executing the workflow the __package-name__ input is required.
 
 __Example__
 
@@ -139,9 +141,9 @@ __Example__
 
 <br>
 
-### Delete oldest version from a package hosted in a different repo than the workflow
+### Delete oldest version of a package hosted in a different repo than the workflow
 
-To delete the oldest version from a package that is hosted in a different repo than the one executing the workflow the __package-name__, __owner__, __repo__, and __token__ inputs are required.
+To delete the oldest version of a package that is hosted in a different repo than the one executing the workflow the __package-name__, __owner__, __repo__, and __token__ inputs are required.
 
 The [token][token] needs the delete packages and read packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
 
@@ -153,6 +155,45 @@ __Example__
     owner: 'github'
     repo: 'packages'
     package-name: 'test-package'
+    token: ${{ secrets.GITHUB_PAT }}
+```
+
+<br>
+
+### Delete oldest x number of versions of a package hosted in the same repo as the workflow
+
+To delete the oldest x number of versions of a package hosted in the same repo that is executing the workflow the __package-name__, and __num-old-versions-to-delete__ inputs are required.
+
+__Example__
+
+Delete the oldest 3 version of a package hosted in the same repo as the workflow
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with:
+    package-name: 'test-package'
+    num-old-versions-to-delete: 3
+```
+
+<br>
+
+### Delete oldest x number of versions of a package hosted in a different repo than the workflow
+
+To delete the oldest x number of versions of a package hosted in a different repo than the one executing the workflow the __package-name__, __num-old-versions-to-delete__, __owner__, __repo__, and __token__ inputs are required.
+
+The [token][token] needs the delete packages and read packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
+
+__Example__
+
+Delete the oldest 3 version of a package hosted in a different repo than the one executing the workflow
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with:
+    owner: 'github'
+    repo: 'packages'  
+    package-name: 'test-package'
+    num-old-versions-to-delete: 3
     token: ${{ secrets.GITHUB_PAT }}
 ```
 
