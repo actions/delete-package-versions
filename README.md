@@ -55,22 +55,13 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * [Delete multiple specific versions from a package hosted in a different repo than the workflow](#delete-multiple-specific-versions-from-a-package-hosted-in-a-different-repo-than-the-workflow)
 * [Delete oldest version from a package hosted in the same repo as the workflow](#delete-oldest-version-from-a-package-hosted-in-the-same-repo-as-the-workflow)
 
-### Delete a specific version from a package hosted in the same repo as the workflow
+## Delete a specific version from a package hosted in the same repo as the workflowRequired Inputs
 
- <table>
-  <tr><td><b>Required Inputs</b></td></tr>
-  <tr>
-    <td>
-      &#8627; <b>package-version-ids:</b> package version ids can be retrieved via the <a href="https://developer.github.com/v4/previews/#github-packages ">GitHub GraphQL API</a>
-    </td>
-  </tr>
-</table>
-
-#### Required Inputs
+### Required Inputs
 
 * __package-version-ids:__ Package version ids can be retrieved via the [GitHub GraphQL API][api]
 
-#### Example
+### Example
 
 ```yaml
 - uses: actions/delete-package-versions@v1
