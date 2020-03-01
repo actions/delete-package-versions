@@ -66,7 +66,11 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   </tr>
 </table>
 
-__Example__
+#### Required Inputs
+
+* __package-version-ids:__ Package version ids can be retrieved via the [GitHub GraphQL API][api]
+
+#### Example
 
 ```yaml
 - uses: actions/delete-package-versions@v1
