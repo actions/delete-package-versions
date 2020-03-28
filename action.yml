@@ -9,6 +9,14 @@ inputs:
     description: Comma separated string of package version ids to delete.
     required: false
 
+  ignored-version-names:
+    description: >
+      Regular expression string matching package version names to never delete.
+      This has no effect when explicitly specifying package version ids using package-version-ids.
+      As a result of the match, less than num-old-versions-to-delete may be deleted.
+    required: false
+    default: "^(?!.*)$"
+
   owner:
     description: >
       Owner of the repo containing the package version to delete.
