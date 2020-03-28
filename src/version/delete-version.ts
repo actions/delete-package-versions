@@ -18,8 +18,12 @@ const mutation = `
 
 export function deletePackageVersion(
   packageVersionId: string,
-  token: string
+  token: string,
+  dryRun = false
 ): Observable<boolean> {
+  if (dryRun) {
+    return of(true)
+  }
   return from(
     graphql(mutation, {
       packageVersionId,
@@ -43,7 +47,8 @@ export function deletePackageVersion(
 
 export function deletePackageVersions(
   packageVersionIds: string[],
-  token: string
+  token: string,
+  dryRun = false
 ): Observable<boolean> {
   if (packageVersionIds.length === 0) {
     console.log('no package version ids found, no versions will be deleted')
@@ -51,7 +56,7 @@ export function deletePackageVersions(
   }
 
   const deletes = packageVersionIds.map(id =>
-    deletePackageVersion(id, token).pipe(
+    deletePackageVersion(id, token, dryRun).pipe(
       tap(result => {
         if (result) {
           console.log(`version with id: ${id}, deleted`)
