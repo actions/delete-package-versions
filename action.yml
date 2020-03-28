@@ -43,6 +43,12 @@ inputs:
     required: false
     default: ${{ github.token }}
 
+  dry-run:
+    description: >
+      Only print the versions that will be deleted without actually deleting them.
+    required: false
+    default: "false"
+
 runs:
   using: node12
   main: dist/index.js

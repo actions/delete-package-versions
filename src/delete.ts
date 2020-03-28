@@ -36,6 +36,6 @@ export function deleteVersions(input: Input): Observable<boolean> {
   }
 
   return getVersionIds(input).pipe(
-    concatMap(ids => deletePackageVersions(ids, input.token))
+    concatMap(ids => deletePackageVersions(ids, input.token, input.dryRun))
   )
 }
