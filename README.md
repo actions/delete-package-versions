@@ -8,6 +8,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete multiple versions
 * Delete specific version(s) 
 * Delete oldest version(s)
+* Delete oldest version(s) while ignoring a specific version pattern
 * Delete version(s) of a package that is hosted in the same repo that is executing the workflow
 * Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
 
@@ -19,7 +20,13 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Can be a single package version id, or a comma separated list of package version ids.
   # Defaults to an empty string.
   package-version-ids:
-  
+
+  # Regular expression string matching package version names to never delete.
+  # This has no effect when explicitly specifying package version ids using package-version-ids.
+  # As a result of the match, less than num-old-versions-to-delete may be deleted.
+  # Defaults to allowing all packages.
+  ignored-version-names:
+
   # Owner of the repo hosting the package.
   # Defaults to the owner of the repo executing the workflow.
   # Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
@@ -60,6 +67,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * [Delete oldest version of a package hosted in the same repo as the workflow](#delete-oldest-version-of-a-package-hosted-in-the-same-repo-as-the-workflow)
 * [Delete oldest x number of versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
 * [Delete oldest x number of versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+* [Delete oldest x number of versions of a package excluding packages whose name matches a given pattern](#delete-oldest-x-number-of-versions-of-a-package-excluding-packages-whose-name-matches-a-given-pattern)
 
 ### Delete a specific version of a package hosted in the same repo as the workflow
 
@@ -199,6 +207,18 @@ Delete the oldest 3 version of a package hosted in a different repo than the one
     package-name: 'test-package'
     num-old-versions-to-delete: 3
     token: ${{ secrets.GITHUB_PAT }}
+```
+
+### Delete oldest x number of versions of a package excluding packages whose name matches a given pattern
+
+To delete the oldest x nubmer of versions of a package, but exclude packages whost name matches a given pattern from being deleted.
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with:
+    package-name: 'test-package'
+    num-old-versions-to-delete: 3
+    ignored-version-names: "docker-base-layer|^\\d+\\.\\d+$"
 ```
 
 # License
