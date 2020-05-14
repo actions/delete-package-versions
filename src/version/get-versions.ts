@@ -1,7 +1,7 @@
-import {graphql} from '@octokit/graphql'
 import {GraphQlQueryResponse} from '@octokit/graphql/dist-types/types'
 import {Observable, from, throwError} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
+import {graphql} from './graphql'
 
 export interface VersionInfo {
   id: string
@@ -52,13 +52,12 @@ export function queryForOldestVersions(
   token: string
 ): Observable<GetVersionsQueryResponse> {
   return from(
-    graphql(query, {
+    graphql(token, query, {
       owner,
       repo,
       package: packageName,
       last: numVersions,
       headers: {
-        authorization: `token ${token}`,
         Accept: 'application/vnd.github.packages-preview+json'
       }
     }) as Promise<GetVersionsQueryResponse>
