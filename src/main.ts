@@ -15,7 +15,7 @@ function getActionInput(): Input {
     packageName: getInput('package-name'),
     numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),
     token: getInput('token'),
-    dryRun: Boolean(getInput('dry-run'))
+    dryRun: getInput('dry-run') === 'true'
   })
 }
 
