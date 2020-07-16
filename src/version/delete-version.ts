@@ -59,9 +59,13 @@ export function deletePackageVersions(
     deletePackageVersion(id, token, dryRun).pipe(
       tap(result => {
         if (result) {
-          console.log(`version with id: ${id}, deleted`)
+          console.log(
+            `version with id: ${id}, deleted ${dryRun ? '(dry-run)' : ''}`
+          )
         } else {
-          console.log(`version with id: ${id}, not deleted`)
+          console.log(
+            `version with id: ${id}, not deleted ${dryRun ? '(dry-run)' : ''}`
+          )
         }
       })
     )
