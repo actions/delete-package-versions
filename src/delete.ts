@@ -15,7 +15,13 @@ export function getVersionIds(input: Input): Observable<string[]> {
       input.packageName,
       input.numOldVersionsToDelete,
       input.token
-    ).pipe(map(versionInfo => versionInfo.map(info => info.id)))
+    ).pipe(
+      map(versionInfo =>
+        versionInfo
+          .filter(info => !input.ignoredVersions.test(info.version))
+          .map(info => info.id)
+      )
+    )
   }
 
   return throwError(
