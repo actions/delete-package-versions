@@ -45,6 +45,10 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   #   If `package-version-ids` is given the token only needs the delete packages scope.
   #   If `package-version-ids` is not given the token needs the delete packages scope and the read packages scope
   token:
+
+  # Perform a dry-run: only print out actions to be performed without actually deleting anything.
+  # Defaults to false.
+  dry-run:
 ```
 
 # Scenarios

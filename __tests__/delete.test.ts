@@ -74,6 +74,13 @@ describe.skip('index tests -- call graphql', () => {
       }
     )
   })
+
+  it('deleteVersions test -- dry run', done => {
+    deleteVersions(getInput({dryRun: true})).subscribe(isSuccess => {
+      expect(isSuccess).toBe(true)
+      done()
+    })
+  })
 })
 
 const defaultInput: InputParams = {
@@ -82,7 +89,8 @@ const defaultInput: InputParams = {
   repo: 'actions-testing',
   packageName: 'com.github.trent-j.actions-test',
   numOldVersionsToDelete: 1,
-  token: process.env.GITHUB_TOKEN as string
+  token: process.env.GITHUB_TOKEN as string,
+  dryRun: false
 }
 
 function getInput(params?: InputParams): Input {
