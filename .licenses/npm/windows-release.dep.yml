@@ -1,6 +1,6 @@
 ---
 name: windows-release
-version: 3.3.0
+version: 3.3.3
 type: npm
 summary: 'Get the name of a Windows version from the release number: `5.1.2600` →
   `XP`'
