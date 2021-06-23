@@ -1,6 +1,6 @@
 ---
 name: rxjs
-version: 6.5.4
+version: 6.6.3
 type: npm
 summary: Reactive Extensions for modern JavaScript
 homepage: https://github.com/ReactiveX/RxJS

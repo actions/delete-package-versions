@@ -14,6 +14,9 @@ function getActionInput(): Input {
     repo: getInput('repo') ? getInput('repo') : context.repo.repo,
     packageName: getInput('package-name'),
     numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),
+    numMostRecentVersionsToKeep: Number(
+      getInput('num-most-recent-versions-to-keep')
+    ),
     token: getInput('token')
   })
 }
