@@ -43,7 +43,7 @@ inputs:
     required: false
     default: ${{ github.token }}
 
-  min-packages-to-keep:
+  min-versions-to-keep:
     description: >
       Number of versions to keep starting with the latest version
     required: false

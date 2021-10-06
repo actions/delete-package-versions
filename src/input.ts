@@ -5,6 +5,7 @@ export interface InputParams {
   packageName?: string
   numOldVersionsToDelete?: number
   token?: string
+  minVersionsToKeep?: number
 }
 
 const defaultParams = {
@@ -13,7 +14,8 @@ const defaultParams = {
   repo: '',
   packageName: '',
   numOldVersionsToDelete: 0,
-  token: ''
+  token: '',
+  minVersionsToKeep: 1
 }
 
 export class Input {
@@ -23,6 +25,7 @@ export class Input {
   packageName: string
   numOldVersionsToDelete: number
   token: string
+  minVersionsToKeep: number
 
   constructor(params?: InputParams) {
     const validatedParams: Required<InputParams> = {...defaultParams, ...params}
@@ -33,6 +36,7 @@ export class Input {
     this.packageName = validatedParams.packageName
     this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete
     this.token = validatedParams.token
+    this.minVersionsToKeep = validatedParams.minVersionsToKeep
   }
 
   hasOldestVersionQueryInfo(): boolean {
