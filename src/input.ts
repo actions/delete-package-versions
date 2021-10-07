@@ -15,7 +15,7 @@ const defaultParams = {
   packageName: '',
   numOldVersionsToDelete: 0,
   token: '',
-  minVersionsToKeep: 1
+  minVersionsToKeep: 0
 }
 
 export class Input {
