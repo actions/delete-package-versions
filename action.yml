@@ -43,6 +43,12 @@ inputs:
     required: false
     default: ${{ github.token }}
 
+  min-versions-to-keep:
+    description: >
+      Number of versions to keep starting with the latest version
+    required: false
+    default: "2"
+
 runs:
   using: node12
   main: dist/index.js

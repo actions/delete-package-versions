@@ -13,9 +13,17 @@ export function getVersionIds(input: Input): Observable<string[]> {
       input.owner,
       input.repo,
       input.packageName,
-      input.numOldVersionsToDelete,
+      input.numOldVersionsToDelete + input.minVersionsToKeep,
       input.token
-    ).pipe(map(versionInfo => versionInfo.map(info => info.id)))
+    ).pipe(
+      map(versionInfo => {
+        const numberVersionsToDelete =
+          versionInfo.length - input.minVersionsToKeep
+        return numberVersionsToDelete <= 0
+          ? []
+          : versionInfo.slice(0, numberVersionsToDelete).map(info => info.id)
+      })
+    )
   }
 
   return throwError(

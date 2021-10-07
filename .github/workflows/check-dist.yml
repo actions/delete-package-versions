@@ -9,7 +9,7 @@ name: Check dist/
 on:
   push:
     branches:
-      - main
+      - add-min-packages-to-keep
     paths-ignore:
       - '**.md'
   pull_request:
