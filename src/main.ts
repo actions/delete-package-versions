@@ -25,7 +25,7 @@ function run(): Observable<boolean> {
       catchError(err => throwError(err))
     )
   } catch (error) {
-    return throwError(error.message)
+    return throwError('error.message')
   }
 }
 
