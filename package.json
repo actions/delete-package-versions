@@ -32,7 +32,6 @@
     "@types/jest": "^24.0.23",
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.8.0",
-    "@zeit/ncc": "^0.20.5",
     "eslint": "^5.16.0",
     "eslint-plugin-github": "^2.0.0",
     "eslint-plugin-jest": "^22.21.0",
@@ -41,6 +40,7 @@
     "js-yaml": "^3.13.1",
     "prettier": "^1.19.1",
     "ts-jest": "^24.2.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "@vercel/ncc": "*"
   }
 }
