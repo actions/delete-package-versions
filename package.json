@@ -41,6 +41,6 @@
     "prettier": "^1.19.1",
     "ts-jest": "^24.2.0",
     "typescript": "^3.6.4",
-    "@vercel/ncc": "*"
+    "@vercel/ncc": "^0.31.1"
   }
 }
