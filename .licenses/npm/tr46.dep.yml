@@ -1,6 +1,6 @@
 ---
 name: "tr46"
-version: 2.1.0
+version: 0.0.3
 type: npm
 summary: An JavaScript implementation of Unicode Technical Standard #46: Unicode IDNA Compatibility Processing.
 homepage: https://github.com/jsdom/tr46#readme
