@@ -13,7 +13,7 @@ export function getVersionIds(input: Input): Observable<string[]> {
       input.owner,
       input.repo,
       input.packageName,
-      input.numOldVersionsToDelete,
+      input.numOldVersionsToDelete + input.minVersionsToKeep,
       input.token
     ).pipe(
       map(versionInfo => {
