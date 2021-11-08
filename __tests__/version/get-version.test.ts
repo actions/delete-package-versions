@@ -7,7 +7,7 @@ import {
 } from '../../src/version'
 import {Observable} from 'rxjs'
 
-describe('get versions tests -- call graphql', () => {
+describe.skip('get versions tests -- call graphql', () => {
   it('getOldestVersions -- succeeds', done => {
     const numVersions = 1
 
