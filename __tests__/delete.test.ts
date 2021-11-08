@@ -1,7 +1,7 @@
 import {Input, InputParams} from '../src/input'
 import {deleteVersions, getVersionIds} from '../src/delete'
 
-describe('index tests -- call graphql', () => {
+describe.skip('index tests -- call graphql', () => {
   it('getVersionIds test -- get oldest version', done => {
     const numVersions = 1
 
