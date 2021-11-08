@@ -7,7 +7,7 @@ import {
 } from '../../src/version'
 import {Observable} from 'rxjs'
 
-describe.skip('get versions tests -- call graphql', () => {
+describe('get versions tests -- call graphql', () => {
   it('getOldestVersions -- succeeds', done => {
     const numVersions = 1
 
@@ -49,9 +49,9 @@ interface Params {
 }
 
 const defaultParams = {
-  owner: 'trent-j',
-  repo: 'actions-testing',
-  packageName: 'com.github.trent-j.actions-test',
+  owner: 'namratajha',
+  repo: 'only-pkg',
+  packageName: 'onlypkg.maven',
   numVersions: 3,
   token: process.env.GITHUB_TOKEN as string
 }

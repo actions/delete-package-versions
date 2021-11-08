@@ -34,6 +34,12 @@ inputs:
     required: false
     default: "1"
 
+  min-versions-to-keep:
+    description: >
+      Number of versions to keep starting with the latest version
+    required: false
+    default: "1"
+    
   token:
     description: >
       Token with the necessary scopes to delete package versions.

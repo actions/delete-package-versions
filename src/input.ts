@@ -4,6 +4,7 @@ export interface InputParams {
   repo?: string
   packageName?: string
   numOldVersionsToDelete?: number
+  minVersionsToKeep?: number
   token?: string
 }
 
@@ -13,6 +14,7 @@ const defaultParams = {
   repo: '',
   packageName: '',
   numOldVersionsToDelete: 0,
+  minVersionsToKeep: 0,
   token: ''
 }
 
@@ -22,6 +24,7 @@ export class Input {
   repo: string
   packageName: string
   numOldVersionsToDelete: number
+  minVersionsToKeep: number
   token: string
 
   constructor(params?: InputParams) {
@@ -32,6 +35,7 @@ export class Input {
     this.repo = validatedParams.repo
     this.packageName = validatedParams.packageName
     this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete
+    this.minVersionsToKeep = validatedParams.minVersionsToKeep
     this.token = validatedParams.token
   }
 
@@ -41,6 +45,7 @@ export class Input {
       this.repo &&
       this.packageName &&
       this.numOldVersionsToDelete > 0 &&
+      this.minVersionsToKeep > 0 &&
       this.token
     )
   }
