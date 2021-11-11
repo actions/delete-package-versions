@@ -49,6 +49,13 @@ inputs:
     required: false
     default: "2"
 
+  ignore-versions:
+    description: >
+      Comma seperated regex patterns of versions to ignore.
+      Defaults to all major release versions and only deletes pre-release versions.
+    required: false
+    default: "^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+
 runs:
   using: node12
   main: dist/index.js

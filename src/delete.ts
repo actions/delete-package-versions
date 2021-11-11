@@ -1,5 +1,5 @@
 import {Input} from './input'
-import {Observable, of, throwError} from 'rxjs'
+import {Observable, of, pipe, throwError} from 'rxjs'
 import {deletePackageVersions, getOldestVersions} from './version'
 import {concatMap, map} from 'rxjs/operators'
 
@@ -21,7 +21,10 @@ export function getVersionIds(input: Input): Observable<string[]> {
           versionInfo.length - input.minVersionsToKeep
         return numberVersionsToDelete <= 0
           ? []
-          : versionInfo.slice(0, numberVersionsToDelete).map(info => info.id)
+          : versionInfo
+              .slice(0, numberVersionsToDelete)
+              .filter(info => !input.ignoreVersions.test(info.version))
+              .map(info => info.id)
       })
     )
   }

@@ -15,7 +15,8 @@ function getActionInput(): Input {
     packageName: getInput('package-name'),
     numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),
     token: getInput('token'),
-    minVersionsToKeep: Number(getInput('min-versions-to-keep'))
+    minVersionsToKeep: Number(getInput('min-versions-to-keep')),
+    ignoreVersions: RegExp(getInput('ignore-versions'))
   })
 }
 
