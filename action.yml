@@ -39,7 +39,14 @@ inputs:
       Number of versions to keep starting with the latest version
     required: false
     default: "1"
-    
+
+  ignore-versions:
+    description: >
+      Comma seperated regex patterns of versions to ignore.
+      Defaults to all major release versions and only deletes pre-release versions.
+    required: false
+    default: "^[\d*]+.[\d*]+.[0*]+$"
+
   token:
     description: >
       Token with the necessary scopes to delete package versions.

@@ -36,7 +36,10 @@ function getVersionIds(input) {
             const numberVersionsToDelete = versionInfo.length - input.minVersionsToKeep;
             return numberVersionsToDelete <= 0
                 ? []
-                : versionInfo.slice(0, numberVersionsToDelete).map(info => info.id);
+                : versionInfo
+                    .filter(info => !input.ignoreVersions.test(info.version))
+                    .map(info => info.id)
+                    .slice(0, numberVersionsToDelete);
         }));
     }
     return rxjs_1.throwError("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input or provide the 'package-name' and 'num-old-versions-to-delete' inputs to dynamically retrieve oldest versions");
@@ -71,6 +74,7 @@ const defaultParams = {
     packageName: '',
     numOldVersionsToDelete: 0,
     minVersionsToKeep: 0,
+    ignoreVersions: new RegExp(''),
     token: ''
 };
 class Input {
@@ -82,6 +86,7 @@ class Input {
         this.packageName = validatedParams.packageName;
         this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete;
         this.minVersionsToKeep = validatedParams.minVersionsToKeep;
+        this.ignoreVersions = validatedParams.ignoreVersions;
         this.token = validatedParams.token;
     }
     hasOldestVersionQueryInfo() {
@@ -40309,6 +40314,7 @@ function getActionInput() {
         packageName: core_1.getInput('package-name'),
         numOldVersionsToDelete: Number(core_1.getInput('num-old-versions-to-delete')),
         minVersionsToKeep: Number(core_1.getInput('min-versions-to-keep')),
+        ignoreVersions: RegExp(core_1.getInput('ignore-versions')),
         token: core_1.getInput('token')
     });
 }
