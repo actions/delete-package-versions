@@ -45,7 +45,7 @@ inputs:
       Comma seperated regex patterns of versions to ignore.
       Defaults to all major and minor versions and only deletes pre-release and patch versions.
     required: false
-    default: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0+)$"
+    default: "^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$"
 
   token:
     description: >
