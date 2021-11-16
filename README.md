@@ -265,7 +265,7 @@ Delete the oldest 3 version and always keep atleast 2 versions of a package host
 
 To delete oldest x number of versions while ignoring all the major package versions in the same repo as the workflow the __package-name__, __num-oldest-versions-to-delete__ and __ignore-versions__ inputs are required.
 
-There is a possibility if the oldest x number of versions contain ignored package versions, actual package versions to ge deleted will be less than x.
+There is a possibility if the oldest x number of versions contain ignored package versions, actual package versions to get deleted will be less than x.
 
 __Example__
 
