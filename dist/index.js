@@ -75,6 +75,7 @@ const defaultParams = {
     numOldVersionsToDelete: 0,
     minVersionsToKeep: 0,
     ignoreVersions: new RegExp(''),
+    deletePreReleaseVersions: '',
     token: ''
 };
 class Input {
@@ -87,7 +88,13 @@ class Input {
         this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete;
         this.minVersionsToKeep = validatedParams.minVersionsToKeep;
         this.ignoreVersions = validatedParams.ignoreVersions;
+        this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
+        if (this.deletePreReleaseVersions == 'true') {
+            this.numOldVersionsToDelete = 100;
+            this.minVersionsToKeep = 0;
+            this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
+        }
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
@@ -40315,6 +40322,7 @@ function getActionInput() {
         numOldVersionsToDelete: Number(core_1.getInput('num-old-versions-to-delete')),
         minVersionsToKeep: Number(core_1.getInput('min-versions-to-keep')),
         ignoreVersions: RegExp(core_1.getInput('ignore-versions')),
+        deletePreReleaseVersions: core_1.getInput('delete-only-pre-release-versions'),
         token: core_1.getInput('token')
     });
 }

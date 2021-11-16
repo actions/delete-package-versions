@@ -42,10 +42,18 @@ inputs:
 
   ignore-versions:
     description: >
-      Comma seperated regex patterns of versions to ignore.
-      Defaults to all major and minor versions and only deletes pre-release and patch versions.
+      Regex pattern for package versions to ignore.
+      Defaults to delete all versions.
     required: false
-    default: "^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$"
+    default: "^$"
+
+  delete-only-pre-release-versions:
+    description: >
+      Deletes all the pre-release versions upto 100.
+      When this is set min-versions-to-keep, num-old-versions-to-delete and ignore-versions will not be taken into account.
+      By default this is set to false
+    required: false
+    default: "false"
 
   token:
     description: >

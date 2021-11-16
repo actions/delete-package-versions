@@ -11,6 +11,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete version(s) of a package that is hosted in the same repo that is executing the workflow
 * Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
 * Specify a minimum number of latest package versions to not get deleted.
+* Ignore some versions based on name and delete remaining versions.
+* Delete all pre-release versions
 
 # Usage
 
@@ -44,6 +46,14 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Defaults to 1.
   min-versions-to-keep:
 
+  # The package versions to ignore exclude from deletion.
+  # By default nothing is ignored"
+  ignore-versions:
+
+  # If true it will delete all the pre-release versions upto 100 at once.
+  # Defaults to false.
+  delete-only-pre-release-versions:
+
   # The token used to authenticate with GitHub Packages.
   # Defaults to github.token.
   # Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
@@ -54,25 +64,19 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 # Scenarios
 
-- [Delete Package Versions](#delete-package-versions)
-    - [What It Can Do](#what-it-can-do)
-- [Usage](#usage)
-- [Scenarios](#scenarios)
-- [Delete oldest x number of versions and keeping y latest versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
-- [Delete oldest x number of versions and keeping y latest versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
-    - [Delete a specific version of a package hosted in the same repo as the workflow](#delete-a-specific-version-of-a-package-hosted-in-the-same-repo-as-the-workflow)
-    - [Delete a specific version of a package hosted in a different repo than the workflow](#delete-a-specific-version-of-a-package-hosted-in-a-different-repo-than-the-workflow)
-    - [Delete multiple specific versions of a package hosted in the same repo as the workflow](#delete-multiple-specific-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
-    - [Delete multiple specific versions of a package hosted in a different repo than the workflow](#delete-multiple-specific-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
-    - [Delete oldest version of a package hosted in the same repo as the workflow](#delete-oldest-version-of-a-package-hosted-in-the-same-repo-as-the-workflow)
-    - [Delete oldest version of a package hosted in a different repo than the workflow](#delete-oldest-version-of-a-package-hosted-in-a-different-repo-than-the-workflow)
-    - [Delete oldest x number of versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
-    - [Delete oldest x number of versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
-    - [Delete oldest x number of versions and keeping y latest versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow-1)
-    - [Delete oldest x number of versions and keeping y latest versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow-1)
-- [License](#license)
-# [Delete oldest x number of versions and keeping y latest versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
-# [Delete oldest x number of versions and keeping y latest versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+  - [Delete a specific version of a package hosted in the same repo as the workflow](#delete-a-specific-version-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+  - [Delete a specific version of a package hosted in a different repo than the workflow](#delete-a-specific-version-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+  - [Delete multiple specific versions of a package hosted in the same repo as the workflow](#delete-multiple-specific-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+  - [Delete multiple specific versions of a package hosted in a different repo than the workflow](#delete-multiple-specific-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+  - [Delete oldest version of a package hosted in the same repo as the workflow](#delete-oldest-version-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+  - [Delete oldest version of a package hosted in a different repo than the workflow](#delete-oldest-version-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+  - [Delete oldest x number of versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+  - [Delete oldest x number of versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+  - [Delete oldest x number of versions and keeping y latest versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+  - [Delete oldest x number of versions and keeping y latest versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+  - [Delete oldest x number of versions while ignoring particular package versions in the same repo as the workflow](#delete-oldest-x-number-of-versions-while-ignoring-particular-package-versions-in-the-same-repo-as-the-workflow)
+  - [Delete all pre-release package versions in the same repo as the workflow](#delete-all-pre-release-package-versions-in-the-same-repo-as-the-workflow)
+
 
 ### Delete a specific version of a package hosted in the same repo as the workflow
 
@@ -255,6 +259,40 @@ Delete the oldest 3 version and always keep atleast 2 versions of a package host
     token: ${{ secrets.GITHUB_PAT }}
 ```
 
+<br>
+
+### Delete oldest x number of versions while ignoring particular package versions in the same repo as the workflow
+
+To delete oldest x number of versions while ignoring all the major package versions in the same repo as the workflow the __package-name__, __num-oldest-versions-to-delete__ and __ignore-versions__ inputs are required.
+
+There is a possibility if the oldest x number of versions contain ignored package versions, actual package versions to ge deleted will be less than x.
+
+__Example__
+
+Delete 3 oldest versions excluding major versions as per semver is the same repo as the workflow
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with: 
+    package-name: 'test-packae'
+    num-old-versions-to-delete: 3
+    ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
+```
+
+### Delete all pre-release package versions in the same repo as the workflow
+
+To delete all pre release package versions in the same repo as the workflow the __package-name__ and __delete-only-pre-release-versions__ inputs are required.
+
+__Example__
+
+Delete all pre-release package versions in the same repo as the workflow
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with: 
+    package-name: 'test-package'
+    delete-only-pre-release-versions: "true"
+```
 
 # License
 
