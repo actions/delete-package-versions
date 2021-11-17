@@ -89,9 +89,10 @@ export function getOldestVersions(
   ).pipe(
     map(result => {
       if (result.repository.packages.edges.length < 1) {
-        throwError(
+        console.log(
           `package: ${packageName} not found for owner: ${owner} in repo: ${repo}`
         )
+        return []
       }
 
       const versions = result.repository.packages.edges[0].node.versions.edges

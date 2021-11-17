@@ -221,7 +221,8 @@ exports.queryForOldestVersions = queryForOldestVersions;
 function getOldestVersions(owner, repo, packageName, numVersions, token) {
     return queryForOldestVersions(owner, repo, packageName, numVersions, token).pipe(operators_1.map(result => {
         if (result.repository.packages.edges.length < 1) {
-            rxjs_1.throwError(`package: ${packageName} not found for owner: ${owner} in repo: ${repo}`);
+            console.log(`package: ${packageName} not found for owner: ${owner} in repo: ${repo}`);
+            return [];
         }
         const versions = result.repository.packages.edges[0].node.versions.edges;
         if (versions.length !== numVersions) {
