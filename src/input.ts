@@ -47,9 +47,9 @@ export class Input {
     this.token = validatedParams.token
 
     if (this.deletePreReleaseVersions == 'true') {
-      this.numOldVersionsToDelete = 100 - this.minVersionsToKeep
       this.minVersionsToKeep =
         this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 1
+      this.numOldVersionsToDelete = 100 - this.minVersionsToKeep
       this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$')
     }
   }
