@@ -10,8 +10,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete oldest version(s)
 * Delete version(s) of a package that is hosted in the same repo that is executing the workflow
 * Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
-* Specify a minimum number of latest package versions to not get deleted.
-* Ignore some versions based on name and delete remaining versions.
+* Delete maximum possible package versions except n latest versions
+* Ignore some versions based on name from deletion
 * Delete only pre-release versions
 
 # Usage
@@ -40,18 +40,23 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
   # The number of old versions to delete starting from the oldest version.
   # Defaults to 1.
+  # Cannot be more than 100
   num-old-versions-to-delete:
 
-  # The min number of latest versions to never delete.
+  # The number of latest versions to not delete.
   # Defaults to 0.
+  # When this is set greater than 0 it will delete all deletable package versions except the specified no.
+  # `num-old-versions-to-delete` will not be taken into account.
+  # Cannot be more than 100
   min-versions-to-keep:
 
   # The package versions to ignore exclude from deletion.
-  # By default nothing is ignored"
+  # By default nothing is ignored
   ignore-versions:
 
   # If true it will delete only the pre-release versions.
-  # The number of pre-release versions to kep can be set by using `min-versions-to-keep` value with this.
+  # The number of pre-release versions to keep can be set by using `min-versions-to-keep` value with this.
+  # When `min-versions-to-keep` is 0, all pre-release versions get deleted.
   # Defaults to false.
   delete-only-pre-release-versions:
 
@@ -73,10 +78,11 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   - [Delete oldest version of a package hosted in a different repo than the workflow](#delete-oldest-version-of-a-package-hosted-in-a-different-repo-than-the-workflow)
   - [Delete oldest x number of versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
   - [Delete oldest x number of versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
-  - [Delete oldest x number of versions and keeping y latest versions of a package hosted in the same repo as the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
-  - [Delete oldest x number of versions and keeping y latest versions of a package hosted in a different repo than the workflow](#delete-oldest-x-number-of-versions-and-keeping-y-latest-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
+  - [Delete all except y latest versions of a package hosted in the same repo as the workflow](#delete-all-except-y-latest-versions-of-a-package-hosted-in-the-same-repo-as-the-workflow)
+  - [Delete all except y latest versions of a package hosted in a different repo than the workflow](#delete-all-except-y-latest-versions-of-a-package-hosted-in-a-different-repo-than-the-workflow)
   - [Delete oldest x number of versions while ignoring particular package versions in the same repo as the workflow](#delete-oldest-x-number-of-versions-while-ignoring-particular-package-versions-in-the-same-repo-as-the-workflow)
-  - [Delete only pre-release package versions except x no of pre-release package versions in the same repo as the workflow](#delete-only-pre-release-package-versions-except-x-no-of-pre-release-package-versions-in-the-same-repo-as-the-workflow)
+  - [Delete all except y latest versions while ignoring particular package versions in the same repo as the workflow](#delete-all-except-y-latest-versions-while-ignoring-particular-package-versions-in-the-same-repo-as-the-workflow)
+  - [Delete only pre-release package versions except y no of pre-release package versions in the same repo as the workflow](#delete-only-pre-release-package-versions-except-y-no-of-pre-release-package-versions-in-the-same-repo-as-the-workflow)
 
 
 ### Delete a specific version of a package hosted in the same repo as the workflow
@@ -221,33 +227,32 @@ Delete the oldest 3 version of a package hosted in a different repo than the one
 
 <br>
 
-### Delete oldest x number of versions and keeping y latest versions of a package hosted in the same repo as the workflow
+### Delete all except y latest versions of a package hosted in the same repo as the workflow
 
-To delete oldest x number of versions while keeping minimum y latest versions of a package hosted in the same repo as the workflow the __package-name__, __num-old-versions-to-delete__, and __min-versions-to-keep__ inputs are required.
+To delete all except y latest versions of a package hosted in the same repo as the workflow the __package-name__ and __min-versions-to-keep__ inputs are required.
 
 __Example__
 
-Delete the oldest 3 version and always keep atleast 2 versions of a package hosted in the same repo as the workflow
+Delete all except latest 2 versions of a package hosted in the same repo as the workflow
 
 ```yaml
 - uses: actions/delete-package-versions@v1
   with:
     package-name: 'test-package'
-    num-old-versions-to-delete: 3
     min-versions-to-keep: 2
 ```
 
 <br>
 
-### Delete oldest x number of versions and keeping y latest versions of a package hosted in a different repo than the workflow
+### Delete all except y latest versions of a package hosted in a different repo than the workflow
 
-To delete oldest x number of versions while keeping minimum y latest versions of a package hosted in a different repo than the workflow the __package-name__, __num-old-versions-to-delete__, __min-versions-to-keep__, __owner__, __repo__, and __token__ inputs are required.
+To delete oldest x number of versions while keeping minimum y latest versions of a package hosted in a different repo than the workflow the __package-name__, __min-versions-to-keep__, __owner__, __repo__, and __token__ inputs are required.
 
 The [token][token] needs the delete packages and read packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
 
 __Example__
 
-Delete the oldest 3 version and always keep atleast 2 versions of a package hosted in a different repo than the workflow
+Delete all excpet latest 2 versions of a package hosted in a different repo than the workflow
 
 ```yaml
 - uses: actions/delete-package-versions@v1
@@ -255,7 +260,6 @@ Delete the oldest 3 version and always keep atleast 2 versions of a package host
     owner: 'github'
     repo: 'packages'
     package-name: 'test-package'
-    num-old-versions-to-delete: 3
     min-versions-to-keep: 2
     token: ${{ secrets.GITHUB_PAT }}
 ```
@@ -280,9 +284,27 @@ Delete 3 oldest versions excluding major versions as per semver is the same repo
     ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
 ```
 
-### Delete only pre-release package versions except x no of pre-release package versions in the same repo as the workflow
+<br>
 
-To delete all pre release package versions except x no of pre-release package versions in the same repo as the workflow the __package-name__ and __delete-only-pre-release-versions__ inputs are required.
+### Delete all except y latest versions while ignoring particular package versions in the same repo as the workflow
+
+To delete all except y latest versions while ignoring all the major package versions in the same repo as the workflow the __package-name__, __min-versions-to-keep__ and __ignore-versions__ inputs are required.
+
+__Example__
+
+Delete all except latest 3 package versions excluding major versions as per semver is the same repo as the workflow
+
+```yaml
+- uses: actions/delete-package-versions@v1
+  with: 
+    package-name: 'test-packae'
+    min-versions-to-keep: 3
+    ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
+```
+
+### Delete only pre-release package versions except y no of pre-release package versions in the same repo as the workflow
+
+To delete all pre release package versions except y no of pre-release package versions in the same repo as the workflow the __package-name__, __min-versions-to-keep__ and __delete-only-pre-release-versions__ inputs are required.
 
 __Example__
 
