@@ -34,7 +34,8 @@ function getVersionIds(input) {
     if (input.hasOldestVersionQueryInfo()) {
         return version_1.getOldestVersions(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete + input.minVersionsToKeep, input.token).pipe(operators_1.map(versionInfo => {
             const numberVersionsToDelete = versionInfo.length - input.minVersionsToKeep;
-            if (input.deletePreReleaseVersions == 'true') {
+            if (input.deletePreReleaseVersions == 'true' &&
+                input.minVersionsToKeep > 0) {
                 return numberVersionsToDelete <= 0
                     ? []
                     : versionInfo
@@ -101,8 +102,6 @@ class Input {
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
         if (this.deletePreReleaseVersions == 'true') {
-            this.minVersionsToKeep =
-                this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 1;
             this.numOldVersionsToDelete = 100 - this.minVersionsToKeep;
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
         }

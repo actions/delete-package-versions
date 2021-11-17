@@ -20,7 +20,10 @@ export function getVersionIds(input: Input): Observable<string[]> {
         const numberVersionsToDelete =
           versionInfo.length - input.minVersionsToKeep
 
-        if (input.deletePreReleaseVersions == 'true') {
+        if (
+          input.deletePreReleaseVersions == 'true' &&
+          input.minVersionsToKeep > 0
+        ) {
           return numberVersionsToDelete <= 0
             ? []
             : versionInfo
