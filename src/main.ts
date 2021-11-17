@@ -16,7 +16,9 @@ function getActionInput(): Input {
     numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),
     minVersionsToKeep: Number(getInput('min-versions-to-keep')),
     ignoreVersions: RegExp(getInput('ignore-versions')),
-    deletePreReleaseVersions: getInput('delete-only-pre-release-versions'),
+    deletePreReleaseVersions: getInput(
+      'delete-only-pre-release-versions'
+    ).toLowerCase(),
     token: getInput('token')
   })
 }

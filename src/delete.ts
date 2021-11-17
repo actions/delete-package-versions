@@ -19,12 +19,22 @@ export function getVersionIds(input: Input): Observable<string[]> {
       map(versionInfo => {
         const numberVersionsToDelete =
           versionInfo.length - input.minVersionsToKeep
-        return numberVersionsToDelete <= 0
-          ? []
-          : versionInfo
-              .filter(info => !input.ignoreVersions.test(info.version))
-              .map(info => info.id)
-              .slice(0, numberVersionsToDelete)
+
+        if (input.deletePreReleaseVersions == 'true') {
+          return numberVersionsToDelete <= 0
+            ? []
+            : versionInfo
+                .filter(info => !input.ignoreVersions.test(info.version))
+                .map(info => info.id)
+                .slice(0, -input.minVersionsToKeep)
+        } else {
+          return numberVersionsToDelete <= 0
+            ? []
+            : versionInfo
+                .filter(info => !input.ignoreVersions.test(info.version))
+                .map(info => info.id)
+                .slice(0, numberVersionsToDelete)
+        }
       })
     )
   }

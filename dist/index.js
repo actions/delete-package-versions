@@ -34,12 +34,22 @@ function getVersionIds(input) {
     if (input.hasOldestVersionQueryInfo()) {
         return version_1.getOldestVersions(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete + input.minVersionsToKeep, input.token).pipe(operators_1.map(versionInfo => {
             const numberVersionsToDelete = versionInfo.length - input.minVersionsToKeep;
-            return numberVersionsToDelete <= 0
-                ? []
-                : versionInfo
-                    .filter(info => !input.ignoreVersions.test(info.version))
-                    .map(info => info.id)
-                    .slice(0, numberVersionsToDelete);
+            if (input.deletePreReleaseVersions == 'true') {
+                return numberVersionsToDelete <= 0
+                    ? []
+                    : versionInfo
+                        .filter(info => !input.ignoreVersions.test(info.version))
+                        .map(info => info.id)
+                        .slice(0, -input.minVersionsToKeep);
+            }
+            else {
+                return numberVersionsToDelete <= 0
+                    ? []
+                    : versionInfo
+                        .filter(info => !input.ignoreVersions.test(info.version))
+                        .map(info => info.id)
+                        .slice(0, numberVersionsToDelete);
+            }
         }));
     }
     return rxjs_1.throwError("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input or provide the 'package-name' and 'num-old-versions-to-delete' inputs to dynamically retrieve oldest versions");
@@ -91,8 +101,9 @@ class Input {
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
         if (this.deletePreReleaseVersions == 'true') {
-            this.numOldVersionsToDelete = 100;
-            this.minVersionsToKeep = 0;
+            this.numOldVersionsToDelete = 100 - this.minVersionsToKeep;
+            this.minVersionsToKeep =
+                this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 1;
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
         }
     }
@@ -40322,7 +40333,7 @@ function getActionInput() {
         numOldVersionsToDelete: Number(core_1.getInput('num-old-versions-to-delete')),
         minVersionsToKeep: Number(core_1.getInput('min-versions-to-keep')),
         ignoreVersions: RegExp(core_1.getInput('ignore-versions')),
-        deletePreReleaseVersions: core_1.getInput('delete-only-pre-release-versions'),
+        deletePreReleaseVersions: core_1.getInput('delete-only-pre-release-versions').toLowerCase(),
         token: core_1.getInput('token')
     });
 }

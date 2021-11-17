@@ -37,8 +37,9 @@ inputs:
   min-versions-to-keep:
     description: >
       Number of versions to keep starting with the latest version
+      Defaults to 0.
     required: false
-    default: "1"
+    default: "0"
 
   ignore-versions:
     description: >
@@ -49,8 +50,8 @@ inputs:
 
   delete-only-pre-release-versions:
     description: >
-      Deletes all the pre-release versions upto 100.
-      When this is set min-versions-to-keep, num-old-versions-to-delete and ignore-versions will not be taken into account.
+      Deletes only pre-release versions upto. The number of pre-release versions to keep can be specified by min-versions-to-keep.
+      When this is set num-old-versions-to-delete and ignore-versions will not be taken into account.
       By default this is set to false
     required: false
     default: "false"
