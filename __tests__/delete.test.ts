@@ -7,7 +7,7 @@ describe.skip('index tests -- call graphql', () => {
 
     getVersionIds(getInput({numOldVersionsToDelete: numVersions})).subscribe(
       ids => {
-        expect(ids.length).toBe(numVersions)
+        expect(ids.length).toBeLessThanOrEqual(numVersions)
         done()
       }
     )
@@ -18,7 +18,7 @@ describe.skip('index tests -- call graphql', () => {
 
     getVersionIds(getInput({numOldVersionsToDelete: numVersions})).subscribe(
       ids => {
-        expect(ids.length).toBe(numVersions)
+        expect(ids.length).toBeLessThanOrEqual(numVersions)
         done()
       }
     )
@@ -57,31 +57,39 @@ describe.skip('index tests -- call graphql', () => {
     })
   })
 
-  it('deleteVersions test -- delete oldest version', done => {
-    deleteVersions(getInput({numOldVersionsToDelete: 1})).subscribe(
-      isSuccess => {
-        expect(isSuccess).toBe(true)
-        done()
-      }
-    )
+  it.skip('deleteVersions test -- delete oldest version', done => {
+    deleteVersions(
+      getInput({numOldVersionsToDelete: 2, minVersionsToKeep: 1})
+    ).subscribe(isSuccess => {
+      expect(isSuccess).toBe(true)
+      done()
+    })
   })
 
-  it('deleteVersions test -- delete 3 oldest versions', done => {
-    deleteVersions(getInput({numOldVersionsToDelete: 3})).subscribe(
-      isSuccess => {
-        expect(isSuccess).toBe(true)
-        done()
-      }
-    )
+  it.skip('deleteVersions test -- delete 3 oldest versions', done => {
+    deleteVersions(
+      getInput({numOldVersionsToDelete: 3, minVersionsToKeep: 1})
+    ).subscribe(isSuccess => {
+      expect(isSuccess).toBe(true)
+      done()
+    })
+  })
+
+  it('deleteVersions test -- keep 5 versions', done => {
+    deleteVersions(getInput({minVersionsToKeep: 5})).subscribe(isSuccess => {
+      expect(isSuccess).toBe(true)
+      done()
+    })
   })
 })
 
 const defaultInput: InputParams = {
   packageVersionIds: [],
-  owner: 'trent-j',
-  repo: 'actions-testing',
-  packageName: 'com.github.trent-j.actions-test',
+  owner: 'namratajha',
+  repo: 'only-pkg',
+  packageName: 'onlypkg.maven',
   numOldVersionsToDelete: 1,
+  minVersionsToKeep: 1,
   token: process.env.GITHUB_TOKEN as string
 }
 

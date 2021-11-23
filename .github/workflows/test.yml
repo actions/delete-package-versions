@@ -31,3 +31,4 @@ jobs:
       with:
         package-name: 'com.github.actions.test-package'
         num-old-versions-to-delete: 0
+        min-versions-to-keep: 0

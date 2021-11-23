@@ -49,9 +49,9 @@ interface Params {
 }
 
 const defaultParams = {
-  owner: 'trent-j',
-  repo: 'actions-testing',
-  packageName: 'com.github.trent-j.actions-test',
+  owner: 'namratajha',
+  repo: 'only-pkg',
+  packageName: 'onlypkg.maven',
   numVersions: 3,
   token: process.env.GITHUB_TOKEN as string
 }
