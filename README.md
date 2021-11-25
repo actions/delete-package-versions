@@ -5,9 +5,9 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 ### What It Can Do
 
 * Create a retention policy (delete all except n most recent pre-release versions)
-* Delete all package versions except n most recent versions.
+* Delete all package versions except n most recent versions
 * Delete oldest version(s)
-* Ignore version(s) from deletion through regex.
+* Ignore version(s) from deletion through regex
 * Delete version(s) of a package that is hosted in the same repo that is executing the workflow
 * Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
 * Delete a single version
