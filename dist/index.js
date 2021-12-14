@@ -62,17 +62,15 @@ function finalIds(input) {
                     value.filter(info => input.ignoreVersions.test(info.version))
                         .length -
                     input.minVersionsToKeep;
+                value = value.filter(info => !input.ignoreVersions.test(info.version));
                 console.log(`toDelete: ${toDelete} numVersions: ${input.numOldVersionsToDelete} total count: ${totalCount}`);
                 if (toDelete > input.numOldVersionsToDelete) {
                     //here input.numOldVersionsToDelete will never have user value hence using it to keep track of deleted versions
                     input.numOldVersionsToDelete =
                         input.numOldVersionsToDelete + value.length;
                     return toDelete - input.numOldVersionsToDelete >= 0
-                        ? value
-                            .filter(info => !input.ignoreVersions.test(info.version))
-                            .map(info => info.id)
+                        ? value.map(info => info.id)
                         : value
-                            .filter(info => !input.ignoreVersions.test(info.version))
                             .map(info => info.id)
                             .slice(0, toDelete - input.numOldVersionsToDelete);
                 }
