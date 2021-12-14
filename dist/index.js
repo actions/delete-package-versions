@@ -59,6 +59,9 @@ function deleteVersions(input) {
     if (!input.token) {
         return rxjs_1.throwError('No token found');
     }
+    if (!input.checkInput()) {
+        return rxjs_1.throwError('Invalid input combination');
+    }
     if (input.numOldVersionsToDelete <= 0) {
         console.log('Number of old versions to delete input is 0 or less, no versions will be deleted');
         return rxjs_1.of(true);
@@ -71,13 +74,12 @@ exports.deleteVersions = deleteVersions;
 /***/ }),
 
 /***/ 8657:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Input = void 0;
-const rxjs_1 = __nccwpck_require__(5805);
 const defaultParams = {
     packageVersionIds: [],
     owner: '',
@@ -101,9 +103,19 @@ class Input {
         this.ignoreVersions = validatedParams.ignoreVersions;
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
+    }
+    hasOldestVersionQueryInfo() {
+        return !!(this.owner &&
+            this.repo &&
+            this.packageName &&
+            this.numOldVersionsToDelete > 0 &&
+            this.minVersionsToKeep >= 0 &&
+            this.token);
+    }
+    checkInput() {
         if (this.numOldVersionsToDelete > 1 &&
-            (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions == 'true')) {
-            rxjs_1.throwError('Invalid input combination');
+            (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')) {
+            return false;
         }
         if (this.deletePreReleaseVersions === 'true') {
             this.minVersionsToKeep =
@@ -113,14 +125,7 @@ class Input {
         if (this.minVersionsToKeep >= 0) {
             this.numOldVersionsToDelete = 0;
         }
-    }
-    hasOldestVersionQueryInfo() {
-        return !!(this.owner &&
-            this.repo &&
-            this.packageName &&
-            this.numOldVersionsToDelete > 0 &&
-            this.minVersionsToKeep >= 0 &&
-            this.token);
+        return true;
     }
 }
 exports.Input = Input;

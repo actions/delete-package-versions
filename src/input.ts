@@ -47,23 +47,6 @@ export class Input {
     this.ignoreVersions = validatedParams.ignoreVersions
     this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions
     this.token = validatedParams.token
-
-    if (
-      this.numOldVersionsToDelete > 1 &&
-      (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions == 'true')
-    ) {
-      throwError('Invalid input combination')
-    }
-
-    if (this.deletePreReleaseVersions === 'true') {
-      this.minVersionsToKeep =
-        this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0
-      this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$')
-    }
-
-    if (this.minVersionsToKeep >= 0) {
-      this.numOldVersionsToDelete = 0
-    }
   }
 
   hasOldestVersionQueryInfo(): boolean {
@@ -75,5 +58,26 @@ export class Input {
       this.minVersionsToKeep >= 0 &&
       this.token
     )
+  }
+
+  checkInput(): boolean {
+    if (
+      this.numOldVersionsToDelete > 1 &&
+      (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')
+    ) {
+      return false
+    }
+
+    if (this.deletePreReleaseVersions === 'true') {
+      this.minVersionsToKeep =
+        this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0
+      this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$')
+    }
+
+    if (this.minVersionsToKeep >= 0) {
+      this.numOldVersionsToDelete = 0
+    }
+
+    return true
   }
 }
