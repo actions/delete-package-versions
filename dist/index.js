@@ -81,7 +81,7 @@ function finalIds(input) {
             }));
         }
     }
-    return rxjs_1.throwError(`no package id found`);
+    return rxjs_1.throwError("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input");
 }
 exports.finalIds = finalIds;
 function deleteVersions(input) {
@@ -137,8 +137,7 @@ class Input {
         return !!(this.owner &&
             this.repo &&
             this.packageName &&
-            this.numOldVersionsToDelete > 0 &&
-            this.minVersionsToKeep >= 0 &&
+            this.numOldVersionsToDelete >= 0 &&
             this.token);
     }
     checkInput() {

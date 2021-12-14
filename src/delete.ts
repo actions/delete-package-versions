@@ -128,7 +128,9 @@ export function finalIds(input: Input): Observable<string[]> {
     }
   }
 
-  return throwError(`no package id found`)
+  return throwError(
+    "Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input"
+  )
 }
 
 export function deleteVersions(input: Input): Observable<boolean> {
