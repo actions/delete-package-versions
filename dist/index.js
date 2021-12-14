@@ -71,12 +71,13 @@ exports.deleteVersions = deleteVersions;
 /***/ }),
 
 /***/ 8657:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Input = void 0;
+const rxjs_1 = __nccwpck_require__(5805);
 const defaultParams = {
     packageVersionIds: [],
     owner: '',
@@ -100,12 +101,17 @@ class Input {
         this.ignoreVersions = validatedParams.ignoreVersions;
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
-        if (this.minVersionsToKeep > 0) {
-            this.numOldVersionsToDelete = 100 - this.minVersionsToKeep;
+        if (this.numOldVersionsToDelete > 1 &&
+            (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions == 'true')) {
+            rxjs_1.throwError('Invalid input combination');
         }
-        if (this.deletePreReleaseVersions == 'true') {
-            this.numOldVersionsToDelete = 100 - this.minVersionsToKeep;
+        if (this.deletePreReleaseVersions === 'true') {
+            this.minVersionsToKeep =
+                this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
+        }
+        if (this.minVersionsToKeep >= 0) {
+            this.numOldVersionsToDelete = 0;
         }
     }
     hasOldestVersionQueryInfo() {

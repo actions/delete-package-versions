@@ -1,3 +1,5 @@
+import {throwError} from 'rxjs'
+
 export interface InputParams {
   packageVersionIds?: string[]
   owner?: string
@@ -46,13 +48,21 @@ export class Input {
     this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions
     this.token = validatedParams.token
 
-    if (this.minVersionsToKeep > 0) {
-      this.numOldVersionsToDelete = 100 - this.minVersionsToKeep
+    if (
+      this.numOldVersionsToDelete > 1 &&
+      (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions == 'true')
+    ) {
+      throwError('Invalid input combination')
     }
 
-    if (this.deletePreReleaseVersions == 'true') {
-      this.numOldVersionsToDelete = 100 - this.minVersionsToKeep
+    if (this.deletePreReleaseVersions === 'true') {
+      this.minVersionsToKeep =
+        this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0
       this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$')
+    }
+
+    if (this.minVersionsToKeep >= 0) {
+      this.numOldVersionsToDelete = 0
     }
   }
 
