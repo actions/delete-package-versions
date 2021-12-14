@@ -59,7 +59,7 @@ function finalIds(input) {
             return getVersionIds(input.owner, input.repo, input.packageName, 100, input.ignoreVersions, '', input.token).pipe(operators_1.map(value => {
                 console.log(`point 1`);
                 const toDelete = totalCount -
-                    value.filter(info => !input.ignoreVersions.test(info.version))
+                    value.filter(info => input.ignoreVersions.test(info.version))
                         .length -
                     input.minVersionsToKeep;
                 console.log(`toDelete: ${toDelete} numVersions: ${input.numOldVersionsToDelete} total count: ${totalCount}`);
