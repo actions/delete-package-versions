@@ -23,50 +23,79 @@ module.exports = JSON.parse('{"_args":[["@octokit/rest@16.43.1","/workspaces/del
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deleteVersions = exports.getVersionIds = void 0;
+exports.deleteVersions = exports.finalIds = exports.getVersionIds = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const version_1 = __nccwpck_require__(4428);
 const operators_1 = __nccwpck_require__(7801);
-function getVersionIds(input) {
+let totalCount;
+function getVersionIds(owner, repo, packageName, numVersions, ignoreVersions, cursor, token) {
+    return version_1.getOldestVersions(owner, repo, packageName, numVersions, ignoreVersions, cursor, token).pipe(operators_1.expand(value => value.paginate
+        ? version_1.getOldestVersions(owner, repo, packageName, numVersions, ignoreVersions, value.cursor, token)
+        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = value.totalCount)), operators_1.map(value => value.versions), operators_1.tap(value => value.map(info => console.log(`id0: ${info.id}, version: ${info.version}`))));
+}
+exports.getVersionIds = getVersionIds;
+function finalIds(input) {
     if (input.packageVersionIds.length > 0) {
         return rxjs_1.of(input.packageVersionIds);
     }
     if (input.hasOldestVersionQueryInfo()) {
-        return version_1.getOldestVersions(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete + input.minVersionsToKeep, input.token).pipe(operators_1.map(versionInfo => {
-            const numberVersionsToDelete = versionInfo.length - input.minVersionsToKeep;
-            if (input.minVersionsToKeep > 0) {
-                return numberVersionsToDelete <= 0
-                    ? []
-                    : versionInfo
-                        .filter(info => !input.ignoreVersions.test(info.version))
-                        .map(info => info.id)
-                        .slice(0, -input.minVersionsToKeep);
-            }
-            else {
-                return numberVersionsToDelete <= 0
-                    ? []
-                    : versionInfo
-                        .filter(info => !input.ignoreVersions.test(info.version))
-                        .map(info => info.id)
-                        .slice(0, numberVersionsToDelete);
-            }
-        }));
+        if (input.minVersionsToKeep < 0) {
+            console.log(`in numOldVersionsToDelete`);
+            return getVersionIds(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete, input.ignoreVersions, '', input.token).pipe(operators_1.map(value => {
+                const temp = input.numOldVersionsToDelete;
+                input.numOldVersionsToDelete =
+                    input.numOldVersionsToDelete - value.length <= 0
+                        ? 0
+                        : input.numOldVersionsToDelete - value.length;
+                console.log(`temp: ${temp} numVersions: ${input.numOldVersionsToDelete} ignore-versions: ${input.ignoreVersions}`);
+                return value
+                    .filter(info => !input.ignoreVersions.test(info.version))
+                    .map(info => info.id)
+                    .slice(0, temp);
+            }));
+        }
+        else {
+            console.log(`in min versions to keep`);
+            return getVersionIds(input.owner, input.repo, input.packageName, 100, input.ignoreVersions, '', input.token).pipe(operators_1.map(value => {
+                console.log(`point 1`);
+                const toDelete = totalCount -
+                    value.filter(info => !input.ignoreVersions.test(info.version))
+                        .length -
+                    input.minVersionsToKeep;
+                console.log(`toDelete: ${toDelete} numVersions: ${input.numOldVersionsToDelete} total count: ${totalCount}`);
+                if (toDelete > input.numOldVersionsToDelete) {
+                    //here input.numOldVersionsToDelete will never have user value hence using it to keep track of deleted versions
+                    input.numOldVersionsToDelete =
+                        input.numOldVersionsToDelete + value.length;
+                    return toDelete - input.numOldVersionsToDelete >= 0
+                        ? value
+                            .filter(info => !input.ignoreVersions.test(info.version))
+                            .map(info => info.id)
+                        : value
+                            .filter(info => !input.ignoreVersions.test(info.version))
+                            .map(info => info.id)
+                            .slice(0, toDelete - input.numOldVersionsToDelete);
+                }
+                else
+                    return [];
+            }));
+        }
     }
-    return rxjs_1.throwError("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input or provide the 'package-name' and 'num-old-versions-to-delete' inputs to dynamically retrieve oldest versions");
+    return rxjs_1.throwError(`no package id found`);
 }
-exports.getVersionIds = getVersionIds;
+exports.finalIds = finalIds;
 function deleteVersions(input) {
     if (!input.token) {
         return rxjs_1.throwError('No token found');
     }
     if (!input.checkInput()) {
-        return rxjs_1.throwError('Invalid input combination');
+        return rxjs_1.throwError('Invlaid input combination');
     }
-    if (input.numOldVersionsToDelete <= 0) {
+    if (input.numOldVersionsToDelete <= 0 && input.minVersionsToKeep < 0) {
         console.log('Number of old versions to delete input is 0 or less, no versions will be deleted');
         return rxjs_1.of(true);
     }
-    return getVersionIds(input).pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
+    return finalIds(input).pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
@@ -201,11 +230,16 @@ const query = `
           node {
             name
             versions(last: $last) {
+              totalCount
               edges {
                 node {
                   id
                   version
                 }
+              }
+              pageInfo {
+                startCursor
+                hasPreviousPage
               }
             }
           }
@@ -213,36 +247,95 @@ const query = `
       }
     }
   }`;
-function queryForOldestVersions(owner, repo, packageName, numVersions, token) {
-    return rxjs_1.from(graphql_1.graphql(token, query, {
-        owner,
-        repo,
-        package: packageName,
-        last: numVersions,
-        headers: {
-            Accept: 'application/vnd.github.packages-preview+json'
+const Paginatequery = `
+  query getVersions($owner: String!, $repo: String!, $package: String!, $last: Int!, $before: String!) {
+    repository(owner: $owner, name: $repo) {
+      packages(first: 1, names: [$package]) {
+        edges {
+          node {
+            name
+            versions(last: $last, before: $before) {
+              totalCount
+              edges {
+                node {
+                  id
+                  version
+                }
+              }
+              pageInfo{
+                startCursor
+                hasPreviousPage
+              }
+            }
+          }
         }
-    })).pipe(operators_1.catchError((err) => {
-        const msg = 'query for oldest version failed.';
-        return rxjs_1.throwError(err.errors && err.errors.length > 0
-            ? `${msg} ${err.errors[0].message}`
-            : `${msg} verify input parameters are correct`);
-    }));
+      }
+    }
+  }`;
+function queryForOldestVersions(owner, repo, packageName, numVersions, startCursor, token) {
+    if (startCursor === '') {
+        return rxjs_1.from(graphql_1.graphql(token, query, {
+            owner,
+            repo,
+            package: packageName,
+            last: numVersions > 100 ? 100 : numVersions,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe(operators_1.catchError((err) => {
+            const msg = 'query for oldest version failed.';
+            return rxjs_1.throwError(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct`);
+        }));
+    }
+    else {
+        return rxjs_1.from(graphql_1.graphql(token, Paginatequery, {
+            owner,
+            repo,
+            package: packageName,
+            last: numVersions > 100 ? 100 : numVersions,
+            before: startCursor,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe(operators_1.catchError((err) => {
+            const msg = 'query for oldest version failed.';
+            return rxjs_1.throwError(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct`);
+        }));
+    }
 }
 exports.queryForOldestVersions = queryForOldestVersions;
-function getOldestVersions(owner, repo, packageName, numVersions, token) {
-    return queryForOldestVersions(owner, repo, packageName, numVersions, token).pipe(operators_1.map(result => {
+function getOldestVersions(owner, repo, packageName, numVersions, ignoreVersions, startCursor, token) {
+    return queryForOldestVersions(owner, repo, packageName, numVersions, startCursor, token).pipe(operators_1.map(result => {
+        let r;
         if (result.repository.packages.edges.length < 1) {
             console.log(`package: ${packageName} not found for owner: ${owner} in repo: ${repo}`);
-            return [];
+            r = {
+                versions: [],
+                cursor: '',
+                paginate: false,
+                totalCount: 0
+            };
+            return r;
         }
         const versions = result.repository.packages.edges[0].node.versions.edges;
+        const pages = result.repository.packages.edges[0].node.versions.pageInfo;
+        const count = result.repository.packages.edges[0].node.versions.totalCount;
         if (versions.length !== numVersions) {
             console.log(`number of versions requested was: ${numVersions}, but found: ${versions.length}`);
         }
-        return versions
-            .map(value => ({ id: value.node.id, version: value.node.version }))
-            .reverse();
+        r = {
+            versions: versions
+                .map(value => ({ id: value.node.id, version: value.node.version }))
+                .reverse(),
+            cursor: pages.startCursor,
+            paginate: pages.hasPreviousPage,
+            totalCount: count
+        };
+        return r;
     }));
 }
 exports.getOldestVersions = getOldestVersions;
