@@ -58,16 +58,20 @@ function finalIds(input) {
             console.log(`in min versions to keep`);
             return getVersionIds(input.owner, input.repo, input.packageName, 100, input.ignoreVersions, '', input.token).pipe(operators_1.map(value => {
                 console.log(`point 1`);
-                const toDelete = totalCount -
+                let toDelete = totalCount -
                     value.filter(info => input.ignoreVersions.test(info.version))
                         .length -
                     input.minVersionsToKeep;
+                toDelete = toDelete > 100 ? 100 : toDelete;
                 value = value.filter(info => !input.ignoreVersions.test(info.version));
                 console.log(`toDelete: ${toDelete} numVersions: ${input.numOldVersionsToDelete} total count: ${totalCount}`);
-                if (toDelete > input.numOldVersionsToDelete) {
+                if (toDelete > input.numOldVersionsToDelete &&
+                    input.numOldVersionsToDelete < 100) {
                     //here input.numOldVersionsToDelete will never have user value hence using it to keep track of deleted versions
                     input.numOldVersionsToDelete =
-                        input.numOldVersionsToDelete + value.length;
+                        input.numOldVersionsToDelete + value.length > 100
+                            ? 100
+                            : input.numOldVersionsToDelete + value.length;
                     return toDelete - input.numOldVersionsToDelete >= 0
                         ? value.map(info => info.id)
                         : value

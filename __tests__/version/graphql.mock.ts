@@ -6,7 +6,7 @@ import {
 import * as Graphql from '../../src/version/graphql'
 import {GetVersionsQueryResponse} from '../../src/version'
 
-export function getMockedOldestQueryResponse(
+export function getMockedOldestQueryResponseForLessThan100(
   numVersions: number
 ): GetVersionsQueryResponse {
   const versions = []
