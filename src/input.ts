@@ -1,5 +1,3 @@
-import {throwError} from 'rxjs'
-
 export interface InputParams {
   packageVersionIds?: string[]
   owner?: string
@@ -34,6 +32,7 @@ export class Input {
   ignoreVersions: RegExp
   deletePreReleaseVersions: string
   token: string
+  numDeleted: number
 
   constructor(params?: InputParams) {
     const validatedParams: Required<InputParams> = {...defaultParams, ...params}
@@ -47,6 +46,7 @@ export class Input {
     this.ignoreVersions = validatedParams.ignoreVersions
     this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions
     this.token = validatedParams.token
+    this.numDeleted = 0
   }
 
   hasOldestVersionQueryInfo(): boolean {

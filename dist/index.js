@@ -48,6 +48,7 @@ function finalIds(input) {
                         ? 0
                         : input.numOldVersionsToDelete - value.length;
                 console.log(`temp: ${temp} numVersions: ${input.numOldVersionsToDelete} ignore-versions: ${input.ignoreVersions}`);
+                input.numDeleted += value.filter(info => !input.ignoreVersions.test(info.version)).length;
                 return value
                     .filter(info => !input.ignoreVersions.test(info.version))
                     .map(info => info.id)
@@ -64,19 +65,16 @@ function finalIds(input) {
                     input.minVersionsToKeep;
                 toDelete = toDelete > 100 ? 100 : toDelete;
                 value = value.filter(info => !input.ignoreVersions.test(info.version));
-                console.log(`toDelete: ${toDelete} numVersions: ${input.numOldVersionsToDelete} total count: ${totalCount}`);
-                if (toDelete > input.numOldVersionsToDelete &&
-                    input.numOldVersionsToDelete < 100) {
+                console.log(`toDelete: ${toDelete} numVersions: ${input.numDeleted} total count: ${totalCount}`);
+                if (toDelete > input.numDeleted && input.numDeleted < 100) {
                     //here input.numOldVersionsToDelete will never have user value hence using it to keep track of deleted versions
-                    input.numOldVersionsToDelete =
-                        input.numOldVersionsToDelete + value.length > 100
+                    input.numDeleted =
+                        input.numDeleted + value.length > 100
                             ? 100
-                            : input.numOldVersionsToDelete + value.length;
-                    return toDelete - input.numOldVersionsToDelete >= 0
+                            : input.numDeleted + value.length;
+                    return toDelete - input.numDeleted >= 0
                         ? value.map(info => info.id)
-                        : value
-                            .map(info => info.id)
-                            .slice(0, toDelete - input.numOldVersionsToDelete);
+                        : value.map(info => info.id).slice(0, toDelete - input.numDeleted);
                 }
                 else
                     return [];
@@ -97,7 +95,9 @@ function deleteVersions(input) {
         console.log('Number of old versions to delete input is 0 or less, no versions will be deleted');
         return rxjs_1.of(true);
     }
-    return finalIds(input).pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
+    const result = finalIds(input);
+    console.log(`${input.numDeleted} versions deleted`);
+    return result.pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
@@ -134,6 +134,7 @@ class Input {
         this.ignoreVersions = validatedParams.ignoreVersions;
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
+        this.numDeleted = 0;
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
