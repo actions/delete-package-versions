@@ -48,7 +48,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # The number of latest versions to not delete.
   # Defaults to 0.
   # When this is set greater than 0 it will delete all deletable package versions except the specified no.
-  # `num-old-versions-to-delete` will not be taken into account with this option.
+  # This cannot be specified with `num-old-versions-to-delete`. By default, `num-old-versions-to-delete` takes precedence over `min-versions-to-keep`.
   # Cannot be more than 100.
   min-versions-to-keep:
 
