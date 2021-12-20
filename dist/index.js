@@ -31,7 +31,7 @@ let totalCount;
 function getVersionIds(owner, repo, packageName, numVersions, cursor, token) {
     return version_1.getOldestVersions(owner, repo, packageName, numVersions, cursor, token).pipe(operators_1.expand(value => value.paginate
         ? version_1.getOldestVersions(owner, repo, packageName, numVersions, value.cursor, token)
-        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = value.totalCount)), operators_1.map(value => value.versions), operators_1.tap(value => value.map(info => console.log(`id0: ${info.id}, version: ${info.version}`))));
+        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = value.totalCount)), operators_1.map(value => value.versions));
 }
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
@@ -91,7 +91,8 @@ function deleteVersions(input) {
         return rxjs_1.of(true);
     }
     const result = finalIds(input);
-    console.log(`${input.numDeleted} versions deleted`);
+    result.pipe(operators_1.tap(value => (input.numDeleted = value.length < 100 ? value.length : 100)));
+    console.log(`${input.numDeleted} versions will be deleted`);
     return result.pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids.slice(0, 100), input.token)));
 }
 exports.deleteVersions = deleteVersions;
@@ -191,7 +192,6 @@ function deletePackageVersion(packageVersionId, token) {
 exports.deletePackageVersion = deletePackageVersion;
 function deletePackageVersions(packageVersionIds, token) {
     if (packageVersionIds.length === 0) {
-        console.log('no package version ids found, no versions will be deleted');
         return rxjs_1.of(true);
     }
     const deletes = packageVersionIds.map(id => deletePackageVersion(id, token).pipe(operators_1.tap(result => {

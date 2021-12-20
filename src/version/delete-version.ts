@@ -45,7 +45,6 @@ export function deletePackageVersions(
   token: string
 ): Observable<boolean> {
   if (packageVersionIds.length === 0) {
-    console.log('no package version ids found, no versions will be deleted')
     return of(true)
   }
 
