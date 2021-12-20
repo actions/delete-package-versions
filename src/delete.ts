@@ -129,6 +129,6 @@ export function deleteVersions(input: Input): Observable<boolean> {
   console.log(`${input.numDeleted} versions deleted`)
 
   return result.pipe(
-    concatMap(ids => deletePackageVersions(ids.slice(0, 101), input.token))
+    concatMap(ids => deletePackageVersions(ids.slice(0, 100), input.token))
   )
 }
