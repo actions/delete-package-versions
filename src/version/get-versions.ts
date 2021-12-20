@@ -109,6 +109,7 @@ export function queryForOldestVersions(
     ).pipe(
       catchError((err: GraphQlQueryResponse) => {
         const msg = 'query for oldest version failed.'
+        console.log(`numversions: ${numVersions} startCursor: ${startCursor}`)
         return throwError(
           err.errors && err.errors.length > 0
             ? `${msg} ${err.errors[0].message}`
@@ -146,7 +147,6 @@ export function getOldestVersions(
   repo: string,
   packageName: string,
   numVersions: number,
-  ignoreVersions: RegExp,
   startCursor: string,
   token: string
 ): Observable<QueryInfo> {
@@ -176,12 +176,6 @@ export function getOldestVersions(
       const versions = result.repository.packages.edges[0].node.versions.edges
       const pages = result.repository.packages.edges[0].node.versions.pageInfo
       const count = result.repository.packages.edges[0].node.versions.totalCount
-
-      if (versions.length !== numVersions) {
-        console.log(
-          `number of versions requested was: ${numVersions}, but found: ${versions.length}`
-        )
-      }
 
       r = {
         versions: versions

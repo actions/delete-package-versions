@@ -10,7 +10,6 @@ export function getVersionIds(
   repo: string,
   packageName: string,
   numVersions: number,
-  ignoreVersions: RegExp,
   cursor: string,
   token: string
 ): Observable<VersionInfo[]> {
@@ -19,7 +18,6 @@ export function getVersionIds(
     repo,
     packageName,
     numVersions,
-    ignoreVersions,
     cursor,
     token
   ).pipe(
@@ -30,7 +28,6 @@ export function getVersionIds(
             repo,
             packageName,
             numVersions,
-            ignoreVersions,
             value.cursor,
             token
           )
@@ -52,13 +49,11 @@ export function finalIds(input: Input): Observable<string[]> {
   }
   if (input.hasOldestVersionQueryInfo()) {
     if (input.minVersionsToKeep < 0) {
-      console.log(`in numOldVersionsToDelete`)
       return getVersionIds(
         input.owner,
         input.repo,
         input.packageName,
         input.numOldVersionsToDelete,
-        input.ignoreVersions,
         '',
         input.token
       ).pipe(
@@ -68,9 +63,6 @@ export function finalIds(input: Input): Observable<string[]> {
             input.numOldVersionsToDelete - value.length <= 0
               ? 0
               : input.numOldVersionsToDelete - value.length
-          console.log(
-            `temp: ${temp} numVersions: ${input.numOldVersionsToDelete} ignore-versions: ${input.ignoreVersions}`
-          )
           input.numDeleted += value.filter(
             info => !input.ignoreVersions.test(info.version)
           ).length
@@ -81,18 +73,15 @@ export function finalIds(input: Input): Observable<string[]> {
         })
       )
     } else {
-      console.log(`in min versions to keep`)
       return getVersionIds(
         input.owner,
         input.repo,
         input.packageName,
         100,
-        input.ignoreVersions,
         '',
         input.token
       ).pipe(
         map(value => {
-          console.log(`point 1`)
           let toDelete =
             totalCount -
             value.filter(info => input.ignoreVersions.test(info.version))
@@ -100,11 +89,8 @@ export function finalIds(input: Input): Observable<string[]> {
             input.minVersionsToKeep
           toDelete = toDelete > 100 ? 100 : toDelete
           value = value.filter(info => !input.ignoreVersions.test(info.version))
-          console.log(
-            `toDelete: ${toDelete} numVersions: ${input.numDeleted} total count: ${totalCount}`
-          )
           if (toDelete > input.numDeleted && input.numDeleted < 100) {
-            //here input.numOldVersionsToDelete will never have user value hence using it to keep track of deleted versions
+            // using input.numDeleted to keep track of deleted and remaining packages
             input.numDeleted =
               input.numDeleted + value.length > 100
                 ? 100
