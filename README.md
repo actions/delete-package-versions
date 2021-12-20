@@ -12,8 +12,6 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
 * Delete a single version
 * Delete multiple versions
-
-
 * Delete specific version(s)
 
 # Usage
@@ -69,6 +67,18 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   #   If `package-version-ids` is not given the token needs the delete packages scope and the read packages scope
   token:
 ```
+
+# Valid Input Combinations
+
+`owner`, `repo`, `package-name` and `token` can be used with the following combinations in a workflow - 
+
+  - `num-old-versions-to-delete`
+  - `min-versions-to-keep` 
+  - `delete-only-pre-release-versions`
+  - `ignore-versions`
+  - `num-old-versions-to-delete` + `ignore-versions`
+  - `min-versions-to-keep` + `ignore-versions`
+  - `min-versions-to-keep` + `delete-only-pre-release-versions`
 
 # Scenarios
 
