@@ -121,12 +121,10 @@ export function deleteVersions(input: Input): Observable<boolean> {
   }
 
   const result = finalIds(input)
-  result.pipe(
-    tap(value => (input.numDeleted = value.length < 100 ? value.length : 100))
-  )
-  console.log(`${input.numDeleted} versions will be deleted`)
 
   return result.pipe(
+    tap(value => (input.numDeleted = value.length < 100 ? value.length : 100)),
+    tap(() => console.log(`${input.numDeleted} versions will be deleted`)),
     concatMap(ids => deletePackageVersions(ids.slice(0, 100), input.token))
   )
 }

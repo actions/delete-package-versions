@@ -91,9 +91,7 @@ function deleteVersions(input) {
         return rxjs_1.of(true);
     }
     const result = finalIds(input);
-    result.pipe(operators_1.tap(value => (input.numDeleted = value.length < 100 ? value.length : 100)));
-    console.log(`${input.numDeleted} versions will be deleted`);
-    return result.pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids.slice(0, 100), input.token)));
+    return result.pipe(operators_1.tap(value => (input.numDeleted = value.length < 100 ? value.length : 100)), operators_1.tap(() => console.log(`${input.numDeleted} versions will be deleted`)), operators_1.concatMap(ids => version_1.deletePackageVersions(ids.slice(0, 100), input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
