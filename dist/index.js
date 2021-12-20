@@ -92,7 +92,7 @@ function deleteVersions(input) {
     }
     const result = finalIds(input);
     console.log(`${input.numDeleted} versions deleted`);
-    return result.pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
+    return result.pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids.slice(0, 101), input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
