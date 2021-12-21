@@ -88,16 +88,15 @@ export function finalIds(input: Input): Observable<string[]> {
           value = value.filter(info => !input.ignoreVersions.test(info.version))
           let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted
           toDelete = toDelete > value.length ? value.length : toDelete
-          if (toDelete > 0 && input.numDeleted < 100) {
+          if (toDelete > 0 && input.numDeleted < 99) {
             // using input.numDeleted to keep track of deleted and remaining packages
-            if (input.numDeleted + toDelete > 100) {
-              toDelete = 100 - input.numDeleted
-              input.numDeleted = 100
+            if (input.numDeleted + toDelete > 99) {
+              toDelete = 99 - input.numDeleted
+              input.numDeleted = 99
             } else {
               input.numDeleted = input.numDeleted + toDelete
             }
-            //return value.map(info => info.id).slice(0, toDelete)
-            return []
+            return value.map(info => info.id).slice(0, toDelete)
           } else return []
         })
       )
@@ -128,7 +127,6 @@ export function deleteVersions(input: Input): Observable<boolean> {
   const result = finalIds(input)
 
   return result.pipe(
-    tap(value => (input.numDeleted = value.length < 100 ? value.length : 100)),
     tap(() => {
       if (input.numDeleted > 0)
         console.log(`${input.numDeleted} versions will be deleted`)
