@@ -72,7 +72,8 @@ function finalIds(input) {
                     else {
                         input.numDeleted = input.numDeleted + toDelete;
                     }
-                    return value.map(info => info.id).slice(0, toDelete);
+                    //return value.map(info => info.id).slice(0, toDelete)
+                    return [];
                 }
                 else
                     return [];

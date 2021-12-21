@@ -96,7 +96,8 @@ export function finalIds(input: Input): Observable<string[]> {
             } else {
               input.numDeleted = input.numDeleted + toDelete
             }
-            return value.map(info => info.id).slice(0, toDelete)
+            //return value.map(info => info.id).slice(0, toDelete)
+            return []
           } else return []
         })
       )
