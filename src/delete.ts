@@ -3,6 +3,7 @@ import {EMPTY, Observable, of, throwError} from 'rxjs'
 import {deletePackageVersions, getOldestVersions, VersionInfo} from './version'
 import {concatMap, map, expand, tap} from 'rxjs/operators'
 
+const RATE_LIMIT = 99
 let totalCount: number
 
 export function getVersionIds(
@@ -34,9 +35,6 @@ export function getVersionIds(
         : EMPTY
     ),
     tap(value => (totalCount = value.totalCount)),
-    tap(value =>
-      console.log(`in expand value length: ${value.versions.length}`)
-    ),
     map(value => value.versions)
   )
 }
@@ -48,7 +46,9 @@ export function finalIds(input: Input): Observable<string[]> {
   if (input.hasOldestVersionQueryInfo()) {
     if (input.minVersionsToKeep < 0) {
       input.numOldVersionsToDelete =
-        input.numOldVersionsToDelete < 100 ? input.numOldVersionsToDelete : 100
+        input.numOldVersionsToDelete < RATE_LIMIT
+          ? input.numOldVersionsToDelete
+          : RATE_LIMIT
       return getVersionIds(
         input.owner,
         input.repo,
@@ -77,7 +77,7 @@ export function finalIds(input: Input): Observable<string[]> {
         input.owner,
         input.repo,
         input.packageName,
-        100,
+        RATE_LIMIT,
         '',
         input.token
       ).pipe(
@@ -88,11 +88,11 @@ export function finalIds(input: Input): Observable<string[]> {
           value = value.filter(info => !input.ignoreVersions.test(info.version))
           let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted
           toDelete = toDelete > value.length ? value.length : toDelete
-          if (toDelete > 0 && input.numDeleted < 99) {
+          if (toDelete > 0 && input.numDeleted < RATE_LIMIT) {
             // using input.numDeleted to keep track of deleted and remaining packages
             if (input.numDeleted + toDelete > 99) {
-              toDelete = 99 - input.numDeleted
-              input.numDeleted = 99
+              toDelete = RATE_LIMIT - input.numDeleted
+              input.numDeleted = RATE_LIMIT
             } else {
               input.numDeleted = input.numDeleted + toDelete
             }

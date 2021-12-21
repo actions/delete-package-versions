@@ -48,7 +48,6 @@ export function deletePackageVersions(
     return of(true)
   }
 
-  console.log(`in delete length: ${packageVersionIds.length}`)
   const deletes = packageVersionIds.map(id =>
     deletePackageVersion(id, token).pipe(
       tap(result => {
