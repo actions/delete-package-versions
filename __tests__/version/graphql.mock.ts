@@ -6,11 +6,11 @@ import {
 import * as Graphql from '../../src/version/graphql'
 import {GetVersionsQueryResponse} from '../../src/version'
 
-export function getMockedOldestQueryResponseForLessThan100(
+export function getMockedOldestQueryResponse(
   numVersions: number
 ): GetVersionsQueryResponse {
   const versions = []
-
+  numVersions = numVersions < 100 ? numVersions : numVersions
   for (let i = 1; i <= numVersions; ++i) {
     versions.push({
       node: {
@@ -28,7 +28,12 @@ export function getMockedOldestQueryResponseForLessThan100(
             node: {
               name: 'test',
               versions: {
-                edges: versions.reverse()
+                totalCount: 200,
+                edges: versions.reverse(),
+                pageInfo: {
+                  startCursor: 'AAA',
+                  hasPreviousPage: false
+                }
               }
             }
           }
@@ -38,12 +43,13 @@ export function getMockedOldestQueryResponseForLessThan100(
   }
 }
 
-export function mockOldestQueryResponse(
-  numVersions: number
-) {
-  const response = new Promise((resolve) => {
+export function mockOldestQueryResponse(numVersions: number): void {
+  const response = new Promise<GetVersionsQueryResponse>(resolve => {
     resolve(getMockedOldestQueryResponse(numVersions))
   }) as Promise<GraphQlQueryResponseData>
-  jest.spyOn(Graphql, 'graphql').mockImplementation(
-    (token: string, query: string, parameters: RequestParameters) => response)
+  jest
+    .spyOn(Graphql, 'graphql')
+    .mockImplementation(
+      (token: string, query: string, parameters: RequestParameters) => response
+    )
 }

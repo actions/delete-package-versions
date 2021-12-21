@@ -1,18 +1,23 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {mockOldestQueryResponse} from './graphql.mock'
 import {
   getOldestVersions as _getOldestVersions,
-  VersionInfo
+  QueryInfo
 } from '../../src/version'
 import {Observable} from 'rxjs'
 
-describe.skip('get versions tests -- call graphql', () => {
+describe('get versions tests -- call graphql', () => {
   it('getOldestVersions -- succeeds', done => {
     const numVersions = 1
+    getOldestVersions({numVersions}).subscribe(result => {
+      expect(result.versions.length).toBe(numVersions)
+      done()
+    })
+  })
 
-    getOldestVersions({numVersions}).subscribe(versions => {
-      expect(versions.length).toBe(numVersions)
+  it('getOldestVersions -- succeeds for more than 100 versions', done => {
+    const numVersions = 110
+    getOldestVersions({numVersions}).subscribe(result => {
+      expect(result.versions.length).toBe(100)
       done()
     })
   })
@@ -33,8 +38,8 @@ describe('get versions tests -- mock graphql', () => {
     const numVersions = 5
     mockOldestQueryResponse(numVersions)
 
-    getOldestVersions({numVersions}).subscribe(versions => {
-      expect(versions.length).toBe(numVersions)
+    getOldestVersions({numVersions}).subscribe(result => {
+      expect(result.versions.length).toBe(numVersions)
       done()
     })
   })
@@ -45,24 +50,27 @@ interface Params {
   repo?: string
   packageName?: string
   numVersions?: number
+  startCursor?: string
   token?: string
 }
 
 const defaultParams = {
   owner: 'namratajha',
   repo: 'only-pkg',
-  packageName: 'onlypkg.maven',
-  numVersions: 3,
+  packageName: 'only-pkg',
+  numVersions: 1,
+  startCursor: '',
   token: process.env.GITHUB_TOKEN as string
 }
 
-function getOldestVersions(params?: Params): Observable<VersionInfo[]> {
+function getOldestVersions(params?: Params): Observable<QueryInfo> {
   const p: Required<Params> = {...defaultParams, ...params}
   return _getOldestVersions(
     p.owner,
     p.repo,
     p.packageName,
     p.numVersions,
+    p.startCursor,
     p.token
   )
 }
