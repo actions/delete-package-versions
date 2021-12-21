@@ -34,6 +34,9 @@ export function getVersionIds(
         : EMPTY
     ),
     tap(value => (totalCount = value.totalCount)),
+    tap(value =>
+      console.log(`in expand value length: ${value.versions.length}`)
+    ),
     map(value => value.versions)
   )
 }
@@ -44,6 +47,8 @@ export function finalIds(input: Input): Observable<string[]> {
   }
   if (input.hasOldestVersionQueryInfo()) {
     if (input.minVersionsToKeep < 0) {
+      input.numOldVersionsToDelete =
+        input.numOldVersionsToDelete < 100 ? input.numOldVersionsToDelete : 100
       return getVersionIds(
         input.owner,
         input.repo,
@@ -77,22 +82,21 @@ export function finalIds(input: Input): Observable<string[]> {
         input.token
       ).pipe(
         map(value => {
-          let toDelete =
+          totalCount =
             totalCount -
-            value.filter(info => input.ignoreVersions.test(info.version))
-              .length -
-            input.minVersionsToKeep
-          toDelete = toDelete > 100 ? 100 : toDelete
+            value.filter(info => input.ignoreVersions.test(info.version)).length
           value = value.filter(info => !input.ignoreVersions.test(info.version))
-          if (toDelete > input.numDeleted && input.numDeleted < 100) {
+          let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted
+          toDelete = toDelete > value.length ? value.length : toDelete
+          if (toDelete > 0 && input.numDeleted < 100) {
             // using input.numDeleted to keep track of deleted and remaining packages
-            input.numDeleted =
-              input.numDeleted + value.length > 100
-                ? 100
-                : input.numDeleted + value.length
-            return toDelete - input.numDeleted >= 0
-              ? value.map(info => info.id)
-              : value.map(info => info.id).slice(0, toDelete - input.numDeleted)
+            if (input.numDeleted + toDelete > 100) {
+              toDelete = 100 - input.numDeleted
+              input.numDeleted = 100
+            } else {
+              input.numDeleted = input.numDeleted + toDelete
+            }
+            return value.map(info => info.id).slice(0, toDelete)
           } else return []
         })
       )
@@ -128,6 +132,6 @@ export function deleteVersions(input: Input): Observable<boolean> {
       if (input.numDeleted > 0)
         console.log(`${input.numDeleted} versions will be deleted`)
     }),
-    concatMap(ids => deletePackageVersions(ids.slice(0, 100), input.token))
+    concatMap(ids => deletePackageVersions(ids, input.token))
   )
 }

@@ -31,7 +31,7 @@ let totalCount;
 function getVersionIds(owner, repo, packageName, numVersions, cursor, token) {
     return version_1.getOldestVersions(owner, repo, packageName, numVersions, cursor, token).pipe(operators_1.expand(value => value.paginate
         ? version_1.getOldestVersions(owner, repo, packageName, numVersions, value.cursor, token)
-        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = value.totalCount)), operators_1.map(value => value.versions));
+        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = value.totalCount)), operators_1.tap(value => console.log(`in expand value length: ${value.versions.length}`)), operators_1.map(value => value.versions));
 }
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
@@ -40,6 +40,8 @@ function finalIds(input) {
     }
     if (input.hasOldestVersionQueryInfo()) {
         if (input.minVersionsToKeep < 0) {
+            input.numOldVersionsToDelete =
+                input.numOldVersionsToDelete < 100 ? input.numOldVersionsToDelete : 100;
             return getVersionIds(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete, '', input.token).pipe(operators_1.map(value => {
                 const temp = input.numOldVersionsToDelete;
                 input.numOldVersionsToDelete =
@@ -55,21 +57,22 @@ function finalIds(input) {
         }
         else {
             return getVersionIds(input.owner, input.repo, input.packageName, 100, '', input.token).pipe(operators_1.map(value => {
-                let toDelete = totalCount -
-                    value.filter(info => input.ignoreVersions.test(info.version))
-                        .length -
-                    input.minVersionsToKeep;
-                toDelete = toDelete > 100 ? 100 : toDelete;
+                totalCount =
+                    totalCount -
+                        value.filter(info => input.ignoreVersions.test(info.version)).length;
                 value = value.filter(info => !input.ignoreVersions.test(info.version));
-                if (toDelete > input.numDeleted && input.numDeleted < 100) {
+                let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted;
+                toDelete = toDelete > value.length ? value.length : toDelete;
+                if (toDelete > 0 && input.numDeleted < 100) {
                     // using input.numDeleted to keep track of deleted and remaining packages
-                    input.numDeleted =
-                        input.numDeleted + value.length > 100
-                            ? 100
-                            : input.numDeleted + value.length;
-                    return toDelete - input.numDeleted >= 0
-                        ? value.map(info => info.id)
-                        : value.map(info => info.id).slice(0, toDelete - input.numDeleted);
+                    if (input.numDeleted + toDelete > 100) {
+                        toDelete = 100 - input.numDeleted;
+                        input.numDeleted = 100;
+                    }
+                    else {
+                        input.numDeleted = input.numDeleted + toDelete;
+                    }
+                    return value.map(info => info.id).slice(0, toDelete);
                 }
                 else
                     return [];
@@ -94,7 +97,7 @@ function deleteVersions(input) {
     return result.pipe(operators_1.tap(value => (input.numDeleted = value.length < 100 ? value.length : 100)), operators_1.tap(() => {
         if (input.numDeleted > 0)
             console.log(`${input.numDeleted} versions will be deleted`);
-    }), operators_1.concatMap(ids => version_1.deletePackageVersions(ids.slice(0, 100), input.token)));
+    }), operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
