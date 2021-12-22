@@ -43,35 +43,24 @@ query {
   }
 }`
 
-export function getRateLimit(token: string): Observable<RateLimitResponse> {
-  return from(
-    graphql(token, ratelimitQuery, {
-      headers: {
-        Accept: 'application/vnd.github.package-deletes-preview+json'
-      }
-    }) as Promise<RateLimitResponse>
-  ).pipe(
-    catchError(err => {
-      return throwError(
-        err.errors && err.errors.length > 0
-          ? `${err.errors[0].message}`
-          : `unknown error`
-      )
-    })
-  )
+export async function getRateLimit(token: string): Promise<RateLimitResponse> {
+  return graphql(token, ratelimitQuery, {
+    headers: {
+      Accept: 'application/vnd.github.package-deletes-preview+json'
+    }
+  }) as Promise<RateLimitResponse>
 }
 
 export function deletePackageVersion(
   packageVersionId: string,
   token: string
 ): Observable<boolean> {
-  getRateLimit(token).pipe(
-    tap(value =>
-      console.log(
-        `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`
-      )
+  getRateLimit(token).then(value =>
+    console.log(
+      `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`
     )
   )
+
   if (deleted === 99) {
     console.log(`reaching rate limit`)
     delay(5000)

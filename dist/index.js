@@ -172,10 +172,19 @@ exports.Input = Input;
 /***/ }),
 
 /***/ 5544:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deletePackageVersions = exports.deletePackageVersion = exports.getRateLimit = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
@@ -201,19 +210,17 @@ query {
   }
 }`;
 function getRateLimit(token) {
-    return rxjs_1.from(graphql_1.graphql(token, ratelimitQuery, {
-        headers: {
-            Accept: 'application/vnd.github.package-deletes-preview+json'
-        }
-    })).pipe(operators_1.catchError(err => {
-        return rxjs_1.throwError(err.errors && err.errors.length > 0
-            ? `${err.errors[0].message}`
-            : `unknown error`);
-    }));
+    return __awaiter(this, void 0, void 0, function* () {
+        return graphql_1.graphql(token, ratelimitQuery, {
+            headers: {
+                Accept: 'application/vnd.github.package-deletes-preview+json'
+            }
+        });
+    });
 }
 exports.getRateLimit = getRateLimit;
 function deletePackageVersion(packageVersionId, token) {
-    getRateLimit(token).pipe(operators_1.map(value => console.log(`login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`)));
+    getRateLimit(token).then(value => console.log(`login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`));
     if (deleted === 99) {
         console.log(`reaching rate limit`);
         operators_1.delay(5000);
