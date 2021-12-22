@@ -101,7 +101,7 @@ export function queryForOldestVersions(
         owner,
         repo,
         package: packageName,
-        last: numVersions,
+        last: numVersions > 100 ? 100 : numVersions,
         headers: {
           Accept: 'application/vnd.github.packages-preview+json'
         }

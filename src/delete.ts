@@ -3,7 +3,7 @@ import {EMPTY, Observable, of, throwError} from 'rxjs'
 import {deletePackageVersions, getOldestVersions, VersionInfo} from './version'
 import {concatMap, map, expand, tap} from 'rxjs/operators'
 
-const RATE_LIMIT = 99
+//const RATE_LIMIT = 99
 let totalCount: number
 
 export function getVersionIds(
@@ -45,10 +45,14 @@ export function finalIds(input: Input): Observable<string[]> {
   }
   if (input.hasOldestVersionQueryInfo()) {
     if (input.minVersionsToKeep < 0) {
+      /*
       input.numOldVersionsToDelete =
         input.numOldVersionsToDelete < RATE_LIMIT
           ? input.numOldVersionsToDelete
-          : RATE_LIMIT
+          : RATE_LIMIT*/
+      console.log(
+        `input.numOldVersionsToDelete: ${input.numOldVersionsToDelete}`
+      )
       return getVersionIds(
         input.owner,
         input.repo,
@@ -58,18 +62,16 @@ export function finalIds(input: Input): Observable<string[]> {
         input.token
       ).pipe(
         map(value => {
+          value = value.filter(info => !input.ignoreVersions.test(info.version))
           const temp = input.numOldVersionsToDelete
           input.numOldVersionsToDelete =
             input.numOldVersionsToDelete - value.length <= 0
               ? 0
               : input.numOldVersionsToDelete - value.length
-          input.numDeleted += value.filter(
-            info => !input.ignoreVersions.test(info.version)
-          ).length
-          return value
-            .filter(info => !input.ignoreVersions.test(info.version))
-            .map(info => info.id)
-            .slice(0, temp)
+          console.log(
+            `temp: ${temp}, numOldeVersions: ${input.numOldVersionsToDelete}`
+          )
+          return value.map(info => info.id).slice(0, temp)
         })
       )
     } else {
@@ -77,7 +79,7 @@ export function finalIds(input: Input): Observable<string[]> {
         input.owner,
         input.repo,
         input.packageName,
-        RATE_LIMIT,
+        100,
         '',
         input.token
       ).pipe(
@@ -88,6 +90,7 @@ export function finalIds(input: Input): Observable<string[]> {
           value = value.filter(info => !input.ignoreVersions.test(info.version))
           let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted
           toDelete = toDelete > value.length ? value.length : toDelete
+          /*
           if (toDelete > 0 && input.numDeleted < RATE_LIMIT) {
             // using input.numDeleted to keep track of deleted and remaining packages
             if (input.numDeleted + toDelete > 99) {
@@ -96,6 +99,11 @@ export function finalIds(input: Input): Observable<string[]> {
             } else {
               input.numDeleted = input.numDeleted + toDelete
             }
+            return value.map(info => info.id).slice(0, toDelete)
+          } else return []*/
+
+          if (toDelete > 0) {
+            input.numDeleted += toDelete
             return value.map(info => info.id).slice(0, toDelete)
           } else return []
         })
