@@ -18,39 +18,6 @@ const mutation = `
       }
   }`
 
-export interface RateLimitResponse {
-  viewer: {
-    login: string
-  }
-  ratelimit: {
-    limit: number
-    cost: number
-    remaining: number
-    resetAt: string
-  }
-}
-
-const ratelimitQuery = `
-query {
-  viewer {
-    login
-  }
-  rateLimit {
-    limit
-    cost
-    remaining
-    resetAt
-  }
-}`
-
-export async function getRateLimit(token: string): Promise<RateLimitResponse> {
-  return graphql(token, ratelimitQuery, {
-    headers: {
-      Accept: 'application/vnd.github.package-deletes-preview+json'
-    }
-  }) as Promise<RateLimitResponse>
-}
-
 export function deletePackageVersion(
   packageVersionId: string,
   token: string

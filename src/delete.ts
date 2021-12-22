@@ -78,7 +78,7 @@ export function finalIds(input: Input): Observable<string[]> {
         input.owner,
         input.repo,
         input.packageName,
-        100,
+        RATE_LIMIT,
         '',
         input.token
       ).pipe(
