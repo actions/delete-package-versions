@@ -27,12 +27,12 @@ exports.deleteVersions = exports.finalIds = exports.getVersionIds = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const version_1 = __nccwpck_require__(4428);
 const operators_1 = __nccwpck_require__(7801);
-const RATE_LIMIT = 99;
-let totalCount;
+const RATE_LIMIT = 100;
+let totalCount = 0;
 function getVersionIds(owner, repo, packageName, numVersions, cursor, token) {
     return version_1.getOldestVersions(owner, repo, packageName, numVersions, cursor, token).pipe(operators_1.expand(value => value.paginate
         ? version_1.getOldestVersions(owner, repo, packageName, numVersions, value.cursor, token)
-        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = value.totalCount)), operators_1.map(value => value.versions));
+        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount === 0 ? value.totalCount : totalCount)), operators_1.map(value => value.versions));
 }
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
@@ -45,17 +45,16 @@ function finalIds(input) {
                 input.numOldVersionsToDelete < RATE_LIMIT
                     ? input.numOldVersionsToDelete
                     : RATE_LIMIT;
+            console.log(`input.numOldVersionsToDelete: ${input.numOldVersionsToDelete}`);
             return getVersionIds(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete, '', input.token).pipe(operators_1.map(value => {
+                value = value.filter(info => !input.ignoreVersions.test(info.version));
                 const temp = input.numOldVersionsToDelete;
                 input.numOldVersionsToDelete =
                     input.numOldVersionsToDelete - value.length <= 0
                         ? 0
                         : input.numOldVersionsToDelete - value.length;
-                input.numDeleted += value.filter(info => !input.ignoreVersions.test(info.version)).length;
-                return value
-                    .filter(info => !input.ignoreVersions.test(info.version))
-                    .map(info => info.id)
-                    .slice(0, temp);
+                console.log(`temp: ${temp}, numOldeVersions: ${input.numOldVersionsToDelete}`);
+                return value.map(info => info.id).slice(0, temp);
             }));
         }
         else {
@@ -68,7 +67,7 @@ function finalIds(input) {
                 toDelete = toDelete > value.length ? value.length : toDelete;
                 if (toDelete > 0 && input.numDeleted < RATE_LIMIT) {
                     // using input.numDeleted to keep track of deleted and remaining packages
-                    if (input.numDeleted + toDelete > 99) {
+                    if (input.numDeleted + toDelete > RATE_LIMIT) {
                         toDelete = RATE_LIMIT - input.numDeleted;
                         input.numDeleted = RATE_LIMIT;
                     }
@@ -177,6 +176,7 @@ exports.deletePackageVersions = exports.deletePackageVersion = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const graphql_1 = __nccwpck_require__(6320);
+let deleted = 0;
 const mutation = `
   mutation deletePackageVersion($packageVersionId: String!) {
       deletePackageVersion(input: {packageVersionId: $packageVersionId}) {
@@ -184,6 +184,11 @@ const mutation = `
       }
   }`;
 function deletePackageVersion(packageVersionId, token) {
+    if (deleted === 100) {
+        console.log(`reaching rate limit`);
+        operators_1.delay(5000);
+    }
+    deleted += 1;
     return rxjs_1.from(graphql_1.graphql(token, mutation, {
         packageVersionId,
         headers: {
@@ -202,6 +207,7 @@ function deletePackageVersions(packageVersionIds, token) {
         return rxjs_1.of(true);
     }
     const deletes = packageVersionIds.map(id => deletePackageVersion(id, token).pipe(operators_1.tap(result => {
+        console.log(`versions Deleted 0 : ${deleted}`);
         if (result) {
             console.log(`version with id: ${id}, deleted`);
         }
@@ -209,6 +215,7 @@ function deletePackageVersions(packageVersionIds, token) {
             console.log(`version with id: ${id}, not deleted`);
         }
     })));
+    console.log(`Versions Deleted Final2: ${deleted}`);
     return rxjs_1.merge(...deletes);
 }
 exports.deletePackageVersions = deletePackageVersions;
@@ -282,7 +289,7 @@ function queryForOldestVersions(owner, repo, packageName, numVersions, startCurs
             owner,
             repo,
             package: packageName,
-            last: numVersions,
+            last: numVersions > 100 ? 100 : numVersions,
             headers: {
                 Accept: 'application/vnd.github.packages-preview+json'
             }

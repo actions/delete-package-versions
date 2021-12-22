@@ -1,7 +1,9 @@
 import {from, Observable, merge, throwError, of} from 'rxjs'
-import {catchError, map, tap} from 'rxjs/operators'
+import {catchError, delay, map, tap} from 'rxjs/operators'
 import {GraphQlQueryResponse} from '@octokit/graphql/dist-types/types'
 import {graphql} from './graphql'
+
+let deleted = 0
 
 export interface DeletePackageVersionMutationResponse {
   deletePackageVersion: {
@@ -20,6 +22,11 @@ export function deletePackageVersion(
   packageVersionId: string,
   token: string
 ): Observable<boolean> {
+  if (deleted === 100) {
+    console.log(`reaching rate limit`)
+    delay(5000)
+  }
+  deleted += 1
   return from(
     graphql(token, mutation, {
       packageVersionId,
@@ -51,6 +58,7 @@ export function deletePackageVersions(
   const deletes = packageVersionIds.map(id =>
     deletePackageVersion(id, token).pipe(
       tap(result => {
+        console.log(`versions Deleted 0 : ${deleted}`)
         if (result) {
           console.log(`version with id: ${id}, deleted`)
         } else {
@@ -59,6 +67,6 @@ export function deletePackageVersions(
       })
     )
   )
-
+  console.log(`Versions Deleted Final2: ${deleted}`)
   return merge(...deletes)
 }

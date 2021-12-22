@@ -3,8 +3,8 @@ import {EMPTY, Observable, of, throwError} from 'rxjs'
 import {deletePackageVersions, getOldestVersions, VersionInfo} from './version'
 import {concatMap, map, expand, tap} from 'rxjs/operators'
 
-const RATE_LIMIT = 99
-let totalCount: number
+const RATE_LIMIT = 100
+let totalCount = 0
 
 export function getVersionIds(
   owner: string,
@@ -34,7 +34,7 @@ export function getVersionIds(
           )
         : EMPTY
     ),
-    tap(value => (totalCount = value.totalCount)),
+    tap(value => (totalCount === 0 ? value.totalCount : totalCount)),
     map(value => value.versions)
   )
 }
@@ -49,6 +49,9 @@ export function finalIds(input: Input): Observable<string[]> {
         input.numOldVersionsToDelete < RATE_LIMIT
           ? input.numOldVersionsToDelete
           : RATE_LIMIT
+      console.log(
+        `input.numOldVersionsToDelete: ${input.numOldVersionsToDelete}`
+      )
       return getVersionIds(
         input.owner,
         input.repo,
@@ -58,18 +61,16 @@ export function finalIds(input: Input): Observable<string[]> {
         input.token
       ).pipe(
         map(value => {
+          value = value.filter(info => !input.ignoreVersions.test(info.version))
           const temp = input.numOldVersionsToDelete
           input.numOldVersionsToDelete =
             input.numOldVersionsToDelete - value.length <= 0
               ? 0
               : input.numOldVersionsToDelete - value.length
-          input.numDeleted += value.filter(
-            info => !input.ignoreVersions.test(info.version)
-          ).length
-          return value
-            .filter(info => !input.ignoreVersions.test(info.version))
-            .map(info => info.id)
-            .slice(0, temp)
+          console.log(
+            `temp: ${temp}, numOldeVersions: ${input.numOldVersionsToDelete}`
+          )
+          return value.map(info => info.id).slice(0, temp)
         })
       )
     } else {
@@ -90,7 +91,7 @@ export function finalIds(input: Input): Observable<string[]> {
           toDelete = toDelete > value.length ? value.length : toDelete
           if (toDelete > 0 && input.numDeleted < RATE_LIMIT) {
             // using input.numDeleted to keep track of deleted and remaining packages
-            if (input.numDeleted + toDelete > 99) {
+            if (input.numDeleted + toDelete > RATE_LIMIT) {
               toDelete = RATE_LIMIT - input.numDeleted
               input.numDeleted = RATE_LIMIT
             } else {
