@@ -55,11 +55,19 @@ export function deletePackageVersion(
   packageVersionId: string,
   token: string
 ): Observable<boolean> {
-  getRateLimit(token).then(value =>
-    console.log(
-      `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`
+  getRateLimit(token)
+    .then(value =>
+      console.log(
+        `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`
+      )
     )
-  )
+    .catch(err => {
+      return throwError(
+        err.errors && err.errors.length > 0
+          ? `${err.errors[0].message}`
+          : `Unknown Error`
+      )
+    })
 
   if (deleted === 99) {
     console.log(`reaching rate limit`)
