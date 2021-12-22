@@ -58,22 +58,26 @@ function finalIds(input) {
             }));
         }
         else {
-            return getVersionIds(input.owner, input.repo, input.packageName, RATE_LIMIT, '', input.token).pipe(operators_1.map(value => {
+            return getVersionIds(input.owner, input.repo, input.packageName, 100, '', input.token).pipe(operators_1.map(value => {
                 totalCount =
                     totalCount -
                         value.filter(info => input.ignoreVersions.test(info.version)).length;
                 value = value.filter(info => !input.ignoreVersions.test(info.version));
                 let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted;
                 toDelete = toDelete > value.length ? value.length : toDelete;
+                /*
                 if (toDelete > 0 && input.numDeleted < RATE_LIMIT) {
-                    // using input.numDeleted to keep track of deleted and remaining packages
-                    if (input.numDeleted + toDelete > RATE_LIMIT) {
-                        toDelete = RATE_LIMIT - input.numDeleted;
-                        input.numDeleted = RATE_LIMIT;
-                    }
-                    else {
-                        input.numDeleted = input.numDeleted + toDelete;
-                    }
+                  // using input.numDeleted to keep track of deleted and remaining packages
+                  if (input.numDeleted + toDelete > RATE_LIMIT) {
+                    toDelete = RATE_LIMIT - input.numDeleted
+                    input.numDeleted = RATE_LIMIT
+                  } else {
+                    input.numDeleted = input.numDeleted + toDelete
+                  }
+                  return value.map(info => info.id).slice(0, toDelete)
+                } else return []*/
+                if (toDelete > 0) {
+                    input.numDeleted += toDelete;
                     return value.map(info => info.id).slice(0, toDelete);
                 }
                 else
@@ -167,12 +171,21 @@ exports.Input = Input;
 /***/ }),
 
 /***/ 5544:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deletePackageVersions = exports.deletePackageVersion = void 0;
+exports.deletePackageVersions = exports.deletePackageVersion = exports.getRateLimit = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const graphql_1 = __nccwpck_require__(6320);
@@ -183,6 +196,28 @@ const mutation = `
           success
       }
   }`;
+const ratelimitQuery = `
+query {
+  viewer {
+    login
+  }
+  rateLimit {
+    limit
+    cost
+    remaining
+    resetAt
+  }
+}`;
+function getRateLimit(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return graphql_1.graphql(token, ratelimitQuery, {
+            headers: {
+                Accept: 'application/vnd.github.package-deletes-preview+json'
+            }
+        });
+    });
+}
+exports.getRateLimit = getRateLimit;
 function deletePackageVersion(packageVersionId, token) {
     if (deleted === 100) {
         console.log(`reaching rate limit`);

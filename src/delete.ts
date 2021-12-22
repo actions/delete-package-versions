@@ -78,7 +78,7 @@ export function finalIds(input: Input): Observable<string[]> {
         input.owner,
         input.repo,
         input.packageName,
-        RATE_LIMIT,
+        100,
         '',
         input.token
       ).pipe(
@@ -99,6 +99,11 @@ export function finalIds(input: Input): Observable<string[]> {
             }
             return value.map(info => info.id).slice(0, toDelete)
           } else return []
+          /*
+          if (toDelete > 0) {
+            input.numDeleted += toDelete
+            return value.map(info => info.id).slice(0, toDelete)
+          } else return []*/
         })
       )
     }
