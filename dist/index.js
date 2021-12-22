@@ -206,6 +206,10 @@ function getRateLimit(token) {
         headers: {
             Accept: 'application/vnd.github.package-deletes-preview+json'
         }
+    })).pipe(operators_1.catchError(err => {
+        return rxjs_1.throwError(err.errors && err.errors.length > 0
+            ? `${err.errors[0].message}`
+            : `unknown error`);
     }));
 }
 exports.getRateLimit = getRateLimit;

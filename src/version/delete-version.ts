@@ -52,6 +52,14 @@ export function getRateLimit(token: string): Observable<RateLimitResponse> {
         Accept: 'application/vnd.github.package-deletes-preview+json'
       }
     }) as Promise<RateLimitResponse>
+  ).pipe(
+    catchError(err => {
+      return throwError(
+        err.errors && err.errors.length > 0
+          ? `${err.errors[0].message}`
+          : `unknown error`
+      )
+    })
   )
 }
 
