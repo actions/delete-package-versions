@@ -77,6 +77,7 @@ export function deletePackageVersion(
     delay(5000)
   }
   deleted += 1
+  delay(10000)
   return from(
     graphql(token, mutation, {
       packageVersionId,

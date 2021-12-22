@@ -219,6 +219,7 @@ function deletePackageVersion(packageVersionId, token) {
         operators_1.delay(5000);
     }
     deleted += 1;
+    operators_1.delay(10000);
     return rxjs_1.from(graphql_1.graphql(token, mutation, {
         packageVersionId,
         headers: {
