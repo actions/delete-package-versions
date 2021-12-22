@@ -32,7 +32,7 @@ let totalCount = 0;
 function getVersionIds(owner, repo, packageName, numVersions, cursor, token) {
     return version_1.getOldestVersions(owner, repo, packageName, numVersions, cursor, token).pipe(operators_1.expand(value => value.paginate
         ? version_1.getOldestVersions(owner, repo, packageName, numVersions, value.cursor, token)
-        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount === 0 ? value.totalCount : totalCount)), operators_1.map(value => value.versions));
+        : rxjs_1.EMPTY), operators_1.tap(value => console.log(`total3: ${totalCount}, value total3: ${value.totalCount}`)), operators_1.tap(value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)), operators_1.map(value => value.versions));
 }
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
@@ -47,6 +47,7 @@ function finalIds(input) {
                     : RATE_LIMIT;
             console.log(`input.numOldVersionsToDelete: ${input.numOldVersionsToDelete}`);
             return getVersionIds(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete, '', input.token).pipe(operators_1.map(value => {
+                console.log(`totalCount in numVersions: ${totalCount}`);
                 value = value.filter(info => !input.ignoreVersions.test(info.version));
                 const temp = input.numOldVersionsToDelete;
                 input.numOldVersionsToDelete =
@@ -59,6 +60,7 @@ function finalIds(input) {
         }
         else {
             return getVersionIds(input.owner, input.repo, input.packageName, RATE_LIMIT, '', input.token).pipe(operators_1.map(value => {
+                console.log(`total count: ${totalCount}`);
                 totalCount =
                     totalCount -
                         value.filter(info => input.ignoreVersions.test(info.version)).length;

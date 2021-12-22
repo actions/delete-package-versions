@@ -34,7 +34,12 @@ export function getVersionIds(
           )
         : EMPTY
     ),
-    tap(value => (totalCount === 0 ? value.totalCount : totalCount)),
+    tap(value =>
+      console.log(`total3: ${totalCount}, value total3: ${value.totalCount}`)
+    ),
+    tap(
+      value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)
+    ),
     map(value => value.versions)
   )
 }
@@ -61,6 +66,7 @@ export function finalIds(input: Input): Observable<string[]> {
         input.token
       ).pipe(
         map(value => {
+          console.log(`totalCount in numVersions: ${totalCount}`)
           value = value.filter(info => !input.ignoreVersions.test(info.version))
           const temp = input.numOldVersionsToDelete
           input.numOldVersionsToDelete =
@@ -83,6 +89,7 @@ export function finalIds(input: Input): Observable<string[]> {
         input.token
       ).pipe(
         map(value => {
+          console.log(`total count: ${totalCount}`)
           totalCount =
             totalCount -
             value.filter(info => input.ignoreVersions.test(info.version)).length
