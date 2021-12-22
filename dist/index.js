@@ -198,7 +198,6 @@ query {
     cost
     remaining
     resetAt
-    node
   }
 }`;
 function getRateLimit(token) {
@@ -214,7 +213,7 @@ function getRateLimit(token) {
 }
 exports.getRateLimit = getRateLimit;
 function deletePackageVersion(packageVersionId, token) {
-    getRateLimit(token).pipe(operators_1.map(value => console.log(`login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}, node: ${value.ratelimit.node}`)));
+    getRateLimit(token).pipe(operators_1.map(value => console.log(`login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`)));
     if (deleted === 99) {
         console.log(`reaching rate limit`);
         operators_1.delay(5000);

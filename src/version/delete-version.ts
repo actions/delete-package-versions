@@ -27,7 +27,6 @@ export interface RateLimitResponse {
     cost: number
     remaining: number
     resetAt: string
-    node: number
   }
 }
 
@@ -41,7 +40,6 @@ query {
     cost
     remaining
     resetAt
-    node
   }
 }`
 
@@ -70,7 +68,7 @@ export function deletePackageVersion(
   getRateLimit(token).pipe(
     map(value =>
       console.log(
-        `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}, node: ${value.ratelimit.node}`
+        `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`
       )
     )
   )
