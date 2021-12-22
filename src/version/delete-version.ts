@@ -66,7 +66,7 @@ export function deletePackageVersion(
   token: string
 ): Observable<boolean> {
   getRateLimit(token).pipe(
-    map(value =>
+    tap(value =>
       console.log(
         `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}`
       )
