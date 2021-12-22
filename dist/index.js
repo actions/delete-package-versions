@@ -177,7 +177,7 @@ exports.Input = Input;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deletePackageVersions = exports.deletePackageVersion = void 0;
+exports.deletePackageVersions = exports.deletePackageVersion = exports.getRateLimit = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const graphql_1 = __nccwpck_require__(6320);
@@ -188,7 +188,29 @@ const mutation = `
           success
       }
   }`;
+const ratelimitQuery = `
+query {
+  viewer {
+    login
+  }
+  rateLimit {
+    limit
+    cost
+    remaining
+    resetAt
+    node
+  }
+}`;
+function getRateLimit(token) {
+    return rxjs_1.from(graphql_1.graphql(token, ratelimitQuery, {
+        headers: {
+            Accept: 'application/vnd.github.package-deletes-preview+json'
+        }
+    }));
+}
+exports.getRateLimit = getRateLimit;
 function deletePackageVersion(packageVersionId, token) {
+    getRateLimit(token).pipe(operators_1.map(value => console.log(`login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}, node: ${value.ratelimit.node}`)));
     if (deleted === 99) {
         console.log(`reaching rate limit`);
         operators_1.delay(5000);

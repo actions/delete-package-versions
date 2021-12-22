@@ -18,10 +18,54 @@ const mutation = `
       }
   }`
 
+export interface RateLimitResponse {
+  viewer: {
+    login: string
+  }
+  ratelimit: {
+    limit: number
+    cost: number
+    remaining: number
+    resetAt: string
+    node: number
+  }
+}
+
+const ratelimitQuery = `
+query {
+  viewer {
+    login
+  }
+  rateLimit {
+    limit
+    cost
+    remaining
+    resetAt
+    node
+  }
+}`
+
+export function getRateLimit(token: string): Observable<RateLimitResponse> {
+  return from(
+    graphql(token, ratelimitQuery, {
+      headers: {
+        Accept: 'application/vnd.github.package-deletes-preview+json'
+      }
+    }) as Promise<RateLimitResponse>
+  )
+}
+
 export function deletePackageVersion(
   packageVersionId: string,
   token: string
 ): Observable<boolean> {
+  getRateLimit(token).pipe(
+    map(value =>
+      console.log(
+        `login: ${value.viewer.login}, rate limit: ${value.ratelimit.limit}, cost: ${value.ratelimit.cost}, remaining: ${value.ratelimit.remaining}, node: ${value.ratelimit.node}`
+      )
+    )
+  )
   if (deleted === 99) {
     console.log(`reaching rate limit`)
     delay(5000)
