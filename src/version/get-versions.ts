@@ -101,7 +101,7 @@ export function queryForOldestVersions(
         owner,
         repo,
         package: packageName,
-        last: numVersions > 100 ? 100 : numVersions,
+        last: numVersions,
         headers: {
           Accept: 'application/vnd.github.packages-preview+json'
         }
@@ -123,7 +123,7 @@ export function queryForOldestVersions(
         owner,
         repo,
         package: packageName,
-        last: numVersions > 100 ? 100 : numVersions,
+        last: numVersions,
         before: startCursor,
         headers: {
           Accept: 'application/vnd.github.packages-preview+json'

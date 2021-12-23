@@ -35,7 +35,7 @@ export function deletePackageVersion(
       return throwError(
         err.errors && err.errors.length > 0
           ? `${msg} ${err.errors[0].message}`
-          : `${msg} ${err.message}`
+          : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`
       )
     }),
     map(response => response.deletePackageVersion.success)
@@ -53,14 +53,12 @@ export function deletePackageVersions(
   const deletes = packageVersionIds.map(id =>
     deletePackageVersion(id, token).pipe(
       tap(result => {
-        if (result) {
-          console.log(`version with id: ${id}, deleted`)
-        } else {
+        if (!result) {
           console.log(`version with id: ${id}, not deleted`)
         }
       })
     )
   )
-  console.log(`Versions Deleted: ${deleted}`)
+  console.log(`Total versions deleted till now: ${deleted}`)
   return merge(...deletes)
 }
