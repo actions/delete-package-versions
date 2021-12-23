@@ -1,6 +1,6 @@
 # Delete Package Versions
 
-This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 100 versions in one run.
+This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 99 versions in one run. To delete more than 99 versions the action can be called multiple times in a workflow.
 
 ### What It Can Do
 
@@ -42,7 +42,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Defaults to 1.
   num-old-versions-to-delete:
 
-  # The number of latest versions to not delete.
+  # The number of latest versions to keep.
   # This cannot be specified with `num-old-versions-to-delete`. By default, `num-old-versions-to-delete` takes precedence over `min-versions-to-keep`.
   # When set to 0, all deletable versions will be deleted.
   # When set greater than 0, all deletable package versions except the specified number will be deleted.
