@@ -205,7 +205,7 @@ function deletePackageVersion(packageVersionId, token) {
         const msg = 'delete version mutation failed.';
         return rxjs_1.throwError(err.errors && err.errors.length > 0
             ? `${msg} ${err.errors[0].message}`
-            : `${msg} verify input parameters are correct`);
+            : `${msg} verify input parameters are correct// error123: ${err}`);
     }), operators_1.map(response => response.deletePackageVersion.success));
 }
 exports.deletePackageVersion = deletePackageVersion;

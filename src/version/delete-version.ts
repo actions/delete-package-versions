@@ -40,7 +40,7 @@ export function deletePackageVersion(
       return throwError(
         err.errors && err.errors.length > 0
           ? `${msg} ${err.errors[0].message}`
-          : `${msg} verify input parameters are correct`
+          : `${msg} verify input parameters are correct// error123: ${err}`
       )
     }),
     map(response => response.deletePackageVersion.success)
