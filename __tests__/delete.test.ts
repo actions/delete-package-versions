@@ -1,8 +1,7 @@
 import {Input, InputParams} from '../src/input'
 import {deleteVersions, finalIds} from '../src/delete'
 
-jest.setTimeout(10000)
-describe('index tests -- call graphql', () => {
+describe.skip('index tests -- call graphql', () => {
   it('finalIds test -- get oldest version', done => {
     const numVersions = 1
 
