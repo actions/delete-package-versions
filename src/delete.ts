@@ -34,9 +34,6 @@ export function getVersionIds(
           )
         : EMPTY
     ),
-    tap(value =>
-      console.log(`total3: ${totalCount}, value total3: ${value.totalCount}`)
-    ),
     tap(
       value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)
     ),
@@ -66,16 +63,12 @@ export function finalIds(input: Input): Observable<string[]> {
         input.token
       ).pipe(
         map(value => {
-          console.log(`totalCount in numVersions: ${totalCount}`)
           value = value.filter(info => !input.ignoreVersions.test(info.version))
           const temp = input.numOldVersionsToDelete
           input.numOldVersionsToDelete =
             input.numOldVersionsToDelete - value.length <= 0
               ? 0
               : input.numOldVersionsToDelete - value.length
-          console.log(
-            `temp: ${temp}, numOldeVersions: ${input.numOldVersionsToDelete}`
-          )
           return value.map(info => info.id).slice(0, temp)
         })
       )
@@ -89,7 +82,6 @@ export function finalIds(input: Input): Observable<string[]> {
         input.token
       ).pipe(
         map(value => {
-          console.log(`total count: ${totalCount}`)
           totalCount =
             totalCount -
             value.filter(info => input.ignoreVersions.test(info.version)).length
@@ -106,16 +98,10 @@ export function finalIds(input: Input): Observable<string[]> {
             }
             return value.map(info => info.id).slice(0, toDelete)
           } else return []
-          /*
-          if (toDelete > 0) {
-            input.numDeleted += toDelete
-            return value.map(info => info.id).slice(0, toDelete)
-          } else return []*/
         })
       )
     }
   }
-
   return throwError(
     "Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input"
   )
@@ -139,11 +125,5 @@ export function deleteVersions(input: Input): Observable<boolean> {
 
   const result = finalIds(input)
 
-  return result.pipe(
-    tap(() => {
-      if (input.numDeleted > 0)
-        console.log(`${input.numDeleted} versions will be deleted`)
-    }),
-    concatMap(ids => deletePackageVersions(ids, input.token))
-  )
+  return result.pipe(concatMap(ids => deletePackageVersions(ids, input.token)))
 }
