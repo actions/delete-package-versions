@@ -3,7 +3,7 @@ import {EMPTY, Observable, of, throwError} from 'rxjs'
 import {deletePackageVersions, getOldestVersions, VersionInfo} from './version'
 import {concatMap, map, expand, tap} from 'rxjs/operators'
 
-const RATE_LIMIT = 100
+const RATE_LIMIT = 99
 let totalCount = 0
 
 export function getVersionIds(
