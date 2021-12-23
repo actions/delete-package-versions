@@ -1,26 +1,34 @@
 import {Input, InputParams} from '../src/input'
 import {deleteVersions, finalIds} from '../src/delete'
 
+jest.setTimeout(10000)
 describe('index tests -- call graphql', () => {
-  it('getVersionIds test -- get oldest version', done => {
+  it('finalIds test -- get oldest version', done => {
     const numVersions = 1
 
     finalIds(getInput({numOldVersionsToDelete: numVersions})).subscribe(ids => {
-      expect(ids.length).toBeGreaterThanOrEqual(numVersions)
+      expect(ids.length).toBe(numVersions)
       done()
     })
   })
 
-  it('getVersionIds test -- get oldest 3 versions', done => {
+  it.skip('finalIds test -- get oldest 3 versions', done => {
     const numVersions = 3
+    finalIds(getInput({numOldVersionsToDelete: numVersions})).subscribe(ids => {
+      expect(ids.length).toBe(numVersions)
+      done()
+    })
+  })
+
+  it.skip('finalIds test -- get oldest 110 versions', done => {
+    const numVersions = 110
 
     finalIds(getInput({numOldVersionsToDelete: numVersions})).subscribe(ids => {
-      expect(ids.length).toBeGreaterThanOrEqual(numVersions)
-      done()
+      expect(ids.length).toBe(99), async () => done()
     })
   })
 
-  it('getVersionIds test -- supplied package version id', done => {
+  it('finalIds test -- supplied package version id', done => {
     const suppliedIds = [
       'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
@@ -56,26 +64,26 @@ describe('index tests -- call graphql', () => {
   it.skip('deleteVersions test -- delete oldest version', done => {
     deleteVersions(getInput({numOldVersionsToDelete: 1})).subscribe(
       isSuccess => {
-        expect(isSuccess).toBe(true)
-        done()
-      }
+        expect(isSuccess)
+      },
+      async () => done()
     )
   })
 
   it.skip('deleteVersions test -- delete 3 oldest versions', done => {
     deleteVersions(getInput({numOldVersionsToDelete: 3})).subscribe(
       isSuccess => {
-        expect(isSuccess).toBe(true)
-        done()
-      }
+        expect(isSuccess)
+      },
+      async () => done()
     )
   })
 
   it.skip('deleteVersions test -- keep 5 versions', done => {
-    deleteVersions(getInput({minVersionsToKeep: 5})).subscribe(isSuccess => {
+    deleteVersions(getInput({minVersionsToKeep: 100})).subscribe(isSuccess => {
       expect(isSuccess).toBe(true)
-      done()
-    })
+    }),
+      async () => done()
   })
 })
 
@@ -83,9 +91,9 @@ const defaultInput: InputParams = {
   packageVersionIds: [],
   owner: 'namratajha',
   repo: 'only-pkg',
-  packageName: 'onlypkg.maven',
+  packageName: 'only-pkg',
   numOldVersionsToDelete: 1,
-  minVersionsToKeep: 1,
+  minVersionsToKeep: -1,
   ignoreVersions: RegExp('^$'),
   token: process.env.GITHUB_TOKEN as string
 }

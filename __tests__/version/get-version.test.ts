@@ -14,14 +14,6 @@ describe('get versions tests -- call graphql', () => {
     })
   })
 
-  it('getOldestVersions -- succeeds for more than 100 versions', done => {
-    const numVersions = 110
-    getOldestVersions({numVersions}).subscribe(result => {
-      expect(result.versions.length).toBe(100)
-      done()
-    })
-  })
-
   it('getOldestVersions -- fails for invalid repo', done => {
     getOldestVersions({repo: 'actions-testin'}).subscribe({
       error: err => {
@@ -56,8 +48,8 @@ interface Params {
 
 const defaultParams = {
   owner: 'namratajha',
-  repo: 'only-pkg',
-  packageName: 'only-pkg',
+  repo: 'test-repo',
+  packageName: 'test-repo',
   numVersions: 1,
   startCursor: '',
   token: process.env.GITHUB_TOKEN as string

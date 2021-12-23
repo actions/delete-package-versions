@@ -308,7 +308,6 @@ function queryForOldestVersions(owner, repo, packageName, numVersions, startCurs
             }
         })).pipe(operators_1.catchError((err) => {
             const msg = 'query for oldest version failed.';
-            console.log(`numversions: ${numVersions} startCursor: ${startCursor}`);
             return rxjs_1.throwError(err.errors && err.errors.length > 0
                 ? `${msg} ${err.errors[0].message}`
                 : `${msg} verify input parameters are correct`);

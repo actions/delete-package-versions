@@ -109,7 +109,6 @@ export function queryForOldestVersions(
     ).pipe(
       catchError((err: GraphQlQueryResponse) => {
         const msg = 'query for oldest version failed.'
-        console.log(`numversions: ${numVersions} startCursor: ${startCursor}`)
         return throwError(
           err.errors && err.errors.length > 0
             ? `${msg} ${err.errors[0].message}`
