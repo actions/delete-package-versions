@@ -1,6 +1,6 @@
 # Delete Package Versions
 
-This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 99 versions in one run. To delete more than 99 versions the action can be called multiple times in a workflow.
+This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages) except ghcr packages. This action will only delete a maximum of 99 versions in one run.
 
 ### What It Can Do
 
