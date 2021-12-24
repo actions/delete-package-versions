@@ -23,47 +23,104 @@ module.exports = JSON.parse('{"_args":[["@octokit/rest@16.43.1","/workspaces/del
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deleteVersions = exports.getVersionIds = void 0;
+exports.deleteVersions = exports.finalIds = exports.getVersionIds = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const version_1 = __nccwpck_require__(4428);
 const operators_1 = __nccwpck_require__(7801);
-function getVersionIds(input) {
+const RATE_LIMIT = 99;
+let totalCount = 0;
+function getVersionIds(owner, repo, packageName, numVersions, cursor, token) {
+    return version_1.getOldestVersions(owner, repo, packageName, numVersions, cursor, token).pipe(operators_1.expand(value => value.paginate
+        ? version_1.getOldestVersions(owner, repo, packageName, numVersions, value.cursor, token)
+        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)), operators_1.map(value => value.versions));
+}
+exports.getVersionIds = getVersionIds;
+function finalIds(input) {
     if (input.packageVersionIds.length > 0) {
         return rxjs_1.of(input.packageVersionIds);
     }
     if (input.hasOldestVersionQueryInfo()) {
-        return version_1.getOldestVersions(input.owner, input.repo, input.packageName, input.numOldVersionsToDelete + input.minVersionsToKeep, input.token).pipe(operators_1.map(versionInfo => {
-            const numberVersionsToDelete = versionInfo.length - input.minVersionsToKeep;
-            if (input.minVersionsToKeep > 0) {
-                return numberVersionsToDelete <= 0
-                    ? []
-                    : versionInfo
-                        .filter(info => !input.ignoreVersions.test(info.version))
-                        .map(info => info.id)
-                        .slice(0, -input.minVersionsToKeep);
-            }
-            else {
-                return numberVersionsToDelete <= 0
-                    ? []
-                    : versionInfo
-                        .filter(info => !input.ignoreVersions.test(info.version))
-                        .map(info => info.id)
-                        .slice(0, numberVersionsToDelete);
-            }
-        }));
+        if (input.minVersionsToKeep < 0) {
+            // This code block is when num-old-versions-to-delete is specified.
+            // Setting input.numOldVersionsToDelete is set as minimum of input.numOldVersionsToDelete and RATE_LIMIT
+            input.numOldVersionsToDelete =
+                input.numOldVersionsToDelete < RATE_LIMIT
+                    ? input.numOldVersionsToDelete
+                    : RATE_LIMIT;
+            return getVersionIds(input.owner, input.repo, input.packageName, RATE_LIMIT, '', input.token).pipe(
+            // This code block executes on batches of 100 versions starting from oldest
+            operators_1.map(value => {
+                /*
+                Here first filter out the versions that are to be ignored.
+                Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
+                */
+                value = value.filter(info => !input.ignoreVersions.test(info.version));
+                const temp = input.numOldVersionsToDelete;
+                input.numOldVersionsToDelete =
+                    input.numOldVersionsToDelete - value.length <= 0
+                        ? 0
+                        : input.numOldVersionsToDelete - value.length;
+                return value.map(info => info.id).slice(0, temp);
+            }));
+        }
+        else {
+            // This code block is when min-versions-to-keep is specified.
+            return getVersionIds(input.owner, input.repo, input.packageName, RATE_LIMIT, '', input.token).pipe(
+            // This code block executes on batches of 100 versions starting from oldest
+            operators_1.map(value => {
+                /*
+                Here totalCount is the total no of versions in the package.
+                First we update totalCount by removing no of ignored versions from it and also filter them out from value.
+                toDelete is the no of versions that need to be deleted and input.numDeleted is the total no of versions deleted before this batch.
+                We calculate this from total no of versions in the package, the min no of versions to keep and the no of versions we have deleted in earlier batch.
+                Then we update toDelete to not exceed the length of current batch of versions.
+                Now toDelete holds the no of versions to be deleted from the current batch of versions.
+                */
+                totalCount =
+                    totalCount -
+                        value.filter(info => input.ignoreVersions.test(info.version)).length;
+                value = value.filter(info => !input.ignoreVersions.test(info.version));
+                let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted;
+                toDelete = toDelete > value.length ? value.length : toDelete;
+                //Checking here if we have any versions to delete and whether we are within the RATE_LIMIT.
+                if (toDelete > 0 && input.numDeleted < RATE_LIMIT) {
+                    /*
+                    Checking here if we can delete all the versions left in the current batch.
+                    input.numDeleted + toDelete should not exceed RATE_LIMIT.
+                    If it is exceeding we only delete the no of versions from this batch that are allowed within the RATE_LIMIT.
+                    i.e. diff between RATE_LIMIT and versions deleted till now (input.numDeleted)
+                    input.numDeleted is updated accordingly.
+                    */
+                    if (input.numDeleted + toDelete > RATE_LIMIT) {
+                        toDelete = RATE_LIMIT - input.numDeleted;
+                        input.numDeleted = RATE_LIMIT;
+                    }
+                    else {
+                        input.numDeleted = input.numDeleted + toDelete;
+                    }
+                    return value.map(info => info.id).slice(0, toDelete);
+                }
+                else
+                    return [];
+            }));
+        }
     }
-    return rxjs_1.throwError("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input or provide the 'package-name' and 'num-old-versions-to-delete' inputs to dynamically retrieve oldest versions");
+    return rxjs_1.throwError("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input");
 }
-exports.getVersionIds = getVersionIds;
+exports.finalIds = finalIds;
 function deleteVersions(input) {
     if (!input.token) {
         return rxjs_1.throwError('No token found');
     }
-    if (input.numOldVersionsToDelete <= 0) {
+    if (!input.checkInput()) {
+        return rxjs_1.throwError('Invalid input combination');
+    }
+    if (input.numOldVersionsToDelete <= 0 && input.minVersionsToKeep < 0) {
         console.log('Number of old versions to delete input is 0 or less, no versions will be deleted');
         return rxjs_1.of(true);
     }
-    return getVersionIds(input).pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
+    const result = finalIds(input);
+    return result.pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
@@ -100,21 +157,29 @@ class Input {
         this.ignoreVersions = validatedParams.ignoreVersions;
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
-        if (this.minVersionsToKeep > 0) {
-            this.numOldVersionsToDelete = 100 - this.minVersionsToKeep;
-        }
-        if (this.deletePreReleaseVersions == 'true') {
-            this.numOldVersionsToDelete = 100 - this.minVersionsToKeep;
-            this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
-        }
+        this.numDeleted = 0;
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
             this.repo &&
             this.packageName &&
-            this.numOldVersionsToDelete > 0 &&
-            this.minVersionsToKeep >= 0 &&
+            this.numOldVersionsToDelete >= 0 &&
             this.token);
+    }
+    checkInput() {
+        if (this.numOldVersionsToDelete > 1 &&
+            (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')) {
+            return false;
+        }
+        if (this.deletePreReleaseVersions === 'true') {
+            this.minVersionsToKeep =
+                this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
+            this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
+        }
+        if (this.minVersionsToKeep >= 0) {
+            this.numOldVersionsToDelete = 0;
+        }
+        return true;
     }
 }
 exports.Input = Input;
@@ -132,6 +197,7 @@ exports.deletePackageVersions = exports.deletePackageVersion = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const graphql_1 = __nccwpck_require__(6320);
+let deleted = 0;
 const mutation = `
   mutation deletePackageVersion($packageVersionId: String!) {
       deletePackageVersion(input: {packageVersionId: $packageVersionId}) {
@@ -139,32 +205,30 @@ const mutation = `
       }
   }`;
 function deletePackageVersion(packageVersionId, token) {
+    deleted += 1;
     return rxjs_1.from(graphql_1.graphql(token, mutation, {
         packageVersionId,
         headers: {
             Accept: 'application/vnd.github.package-deletes-preview+json'
         }
-    })).pipe(operators_1.catchError((err) => {
+    })).pipe(operators_1.catchError(err => {
         const msg = 'delete version mutation failed.';
         return rxjs_1.throwError(err.errors && err.errors.length > 0
             ? `${msg} ${err.errors[0].message}`
-            : `${msg} verify input parameters are correct`);
+            : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`);
     }), operators_1.map(response => response.deletePackageVersion.success));
 }
 exports.deletePackageVersion = deletePackageVersion;
 function deletePackageVersions(packageVersionIds, token) {
     if (packageVersionIds.length === 0) {
-        console.log('no package version ids found, no versions will be deleted');
         return rxjs_1.of(true);
     }
     const deletes = packageVersionIds.map(id => deletePackageVersion(id, token).pipe(operators_1.tap(result => {
-        if (result) {
-            console.log(`version with id: ${id}, deleted`);
-        }
-        else {
+        if (!result) {
             console.log(`version with id: ${id}, not deleted`);
         }
     })));
+    console.log(`Total versions deleted till now: ${deleted}`);
     return rxjs_1.merge(...deletes);
 }
 exports.deletePackageVersions = deletePackageVersions;
@@ -190,11 +254,16 @@ const query = `
           node {
             name
             versions(last: $last) {
+              totalCount
               edges {
                 node {
                   id
                   version
                 }
+              }
+              pageInfo {
+                startCursor
+                hasPreviousPage
               }
             }
           }
@@ -202,36 +271,92 @@ const query = `
       }
     }
   }`;
-function queryForOldestVersions(owner, repo, packageName, numVersions, token) {
-    return rxjs_1.from(graphql_1.graphql(token, query, {
-        owner,
-        repo,
-        package: packageName,
-        last: numVersions,
-        headers: {
-            Accept: 'application/vnd.github.packages-preview+json'
+const Paginatequery = `
+  query getVersions($owner: String!, $repo: String!, $package: String!, $last: Int!, $before: String!) {
+    repository(owner: $owner, name: $repo) {
+      packages(first: 1, names: [$package]) {
+        edges {
+          node {
+            name
+            versions(last: $last, before: $before) {
+              totalCount
+              edges {
+                node {
+                  id
+                  version
+                }
+              }
+              pageInfo{
+                startCursor
+                hasPreviousPage
+              }
+            }
+          }
         }
-    })).pipe(operators_1.catchError((err) => {
-        const msg = 'query for oldest version failed.';
-        return rxjs_1.throwError(err.errors && err.errors.length > 0
-            ? `${msg} ${err.errors[0].message}`
-            : `${msg} verify input parameters are correct`);
-    }));
+      }
+    }
+  }`;
+function queryForOldestVersions(owner, repo, packageName, numVersions, startCursor, token) {
+    if (startCursor === '') {
+        return rxjs_1.from(graphql_1.graphql(token, query, {
+            owner,
+            repo,
+            package: packageName,
+            last: numVersions,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe(operators_1.catchError((err) => {
+            const msg = 'query for oldest version failed.';
+            return rxjs_1.throwError(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct`);
+        }));
+    }
+    else {
+        return rxjs_1.from(graphql_1.graphql(token, Paginatequery, {
+            owner,
+            repo,
+            package: packageName,
+            last: numVersions,
+            before: startCursor,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe(operators_1.catchError((err) => {
+            const msg = 'query for oldest version failed.';
+            return rxjs_1.throwError(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct`);
+        }));
+    }
 }
 exports.queryForOldestVersions = queryForOldestVersions;
-function getOldestVersions(owner, repo, packageName, numVersions, token) {
-    return queryForOldestVersions(owner, repo, packageName, numVersions, token).pipe(operators_1.map(result => {
+function getOldestVersions(owner, repo, packageName, numVersions, startCursor, token) {
+    return queryForOldestVersions(owner, repo, packageName, numVersions, startCursor, token).pipe(operators_1.map(result => {
+        let r;
         if (result.repository.packages.edges.length < 1) {
             console.log(`package: ${packageName} not found for owner: ${owner} in repo: ${repo}`);
-            return [];
+            r = {
+                versions: [],
+                cursor: '',
+                paginate: false,
+                totalCount: 0
+            };
+            return r;
         }
         const versions = result.repository.packages.edges[0].node.versions.edges;
-        if (versions.length !== numVersions) {
-            console.log(`number of versions requested was: ${numVersions}, but found: ${versions.length}`);
-        }
-        return versions
-            .map(value => ({ id: value.node.id, version: value.node.version }))
-            .reverse();
+        const pages = result.repository.packages.edges[0].node.versions.pageInfo;
+        const count = result.repository.packages.edges[0].node.versions.totalCount;
+        r = {
+            versions: versions
+                .map(value => ({ id: value.node.id, version: value.node.version }))
+                .reverse(),
+            cursor: pages.startCursor,
+            paginate: pages.hasPreviousPage,
+            totalCount: count
+        };
+        return r;
     }));
 }
 exports.getOldestVersions = getOldestVersions;

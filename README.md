@@ -1,6 +1,6 @@
 # Delete Package Versions
 
-This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages).
+This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages) except ghcr packages. This action will only delete a maximum of 99 versions in one run.
 
 ### What It Can Do
 
@@ -12,8 +12,6 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
 * Delete a single version
 * Delete multiple versions
-
-
 * Delete specific version(s)
 
 # Usage
@@ -42,14 +40,12 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
   # The number of old versions to delete starting from the oldest version.
   # Defaults to 1.
-  # Cannot be more than 100.
   num-old-versions-to-delete:
 
-  # The number of latest versions to not delete.
-  # Defaults to 0.
-  # When this is set greater than 0 it will delete all deletable package versions except the specified no.
-  # This takes precedence over `num-old-versions-to-delete`.
-  # Cannot be more than 100.
+  # The number of latest versions to keep.
+  # This cannot be specified with `num-old-versions-to-delete`. By default, `num-old-versions-to-delete` takes precedence over `min-versions-to-keep`.
+  # When set to 0, all deletable versions will be deleted.
+  # When set greater than 0, all deletable package versions except the specified number will be deleted.
   min-versions-to-keep:
 
   # The package versions to exclude from deletion.
@@ -61,6 +57,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # The number of pre-release versions to keep can be set by using `min-versions-to-keep` value with this.
   # When `min-versions-to-keep` is 0, all pre-release versions get deleted.
   # Defaults to false.
+  # Cannot be used with `num-old-versions-to-delete` and `ignore-versions`.
   delete-only-pre-release-versions:
 
   # The token used to authenticate with GitHub Packages.
@@ -70,6 +67,18 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   #   If `package-version-ids` is not given the token needs the delete packages scope and the read packages scope
   token:
 ```
+
+# Valid Input Combinations
+
+`owner`, `repo`, `package-name` and `token` can be used with the following combinations in a workflow - 
+
+  - `num-old-versions-to-delete`
+  - `min-versions-to-keep` 
+  - `delete-only-pre-release-versions`
+  - `ignore-versions`
+  - `num-old-versions-to-delete` + `ignore-versions`
+  - `min-versions-to-keep` + `ignore-versions`
+  - `min-versions-to-keep` + `delete-only-pre-release-versions`
 
 # Scenarios
 

@@ -32,6 +32,7 @@ export class Input {
   ignoreVersions: RegExp
   deletePreReleaseVersions: string
   token: string
+  numDeleted: number
 
   constructor(params?: InputParams) {
     const validatedParams: Required<InputParams> = {...defaultParams, ...params}
@@ -45,15 +46,7 @@ export class Input {
     this.ignoreVersions = validatedParams.ignoreVersions
     this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions
     this.token = validatedParams.token
-
-    if (this.minVersionsToKeep > 0) {
-      this.numOldVersionsToDelete = 100 - this.minVersionsToKeep
-    }
-
-    if (this.deletePreReleaseVersions == 'true') {
-      this.numOldVersionsToDelete = 100 - this.minVersionsToKeep
-      this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$')
-    }
+    this.numDeleted = 0
   }
 
   hasOldestVersionQueryInfo(): boolean {
@@ -61,9 +54,29 @@ export class Input {
       this.owner &&
       this.repo &&
       this.packageName &&
-      this.numOldVersionsToDelete > 0 &&
-      this.minVersionsToKeep >= 0 &&
+      this.numOldVersionsToDelete >= 0 &&
       this.token
     )
+  }
+
+  checkInput(): boolean {
+    if (
+      this.numOldVersionsToDelete > 1 &&
+      (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')
+    ) {
+      return false
+    }
+
+    if (this.deletePreReleaseVersions === 'true') {
+      this.minVersionsToKeep =
+        this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0
+      this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$')
+    }
+
+    if (this.minVersionsToKeep >= 0) {
+      this.numOldVersionsToDelete = 0
+    }
+
+    return true
   }
 }
