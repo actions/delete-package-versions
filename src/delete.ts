@@ -134,7 +134,7 @@ export function deleteVersions(input: Input): Observable<boolean> {
   }
 
   if (!input.checkInput()) {
-    return throwError('Invlaid input combination')
+    return throwError('Invalid input combination')
   }
 
   if (input.numOldVersionsToDelete <= 0 && input.minVersionsToKeep < 0) {

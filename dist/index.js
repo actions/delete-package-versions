@@ -113,7 +113,7 @@ function deleteVersions(input) {
         return rxjs_1.throwError('No token found');
     }
     if (!input.checkInput()) {
-        return rxjs_1.throwError('Invlaid input combination');
+        return rxjs_1.throwError('Invalid input combination');
     }
     if (input.numOldVersionsToDelete <= 0 && input.minVersionsToKeep < 0) {
         console.log('Number of old versions to delete input is 0 or less, no versions will be deleted');
