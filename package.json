@@ -30,12 +30,12 @@
     "rxjs": "^6.5.4"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
+    "@types/jest": "^27.4.0",
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.8.0",
     "@vercel/ncc": "^0.31.1",
-    "eslint": "^5.16.0",
-    "eslint-plugin-github": "^2.0.0",
+    "eslint": "^8.9.0",
+    "eslint-plugin-github": "^4.3.5",
     "eslint-plugin-jest": "^22.21.0",
     "jest": "^27.3.1",
     "jest-circus": "^27.3.1",
