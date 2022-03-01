@@ -12,7 +12,7 @@ export interface DeletePackageVersionMutationResponse {
 }
 
 const mutation = `
-  mutation deletePackageVersion($packageVersionId: String!) {
+  mutation deletePackageVersion($packageVersionId: ID!) {
       deletePackageVersion(input: {packageVersionId: $packageVersionId}) {
           success
       }
