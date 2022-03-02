@@ -17,7 +17,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 # Usage
 
 ```yaml
-- uses: actions/delete-package-versions@v2
+- uses: actions/delete-package-versions@v3
   with:
   # Can be a single package version id, or a comma separated list of package version ids.
   # Defaults to an empty string.
@@ -101,7 +101,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete all pre-release package versions except latest 10 in the same repo as the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with: 
       package-name: 'test-package'
       min-versions-to-keep: 10
@@ -116,7 +116,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete all pre-release package versions except latest 10 in a different repo than the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with: 
       owner: 'github'
       repo: 'packages'
@@ -137,7 +137,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete all except latest 3 package versions excluding major versions as per semver in the same repo as the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with: 
       package-name: 'test-packae'
       min-versions-to-keep: 3
@@ -153,7 +153,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete all except latest 3 package versions excluding major versions as per semver in a different repo than the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with: 
       owner: 'github'
       repo: 'packages'
@@ -176,7 +176,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete 3 oldest versions excluding major versions as per semver is the same repo as the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with: 
       package-name: 'test-packae'
       num-old-versions-to-delete: 3
@@ -194,7 +194,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete 3 oldest versions excluding major versions as per semver is a differernt repo than the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with: 
       owner: 'github'
       repo: 'packages'
@@ -215,7 +215,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete all except latest 2 versions of a package hosted in the same repo as the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       package-name: 'test-package'
       min-versions-to-keep: 2
@@ -230,7 +230,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete all except latest 2 versions of a package hosted in a repo other than the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       owner: 'github'
       repo: 'packages'
@@ -250,7 +250,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete the oldest 3 version of a package hosted in the same repo as the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       package-name: 'test-package'
       num-old-versions-to-delete: 3
@@ -265,7 +265,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   Delete the oldest 3 version of a package hosted in a different repo than the one executing the workflow
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       owner: 'github'
       repo: 'packages'
@@ -283,7 +283,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   __Example__
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       package-name: 'test-package'
   ```
@@ -295,7 +295,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   __Example__
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       owner: 'github'
       repo: 'packages'
@@ -314,7 +314,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   __Example__
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3'
   ```
@@ -328,7 +328,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   __Example__
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3'
       token: ${{ secrets.PAT }}
@@ -345,7 +345,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   __Example__
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzQ5, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzUw'
   ```
@@ -359,7 +359,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   __Example__
 
   ```yaml
-  - uses: actions/delete-package-versions@v2
+  - uses: actions/delete-package-versions@v3
     with:
       package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzQ5, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzUw'
       token: ${{ secrets.PAT }}
