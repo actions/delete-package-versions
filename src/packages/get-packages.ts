@@ -91,7 +91,11 @@ export function queryForRepoPackages(
         return throwError(
           err.errors && err.errors.length > 0
             ? `${msg} ${err.errors[0].message}`
-            : `${msg} verify input parameters are correct ${JSON.stringify(err, null, 2)}`
+            : `${msg} verify input parameters are correct ${JSON.stringify(
+                err,
+                null,
+                2
+              )}`
         )
       })
     )
