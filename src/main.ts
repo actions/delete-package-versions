@@ -13,6 +13,7 @@ function getActionInput(): Input {
     owner: getInput('owner') ? getInput('owner') : context.repo.owner,
     repo: getInput('repo') ? getInput('repo') : context.repo.repo,
     packageName: getInput('package-name'),
+    packageNames: getInput('package-names'),
     numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),
     minVersionsToKeep: Number(getInput('min-versions-to-keep')),
     ignoreVersions: RegExp(getInput('ignore-versions')),
