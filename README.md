@@ -43,7 +43,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # - a single package name
   # - a group of packages that matches a wildcard at start, end, both sides, or all packages (e.g. "package*")
   # - a group of packages that matches a regex, must start with slash at the beginning and end (e.g. "/package.*/")
-  # - a comma separated list of the previous cases
+  # - a comma separated list of the previous cases (e.g. "package-lorem, *-ipsum, /.*dolor/")
   # Defaults to an empty string.
   # Required if `package-version-ids` or `package-name` input is not given.
   package-names:
