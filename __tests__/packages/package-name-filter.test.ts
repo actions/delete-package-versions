@@ -12,7 +12,7 @@ describe('package name filter -- create filter', () => {
       'com.company.project.module3.package-name-dolor',
     ]
 
-    it('getPackageNameFilter -- wildcard filter', done => {
+    it('getPackageNameFilter -- wildcard end filter', done => {
       const filter = getPackageNameFilter('com.company.project.module1.*')
       
       const result = packageNameList.filter(filter.apply);
@@ -22,6 +22,44 @@ describe('package name filter -- create filter', () => {
         'com.company.project.module1.package1',
         'com.company.project.module1.package2',
       ])
+      done()
+    })
+
+    it('getPackageNameFilter -- wildcard start filter', done => {
+      const filter = getPackageNameFilter('*.package1')
+      
+      const result = packageNameList.filter(filter.apply);
+
+      expect(filter.subfilters[0].type).toBe('wildcard')
+      expect(result).toEqual([
+        'com.company.project.module1.package1',
+        'com.company.project.module2.package1',
+      ])
+      done()
+    })
+
+    it('getPackageNameFilter -- wildcard both sides filter', done => {
+      const filter = getPackageNameFilter('*.project.module3.*')
+      
+      const result = packageNameList.filter(filter.apply);
+
+      expect(filter.subfilters[0].type).toBe('wildcard')
+      expect(result).toEqual([
+        'com.company.project.module3.package-name-lorem',
+        'com.company.project.module3.package-name-ipsum',
+        'com.company.project.module3.package-name-dolor'
+        ])
+      done()
+    })
+
+
+    it('getPackageNameFilter -- wildcard all filter', done => {
+      const filter = getPackageNameFilter('*')
+      
+      const result = packageNameList.filter(filter.apply);
+
+      expect(filter.subfilters[0].type).toBe('wildcard')
+      expect(result).toEqual(packageNameList.slice())
       done()
     })
 
