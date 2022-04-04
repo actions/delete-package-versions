@@ -80,7 +80,7 @@ function createWildcardFilter(
   const startsWithWildCard = wildcardPackageName.startsWith('*')
   const endsWithWildCard = wildcardPackageName.endsWith('*')
   let fn: PackageNameSubFilter['apply']
-  if(wildcardPackageName === "*"){
+  if (wildcardPackageName === '*') {
     fn = () => true
   } else if (startsWithWildCard && endsWithWildCard) {
     const targetText = wildcardPackageName.substring(
