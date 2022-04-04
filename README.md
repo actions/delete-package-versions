@@ -8,8 +8,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete all package versions except n most recent versions
 * Delete oldest version(s)
 * Ignore version(s) from deletion through regex
-* Delete version(s) of a package that is hosted in the same repo that is executing the workflow
-* Delete version(s) of a package that is hosted in a different repo than the one executing the workflow
+* Delete version(s) of packages that are hosted in the same repo that is executing the workflow
+* Delete version(s) of packages that are hosted in a different repo than the one executing the workflow
 * Delete a single version
 * Delete multiple versions
 * Delete specific version(s)
@@ -35,8 +35,19 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
   # Name of the package.
   # Defaults to an empty string.
-  # Required if `package-version-ids` input is not given.
+  # Required if `package-version-ids` or `package-names` input is not given.
   package-name:
+
+  # Names of the package.
+  # Can be one of the following:
+  # - a single package name
+  # - a group of packages that matches a wildcard at start, end, both sides, or all packages (e.g. "package*")
+  # - a group of packages that matches a regex, must start with slash at the beginning and end (e.g. "/package.*/")
+  # - a comma separated list of the previous cases
+  # Defaults to an empty string.
+  # Required if `package-version-ids` or `package-name` input is not given.
+  package-names:
+
 
   # The number of old versions to delete starting from the oldest version.
   # Defaults to 1.
@@ -70,7 +81,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 # Valid Input Combinations
 
-`owner`, `repo`, `package-name` and `token` can be used with the following combinations in a workflow - 
+`owner`, `repo`, `package-name` (of `package-names`) and `token` can be used with the following combinations in a workflow - 
 
   - `num-old-versions-to-delete`
   - `min-versions-to-keep` 
@@ -86,12 +97,13 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   - [Delete all except y latest versions while ignoring particular package versions](#delete-all-except-y-latest-versions-while-ignoring-particular-package-versions)
   - [Delete oldest x number of versions while ignoring particular package versions](#delete-oldest-x-number-of-versions-while-ignoring-particular-package-versions)
   - [Delete all except y latest versions of a package](#delete-all-except-y-latest-versions-of-a-package)
+  - [Delete all except y latest versions of all packages in a repo](#delete-all-except-y-latest-versions-of-all-packages-in-a-repo)
   - [Delete oldest x number of versions of a package](#delete-oldest-x-number-of-versions-of-a-package)
   - [Delete oldest version of a package](#delete-oldest-version-of-a-package)
   - [Delete a specific version of a package](#delete-a-specific-version-of-a-package)
   - [Delete multiple specific versions of a package](#delete-multiple-specific-versions-of-a-package)
-  
 
+  
   ### Delete all pre-release versions except y latest pre-release package versions
 
   To delete all pre release versions except y latest pre-release package versions in the same repo as the workflow the __package-name__, __min-versions-to-keep__ and __delete-only-pre-release-versions__ inputs are required.
@@ -235,6 +247,41 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       owner: 'github'
       repo: 'packages'
       package-name: 'test-package'
+      token: ${{ secrets.PAT }}
+      min-versions-to-keep: 2
+  ```
+
+  <br>
+
+  ### Delete all except y latest versions of a package
+
+  To delete all except y latest versions of all packages hosted in the same repo as the workflow the __package-names__ and __min-versions-to-keep__ inputs are required.
+
+  __Example__
+
+  Delete all except latest 2 versions of a package hosted in the same repo as the workflow
+
+  ```yaml
+  - uses: actions/delete-package-versions@v3
+    with:
+      package-names: '*'
+      min-versions-to-keep: 2
+  ```
+
+  To delete all except y latest versions of all packages hosted in a repo other than the workflow the __owner__, __repo__, __package-names__, __token__ and __min-versions-to-keep__ inputs are required.
+
+  The [token][token] needs the delete packages and read packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
+
+  __Example__
+
+  Delete all except latest 2 versions of a package hosted in a repo other than the workflow
+
+  ```yaml
+  - uses: actions/delete-package-versions@v3
+    with:
+      owner: 'github'
+      repo: 'packages'
+      package-names: '*'
       token: ${{ secrets.PAT }}
       min-versions-to-keep: 2
   ```
