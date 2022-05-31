@@ -14,13 +14,11 @@ export interface QueryInfo {
   packages: PackageInfo[]
   cursor: string
   paginate: boolean
-  totalCount: number
 }
 
 export interface GetPackagesQueryResponse {
   repository: {
     packages: {
-      totalCount: number
       edges: {node: PackageInfo}[]
       pageInfo: {
         endCursor: string
@@ -34,7 +32,6 @@ const query = `
   query getPackages($owner: String!, $name: String!, $first: Int!){
     repository(owner: $owner, name: $name) {
       packages(first:$first){
-        totalCount
         edges {
           node {
             name
@@ -53,7 +50,6 @@ const Paginatequery = `
   query getPackages($owner: String!, $name: String!, $first: Int!, $after: String!){
     repository(owner: $owner, name: $name) {
       packages(first:$first){
-        totalCount
         edges {
           node {
             name
@@ -146,15 +142,13 @@ export function getRepoPackages(
         r = {
           packages: [] as PackageInfo[],
           cursor: '',
-          paginate: false,
-          totalCount: 0
+          paginate: false
         }
         return r
       }
 
       const packages = result.repository.packages.edges
       const pages = result.repository.packages.pageInfo
-      const count = result.repository.packages.totalCount
 
       r = {
         packages: packages.map(value => ({
@@ -162,8 +156,7 @@ export function getRepoPackages(
           name: value.node.name
         })),
         cursor: pages.endCursor,
-        paginate: pages.hasNextPage,
-        totalCount: count
+        paginate: pages.hasNextPage
       }
 
       return r

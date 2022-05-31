@@ -22,7 +22,6 @@ export function getMockedPackagesQueryResponse(
   return {
     repository: {
       packages: {
-        totalCount: 200,
         pageInfo: {
           endCursor: 'AAA',
           hasNextPage: false

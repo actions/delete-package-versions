@@ -55,9 +55,6 @@ export function getPackageNames(
         ? getRepoPackages(owner, repo, numPackages, value.cursor, token)
         : EMPTY
     ),
-    tap(
-      value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)
-    ),
     map(value => value.packages)
   )
 }
