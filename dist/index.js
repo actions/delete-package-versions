@@ -211,8 +211,8 @@ const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const graphql_1 = __nccwpck_require__(4223);
 const query = `
-  query getPackages($owner: String!, $name: String!, $first: Int!){
-    repository(owner: $owner, name: $name) {
+  query getPackages($owner: String!, $repo: String!, $first: Int!){
+    repository(owner: $owner, name: $repo) {
       packages(first:$first){
         edges {
           node {
@@ -228,8 +228,8 @@ const query = `
     }
   }`;
 const Paginatequery = `
-  query getPackages($owner: String!, $name: String!, $first: Int!, $after: String!){
-    repository(owner: $owner, name: $name) {
+  query getPackages($owner: String!, $repo: String!, $first: Int!, $after: String!){
+    repository(owner: $owner, name: $repo) {
       packages(first:$first){
         edges {
           node {

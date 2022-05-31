@@ -29,8 +29,8 @@ export interface GetPackagesQueryResponse {
 }
 
 const query = `
-  query getPackages($owner: String!, $name: String!, $first: Int!){
-    repository(owner: $owner, name: $name) {
+  query getPackages($owner: String!, $repo: String!, $first: Int!){
+    repository(owner: $owner, name: $repo) {
       packages(first:$first){
         edges {
           node {
@@ -47,8 +47,8 @@ const query = `
   }`
 
 const Paginatequery = `
-  query getPackages($owner: String!, $name: String!, $first: Int!, $after: String!){
-    repository(owner: $owner, name: $name) {
+  query getPackages($owner: String!, $repo: String!, $first: Int!, $after: String!){
+    repository(owner: $owner, name: $repo) {
       packages(first:$first){
         edges {
           node {
