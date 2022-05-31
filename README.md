@@ -81,7 +81,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 # Valid Input Combinations
 
-`owner`, `repo`, `package-name` (of `package-names`) and `token` can be used with the following combinations in a workflow - 
+`owner`, `repo`, `package-name` (or `package-names`) and `token` can be used with the following combinations in a workflow - 
 
   - `num-old-versions-to-delete`
   - `min-versions-to-keep` 
