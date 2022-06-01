@@ -3,7 +3,7 @@ import {
   RequestParameters
 } from '@octokit/graphql/dist-types/types'
 
-import * as Graphql from '../../src/packages/graphql'
+import * as Graphql from '../../src/common/graphql'
 import {GetPackagesQueryResponse} from '../../src/packages'
 
 export function getMockedPackagesQueryResponse(

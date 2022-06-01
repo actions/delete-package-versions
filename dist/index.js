@@ -9,6 +9,42 @@ module.exports = JSON.parse('{"_args":[["@octokit/rest@16.43.2","/home/omar/work
 
 /***/ }),
 
+/***/ 9057:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.graphql = void 0;
+/* eslint-disable @typescript-eslint/no-unused-vars */
+const github_1 = __nccwpck_require__(5438);
+/**
+ * Sends a GraphQL query request based on endpoint options
+ *
+ * @param {string} token Auth token
+ * @param {string} query GraphQL query. Example: `'query { viewer { login } }'`.
+ * @param {object} parameters URL, query or body parameters, as well as `headers`, `mediaType.{format|previews}`, `request`, or `baseUrl`.
+ */
+function graphql(token, query, parameters) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const github = new github_1.GitHub(token);
+        return yield github.graphql(query, parameters);
+    });
+}
+exports.graphql = graphql;
+
+
+/***/ }),
+
 /***/ 9645:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -209,7 +245,7 @@ exports.getRepoPackages = exports.queryForRepoPackages = void 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
-const graphql_1 = __nccwpck_require__(4223);
+const graphql_1 = __nccwpck_require__(9057);
 const query = `
   query getPackages($owner: String!, $repo: String!, $first: Int!){
     repository(owner: $owner, name: $repo) {
@@ -304,42 +340,6 @@ function getRepoPackages(owner, repo, numPackages, startCursor, token) {
     }));
 }
 exports.getRepoPackages = getRepoPackages;
-
-
-/***/ }),
-
-/***/ 4223:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.graphql = void 0;
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const github_1 = __nccwpck_require__(5438);
-/**
- * Sends a GraphQL query request based on endpoint options
- *
- * @param {string} token Auth token
- * @param {string} query GraphQL query. Example: `'query { viewer { login } }'`.
- * @param {object} parameters URL, query or body parameters, as well as `headers`, `mediaType.{format|previews}`, `request`, or `baseUrl`.
- */
-function graphql(token, query, parameters) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const github = new github_1.GitHub(token);
-        return yield github.graphql(query, parameters);
-    });
-}
-exports.graphql = graphql;
 
 
 /***/ }),
@@ -484,7 +484,7 @@ exports.deletePackageVersions = exports.deletePackageVersion = void 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
-const graphql_1 = __nccwpck_require__(6320);
+const graphql_1 = __nccwpck_require__(9057);
 let deleted = 0;
 const mutation = `
   mutation deletePackageVersion($packageVersionId: ID!) {
@@ -534,7 +534,7 @@ exports.getOldestVersions = exports.queryForOldestVersions = void 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
-const graphql_1 = __nccwpck_require__(6320);
+const graphql_1 = __nccwpck_require__(9057);
 const query = `
   query getVersions($owner: String!, $repo: String!, $package: String!, $last: Int!) {
     repository(owner: $owner, name: $repo) {
@@ -649,42 +649,6 @@ function getOldestVersions(owner, repo, packageName, numVersions, startCursor, t
     }));
 }
 exports.getOldestVersions = getOldestVersions;
-
-
-/***/ }),
-
-/***/ 6320:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.graphql = void 0;
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const github_1 = __nccwpck_require__(5438);
-/**
- * Sends a GraphQL query request based on endpoint options
- *
- * @param {string} token Auth token
- * @param {string} query GraphQL query. Example: `'query { viewer { login } }'`.
- * @param {object} parameters URL, query or body parameters, as well as `headers`, `mediaType.{format|previews}`, `request`, or `baseUrl`.
- */
-function graphql(token, query, parameters) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const github = new github_1.GitHub(token);
-        return yield github.graphql(query, parameters);
-    });
-}
-exports.graphql = graphql;
 
 
 /***/ }),
