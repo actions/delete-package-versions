@@ -1,6 +1,8 @@
 # Delete Package Versions
 
-This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages) except ghcr packages. This action will only delete a maximum of 99 versions in one run.
+This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 99 versions in one run.
+
+_This action does currently not support deleting packages from the GitHub Container Registry. As the npm registry is about to be migrated to the same new architecture as GHCR, this action won't work for npm soon too (see [#74](https://github.com/actions/delete-package-versions/issues/74))._
 
 ### What It Can Do
 
