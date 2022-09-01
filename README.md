@@ -141,7 +141,7 @@ _This action does currently not support deleting packages from the GitHub Contai
   ```yaml
   - uses: actions/delete-package-versions@v3
     with: 
-      package-name: 'test-packae'
+      package-name: 'test-package'
       min-versions-to-keep: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
   ```
@@ -159,7 +159,7 @@ _This action does currently not support deleting packages from the GitHub Contai
     with: 
       owner: 'github'
       repo: 'packages'
-      package-name: 'test-packae'
+      package-name: 'test-package'
       token: ${{ secrets.GITHUB_PAT }}
       min-versions-to-keep: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
@@ -180,7 +180,7 @@ _This action does currently not support deleting packages from the GitHub Contai
   ```yaml
   - uses: actions/delete-package-versions@v3
     with: 
-      package-name: 'test-packae'
+      package-name: 'test-package'
       num-old-versions-to-delete: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
   ```
@@ -200,7 +200,7 @@ _This action does currently not support deleting packages from the GitHub Contai
     with: 
       owner: 'github'
       repo: 'packages'
-      package-name: 'test-packae'
+      package-name: 'test-package'
       token: ${{ secrets.PAT }}
       num-old-versions-to-delete: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
