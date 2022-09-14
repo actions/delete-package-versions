@@ -141,7 +141,7 @@ _This action does currently not support deleting packages from the GitHub Contai
   ```yaml
   - uses: actions/delete-package-versions@v3
     with: 
-      package-name: 'test-packae'
+      package-name: 'test-package'
       min-versions-to-keep: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
   ```
@@ -159,7 +159,7 @@ _This action does currently not support deleting packages from the GitHub Contai
     with: 
       owner: 'github'
       repo: 'packages'
-      package-name: 'test-packae'
+      package-name: 'test-package'
       token: ${{ secrets.GITHUB_PAT }}
       min-versions-to-keep: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
@@ -180,7 +180,7 @@ _This action does currently not support deleting packages from the GitHub Contai
   ```yaml
   - uses: actions/delete-package-versions@v3
     with: 
-      package-name: 'test-packae'
+      package-name: 'test-package'
       num-old-versions-to-delete: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
   ```
@@ -193,14 +193,14 @@ _This action does currently not support deleting packages from the GitHub Contai
 
   __Example__
 
-  Delete 3 oldest versions excluding major versions as per semver is a differernt repo than the workflow
+  Delete 3 oldest versions excluding major versions as per semver is a different repo than the workflow
 
   ```yaml
   - uses: actions/delete-package-versions@v3
     with: 
       owner: 'github'
       repo: 'packages'
-      package-name: 'test-packae'
+      package-name: 'test-package'
       token: ${{ secrets.PAT }}
       num-old-versions-to-delete: 3
       ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
@@ -340,7 +340,7 @@ _This action does currently not support deleting packages from the GitHub Contai
 
   ### Delete multiple specific versions of a package
 
-  To delete multiple specifc versions of a package that is hosted in the same repo as the workflow the __package-version-ids__ input is required.
+  To delete multiple specific versions of a package that is hosted in the same repo as the workflow the __package-version-ids__ input is required.
 
   The __package-version-ids__ input should be a comma separated string of package version ids. Package version ids can be retrieved via the [GitHub GraphQL API][api].
 
@@ -352,7 +352,7 @@ _This action does currently not support deleting packages from the GitHub Contai
       package-version-ids: 'MDE0OlBhY2thZ2VWZXJzaW9uOTcyMDY3, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzQ5, MDE0OlBhY2thZ2VWZXJzaW9uOTcyMzUw'
   ```
 
-  To delete multiple specifc versions of a package that is hosted in a repo other than the workflow the __package-version-ids__, __token__ inputs are required.
+  To delete multiple specific versions of a package that is hosted in a repo other than the workflow the __package-version-ids__, __token__ inputs are required.
 
   The __package-version-ids__ input should be a comma separated string of package version ids. Package version ids can be retrieved via the [GitHub GraphQL API][api].
 
