@@ -3,7 +3,7 @@ import {
   RequestParameters
 } from '@octokit/graphql/dist-types/types'
 
-import * as Graphql from '../../src/version/graphql'
+import * as Graphql from '../../src/common/graphql'
 import {GetVersionsQueryResponse} from '../../src/version'
 
 export function getMockedOldestQueryResponse(

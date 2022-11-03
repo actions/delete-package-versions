@@ -1,7 +1,8 @@
 import {Input} from './input'
 import {EMPTY, Observable, of, throwError} from 'rxjs'
 import {deletePackageVersions, getOldestVersions, VersionInfo} from './version'
-import {concatMap, map, expand, tap} from 'rxjs/operators'
+import {getRepoPackages, getPackageNameFilter, PackageInfo} from './packages'
+import {concatMap, map, mergeMap, expand, tap} from 'rxjs/operators'
 
 const RATE_LIMIT = 99
 let totalCount = 0
@@ -41,11 +42,55 @@ export function getVersionIds(
   )
 }
 
+export function getPackageNames(
+  owner: string,
+  repo: string,
+  numPackages: number,
+  cursor: string,
+  token: string
+): Observable<PackageInfo[]> {
+  return getRepoPackages(owner, repo, numPackages, cursor, token).pipe(
+    expand(value =>
+      value.paginate
+        ? getRepoPackages(owner, repo, numPackages, value.cursor, token)
+        : EMPTY
+    ),
+    map(value => value.packages)
+  )
+}
+
 export function finalIds(input: Input): Observable<string[]> {
   if (input.packageVersionIds.length > 0) {
     return of(input.packageVersionIds)
   }
   if (input.hasOldestVersionQueryInfo()) {
+    const filter = getPackageNameFilter(input.packageNames)
+    if (!filter.isEmpty) {
+      return getPackageNames(
+        input.owner,
+        input.repo,
+        RATE_LIMIT,
+        '',
+        input.token
+      )
+        .pipe(
+          mergeMap(value => {
+            return value
+              .filter(info => filter.apply(info.name))
+              .map(info =>
+                finalIds(
+                  new Input({
+                    ...input,
+                    packageNames: '',
+                    packageName: info.name
+                  })
+                )
+              )
+          })
+        )
+        .pipe(mergeMap(val => val))
+    }
+
     if (input.minVersionsToKeep < 0) {
       // This code block is when num-old-versions-to-delete is specified.
       // Setting input.numOldVersionsToDelete is set as minimum of input.numOldVersionsToDelete and RATE_LIMIT

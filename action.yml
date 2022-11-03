@@ -27,6 +27,19 @@ inputs:
       Required if dynamically deleting oldest versions.
     required: false
 
+ 
+  package-names:
+    description: >
+      Names of the package.
+      Can be one of the following:
+       - a single package name
+       - a group of packages that matches a wildcard at start, end, both sides, or all packages (e.g. "package*")
+       - a group of packages that matches a regex, must start with slash at the beginning and end (e.g. "/package.*/")
+       - a comma separated list of the previous cases (e.g. "package-lorem, *-ipsum, /.*dolor/")
+      Defaults to an empty string.
+      Required if `package-version-ids` or `package-name` input is not given.
+    required: false
+
   num-old-versions-to-delete:
     description: >
       Number of versions to delete starting with the oldest version.

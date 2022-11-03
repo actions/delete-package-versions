@@ -5,7 +5,43 @@
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_args":[["@octokit/rest@16.43.2","/workspaces/delete-package-versions"]],"_from":"@octokit/rest@16.43.2","_id":"@octokit/rest@16.43.2","_inBundle":false,"_integrity":"sha512-ngDBevLbBTFfrHZeiS7SAMAZ6ssuVmXuya+F/7RaVvlysgGa1JKJkKWY+jV6TCJYcW0OALfJ7nTIGXcBXzycfQ==","_location":"/@octokit/rest","_phantomChildren":{"deprecation":"2.3.1","once":"1.4.0","os-name":"3.1.0"},"_requested":{"type":"version","registry":true,"raw":"@octokit/rest@16.43.2","name":"@octokit/rest","escapedName":"@octokit%2frest","scope":"@octokit","rawSpec":"16.43.2","saveSpec":null,"fetchSpec":"16.43.2"},"_requiredBy":["/@actions/github"],"_resolved":"https://registry.npmjs.org/@octokit/rest/-/rest-16.43.2.tgz","_spec":"16.43.2","_where":"/workspaces/delete-package-versions","author":{"name":"Gregor Martynus","url":"https://github.com/gr2m"},"bugs":{"url":"https://github.com/octokit/rest.js/issues"},"bundlesize":[{"path":"./dist/octokit-rest.min.js.gz","maxSize":"33 kB"}],"contributors":[{"name":"Mike de Boer","email":"info@mikedeboer.nl"},{"name":"Fabian Jakobs","email":"fabian@c9.io"},{"name":"Joe Gallo","email":"joe@brassafrax.com"},{"name":"Gregor Martynus","url":"https://github.com/gr2m"}],"dependencies":{"@octokit/auth-token":"^2.4.0","@octokit/plugin-paginate-rest":"^1.1.1","@octokit/plugin-request-log":"^1.0.0","@octokit/plugin-rest-endpoint-methods":"2.4.0","@octokit/request":"^5.2.0","@octokit/request-error":"^1.0.2","atob-lite":"^2.0.0","before-after-hook":"^2.0.0","btoa-lite":"^1.0.0","deprecation":"^2.0.0","lodash.get":"^4.4.2","lodash.set":"^4.3.2","lodash.uniq":"^4.5.0","octokit-pagination-methods":"^1.1.0","once":"^1.4.0","universal-user-agent":"^4.0.0"},"description":"GitHub REST API client for Node.js","devDependencies":{"@gimenete/type-writer":"^0.1.3","@octokit/auth":"^1.1.1","@octokit/fixtures-server":"^5.0.6","@octokit/graphql":"^4.2.0","@types/node":"^13.1.0","bundlesize":"^0.18.0","chai":"^4.1.2","compression-webpack-plugin":"^3.1.0","cypress":"^4.0.0","glob":"^7.1.2","http-proxy-agent":"^4.0.0","lodash.camelcase":"^4.3.0","lodash.merge":"^4.6.1","lodash.upperfirst":"^4.3.1","lolex":"^6.0.0","mkdirp":"^1.0.0","mocha":"^7.0.1","mustache":"^4.0.0","nock":"^11.3.3","npm-run-all":"^4.1.2","nyc":"^15.0.0","prettier":"^1.14.2","proxy":"^1.0.0","semantic-release":"^17.0.0","sinon":"^8.0.0","sinon-chai":"^3.0.0","sort-keys":"^4.0.0","string-to-arraybuffer":"^1.0.0","string-to-jsdoc-comment":"^1.0.0","typescript":"^3.3.1","webpack":"^4.0.0","webpack-bundle-analyzer":"^3.0.0","webpack-cli":"^3.0.0"},"files":["index.js","index.d.ts","lib","plugins"],"homepage":"https://github.com/octokit/rest.js#readme","keywords":["octokit","github","rest","api-client"],"license":"MIT","name":"@octokit/rest","nyc":{"ignore":["test"]},"publishConfig":{"access":"public"},"release":{"publish":["@semantic-release/npm",{"path":"@semantic-release/github","assets":["dist/*","!dist/*.map.gz"]}]},"repository":{"type":"git","url":"git+https://github.com/octokit/rest.js.git"},"scripts":{"build":"npm-run-all build:*","build:browser":"npm-run-all build:browser:*","build:browser:development":"webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json","build:browser:production":"webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map","build:ts":"npm run -s update-endpoints:typescript","coverage":"nyc report --reporter=html && open coverage/index.html","generate-bundle-report":"webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html","lint":"prettier --check \'{lib,plugins,scripts,test}/**/*.{js,json,ts}\' \'docs/*.{js,json}\' \'docs/src/**/*\' index.js README.md package.json","lint:fix":"prettier --write \'{lib,plugins,scripts,test}/**/*.{js,json,ts}\' \'docs/*.{js,json}\' \'docs/src/**/*\' index.js README.md package.json","postvalidate:ts":"tsc --noEmit --target es6 test/typescript-validate.ts","prebuild:browser":"mkdirp dist/","pretest":"npm run -s lint","prevalidate:ts":"npm run -s build:ts","start-fixtures-server":"octokit-fixtures-server","test":"nyc mocha test/mocha-node-setup.js \\"test/*/**/*-test.js\\"","test:browser":"cypress run --browser chrome","update-endpoints":"npm-run-all update-endpoints:*","update-endpoints:fetch-json":"node scripts/update-endpoints/fetch-json","update-endpoints:typescript":"node scripts/update-endpoints/typescript","validate:ts":"tsc --target es6 --noImplicitAny index.d.ts"},"types":"index.d.ts","version":"16.43.2"}');
+module.exports = JSON.parse('{"_args":[["@octokit/rest@16.43.2","/home/omar/workspace/git/delete-package-versions"]],"_from":"@octokit/rest@16.43.2","_id":"@octokit/rest@16.43.2","_inBundle":false,"_integrity":"sha512-ngDBevLbBTFfrHZeiS7SAMAZ6ssuVmXuya+F/7RaVvlysgGa1JKJkKWY+jV6TCJYcW0OALfJ7nTIGXcBXzycfQ==","_location":"/@octokit/rest","_phantomChildren":{"deprecation":"2.3.1","once":"1.4.0","os-name":"3.1.0"},"_requested":{"type":"version","registry":true,"raw":"@octokit/rest@16.43.2","name":"@octokit/rest","escapedName":"@octokit%2frest","scope":"@octokit","rawSpec":"16.43.2","saveSpec":null,"fetchSpec":"16.43.2"},"_requiredBy":["/@actions/github"],"_resolved":"https://registry.npmjs.org/@octokit/rest/-/rest-16.43.2.tgz","_spec":"16.43.2","_where":"/home/omar/workspace/git/delete-package-versions","author":{"name":"Gregor Martynus","url":"https://github.com/gr2m"},"bugs":{"url":"https://github.com/octokit/rest.js/issues"},"bundlesize":[{"path":"./dist/octokit-rest.min.js.gz","maxSize":"33 kB"}],"contributors":[{"name":"Mike de Boer","email":"info@mikedeboer.nl"},{"name":"Fabian Jakobs","email":"fabian@c9.io"},{"name":"Joe Gallo","email":"joe@brassafrax.com"},{"name":"Gregor Martynus","url":"https://github.com/gr2m"}],"dependencies":{"@octokit/auth-token":"^2.4.0","@octokit/plugin-paginate-rest":"^1.1.1","@octokit/plugin-request-log":"^1.0.0","@octokit/plugin-rest-endpoint-methods":"2.4.0","@octokit/request":"^5.2.0","@octokit/request-error":"^1.0.2","atob-lite":"^2.0.0","before-after-hook":"^2.0.0","btoa-lite":"^1.0.0","deprecation":"^2.0.0","lodash.get":"^4.4.2","lodash.set":"^4.3.2","lodash.uniq":"^4.5.0","octokit-pagination-methods":"^1.1.0","once":"^1.4.0","universal-user-agent":"^4.0.0"},"description":"GitHub REST API client for Node.js","devDependencies":{"@gimenete/type-writer":"^0.1.3","@octokit/auth":"^1.1.1","@octokit/fixtures-server":"^5.0.6","@octokit/graphql":"^4.2.0","@types/node":"^13.1.0","bundlesize":"^0.18.0","chai":"^4.1.2","compression-webpack-plugin":"^3.1.0","cypress":"^4.0.0","glob":"^7.1.2","http-proxy-agent":"^4.0.0","lodash.camelcase":"^4.3.0","lodash.merge":"^4.6.1","lodash.upperfirst":"^4.3.1","lolex":"^6.0.0","mkdirp":"^1.0.0","mocha":"^7.0.1","mustache":"^4.0.0","nock":"^11.3.3","npm-run-all":"^4.1.2","nyc":"^15.0.0","prettier":"^1.14.2","proxy":"^1.0.0","semantic-release":"^17.0.0","sinon":"^8.0.0","sinon-chai":"^3.0.0","sort-keys":"^4.0.0","string-to-arraybuffer":"^1.0.0","string-to-jsdoc-comment":"^1.0.0","typescript":"^3.3.1","webpack":"^4.0.0","webpack-bundle-analyzer":"^3.0.0","webpack-cli":"^3.0.0"},"files":["index.js","index.d.ts","lib","plugins"],"homepage":"https://github.com/octokit/rest.js#readme","keywords":["octokit","github","rest","api-client"],"license":"MIT","name":"@octokit/rest","nyc":{"ignore":["test"]},"publishConfig":{"access":"public"},"release":{"publish":["@semantic-release/npm",{"path":"@semantic-release/github","assets":["dist/*","!dist/*.map.gz"]}]},"repository":{"type":"git","url":"git+https://github.com/octokit/rest.js.git"},"scripts":{"build":"npm-run-all build:*","build:browser":"npm-run-all build:browser:*","build:browser:development":"webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json","build:browser:production":"webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map","build:ts":"npm run -s update-endpoints:typescript","coverage":"nyc report --reporter=html && open coverage/index.html","generate-bundle-report":"webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html","lint":"prettier --check \'{lib,plugins,scripts,test}/**/*.{js,json,ts}\' \'docs/*.{js,json}\' \'docs/src/**/*\' index.js README.md package.json","lint:fix":"prettier --write \'{lib,plugins,scripts,test}/**/*.{js,json,ts}\' \'docs/*.{js,json}\' \'docs/src/**/*\' index.js README.md package.json","postvalidate:ts":"tsc --noEmit --target es6 test/typescript-validate.ts","prebuild:browser":"mkdirp dist/","pretest":"npm run -s lint","prevalidate:ts":"npm run -s build:ts","start-fixtures-server":"octokit-fixtures-server","test":"nyc mocha test/mocha-node-setup.js \\"test/*/**/*-test.js\\"","test:browser":"cypress run --browser chrome","update-endpoints":"npm-run-all update-endpoints:*","update-endpoints:fetch-json":"node scripts/update-endpoints/fetch-json","update-endpoints:typescript":"node scripts/update-endpoints/typescript","validate:ts":"tsc --target es6 --noImplicitAny index.d.ts"},"types":"index.d.ts","version":"16.43.2"}');
+
+/***/ }),
+
+/***/ 9057:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.graphql = void 0;
+/* eslint-disable @typescript-eslint/no-unused-vars */
+const github_1 = __nccwpck_require__(5438);
+/**
+ * Sends a GraphQL query request based on endpoint options
+ *
+ * @param {string} token Auth token
+ * @param {string} query GraphQL query. Example: `'query { viewer { login } }'`.
+ * @param {object} parameters URL, query or body parameters, as well as `headers`, `mediaType.{format|previews}`, `request`, or `baseUrl`.
+ */
+function graphql(token, query, parameters) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const github = new github_1.GitHub(token);
+        return yield github.graphql(query, parameters);
+    });
+}
+exports.graphql = graphql;
+
 
 /***/ }),
 
@@ -15,9 +51,11 @@ module.exports = JSON.parse('{"_args":[["@octokit/rest@16.43.2","/workspaces/del
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deleteVersions = exports.finalIds = exports.getVersionIds = void 0;
+exports.deleteVersions = exports.finalIds = exports.getPackageNames = exports.getVersionIds = void 0;
+const input_1 = __nccwpck_require__(8657);
 const rxjs_1 = __nccwpck_require__(5805);
 const version_1 = __nccwpck_require__(4428);
+const packages_1 = __nccwpck_require__(221);
 const operators_1 = __nccwpck_require__(7801);
 const RATE_LIMIT = 99;
 let totalCount = 0;
@@ -27,11 +65,27 @@ function getVersionIds(owner, repo, packageName, numVersions, cursor, token) {
         : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)), operators_1.map(value => value.versions));
 }
 exports.getVersionIds = getVersionIds;
+function getPackageNames(owner, repo, numPackages, cursor, token) {
+    return packages_1.getRepoPackages(owner, repo, numPackages, cursor, token).pipe(operators_1.expand(value => value.paginate
+        ? packages_1.getRepoPackages(owner, repo, numPackages, value.cursor, token)
+        : rxjs_1.EMPTY), operators_1.map(value => value.packages));
+}
+exports.getPackageNames = getPackageNames;
 function finalIds(input) {
     if (input.packageVersionIds.length > 0) {
         return rxjs_1.of(input.packageVersionIds);
     }
     if (input.hasOldestVersionQueryInfo()) {
+        const filter = packages_1.getPackageNameFilter(input.packageNames);
+        if (!filter.isEmpty) {
+            return getPackageNames(input.owner, input.repo, RATE_LIMIT, '', input.token)
+                .pipe(operators_1.mergeMap(value => {
+                return value
+                    .filter(info => filter.apply(info.name))
+                    .map(info => finalIds(new input_1.Input(Object.assign(Object.assign({}, input), { packageNames: '', packageName: info.name }))));
+            }))
+                .pipe(operators_1.mergeMap(val => val));
+        }
         if (input.minVersionsToKeep < 0) {
             // This code block is when num-old-versions-to-delete is specified.
             // Setting input.numOldVersionsToDelete is set as minimum of input.numOldVersionsToDelete and RATE_LIMIT
@@ -131,6 +185,7 @@ const defaultParams = {
     owner: '',
     repo: '',
     packageName: '',
+    packageNames: '',
     numOldVersionsToDelete: 0,
     minVersionsToKeep: 0,
     ignoreVersions: new RegExp(''),
@@ -144,6 +199,7 @@ class Input {
         this.owner = validatedParams.owner;
         this.repo = validatedParams.repo;
         this.packageName = validatedParams.packageName;
+        this.packageNames = validatedParams.packageNames;
         this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete;
         this.minVersionsToKeep = validatedParams.minVersionsToKeep;
         this.ignoreVersions = validatedParams.ignoreVersions;
@@ -154,7 +210,7 @@ class Input {
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
             this.repo &&
-            this.packageName &&
+            (this.packageName || this.packageNames) &&
             this.numOldVersionsToDelete >= 0 &&
             this.token);
     }
@@ -179,6 +235,245 @@ exports.Input = Input;
 
 /***/ }),
 
+/***/ 6436:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRepoPackages = exports.queryForRepoPackages = void 0;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const rxjs_1 = __nccwpck_require__(5805);
+const operators_1 = __nccwpck_require__(7801);
+const graphql_1 = __nccwpck_require__(9057);
+const query = `
+  query getPackages($owner: String!, $repo: String!, $first: Int!){
+    repository(owner: $owner, name: $repo) {
+      packages(first:$first){
+        edges {
+          node {
+            name
+            id
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }`;
+const Paginatequery = `
+  query getPackages($owner: String!, $repo: String!, $first: Int!, $after: String!){
+    repository(owner: $owner, name: $repo) {
+      packages(first:$first){
+        edges {
+          node {
+            name
+            id
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }`;
+function queryForRepoPackages(owner, repo, numPackages, startCursor, token) {
+    if (startCursor === '') {
+        return rxjs_1.from(graphql_1.graphql(token, query, {
+            owner,
+            repo,
+            first: numPackages,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe(operators_1.catchError((err) => {
+            const msg = 'query for packages failed.';
+            return rxjs_1.throwError(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct ${JSON.stringify(err, null, 2)}`);
+        }));
+    }
+    else {
+        return rxjs_1.from(graphql_1.graphql(token, Paginatequery, {
+            owner,
+            repo,
+            first: numPackages,
+            before: startCursor,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe(operators_1.catchError((err) => {
+            const msg = 'query for packages failed.';
+            return rxjs_1.throwError(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct`);
+        }));
+    }
+}
+exports.queryForRepoPackages = queryForRepoPackages;
+function getRepoPackages(owner, repo, numPackages, startCursor, token) {
+    return queryForRepoPackages(owner, repo, numPackages, startCursor, token).pipe(operators_1.map(result => {
+        let r;
+        if (result.repository.packages.edges.length < 1) {
+            console.log(`package: No packages found for owner: ${owner} in repo: ${repo}`);
+            r = {
+                packages: [],
+                cursor: '',
+                paginate: false
+            };
+            return r;
+        }
+        const packages = result.repository.packages.edges;
+        const pages = result.repository.packages.pageInfo;
+        r = {
+            packages: packages.map(value => ({
+                id: value.node.id,
+                name: value.node.name
+            })),
+            cursor: pages.endCursor,
+            paginate: pages.hasNextPage
+        };
+        return r;
+    }));
+}
+exports.getRepoPackages = getRepoPackages;
+
+
+/***/ }),
+
+/***/ 221:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__nccwpck_require__(6436), exports);
+__exportStar(__nccwpck_require__(2539), exports);
+
+
+/***/ }),
+
+/***/ 2539:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getPackageNameFilter = void 0;
+/**
+ * Used to apply memoization on getPackageNameFilter
+ */
+const resultCache = {};
+/**
+ * Get a filter based on package names to match
+ *
+ * @param packageNames - serialized package names filter as string
+ * @returns the respective package filter
+ */
+function getPackageNameFilter(packageNames) {
+    if (resultCache[packageNames]) {
+        return resultCache[packageNames];
+    }
+    const result = calculatePackageNameFilter(packageNames);
+    resultCache[packageNames] = result;
+    return result;
+}
+exports.getPackageNameFilter = getPackageNameFilter;
+const emptyFilter = Object.freeze({
+    subfilters: Object.freeze([]),
+    isEmpty: true,
+    apply: () => false
+});
+/**
+ * Generates a filter based package names to match
+ *
+ * @param packageNames - serialized package names filter as string
+ * @returns the respective package filter
+ */
+function calculatePackageNameFilter(packageNames) {
+    if (packageNames === '') {
+        return emptyFilter;
+    }
+    const separatedPackageNames = packageNames
+        .split(',')
+        .map(name => name.trim())
+        .filter(name => name !== '');
+    if (separatedPackageNames.length <= 0) {
+        return emptyFilter;
+    }
+    const subfilters = separatedPackageNames.map(createFilter);
+    return {
+        subfilters,
+        isEmpty: subfilters.length <= 0,
+        apply: names => subfilters.some(filter => filter.apply(names))
+    };
+}
+function createFilter(packageName) {
+    if (packageName.startsWith('*') || packageName.endsWith('*')) {
+        return createWildcardFilter(packageName);
+    }
+    else if (packageName.startsWith('/') && packageName.endsWith('/')) {
+        return createRegexFilter(packageName);
+    }
+    else {
+        return createExactMatchFilter(packageName);
+    }
+}
+function createWildcardFilter(wildcardPackageName) {
+    const startsWithWildCard = wildcardPackageName.startsWith('*');
+    const endsWithWildCard = wildcardPackageName.endsWith('*');
+    let fn;
+    if (wildcardPackageName === '*') {
+        fn = () => true;
+    }
+    else if (startsWithWildCard && endsWithWildCard) {
+        const targetText = wildcardPackageName.substring(1, wildcardPackageName.length - 1);
+        fn = (packageName) => packageName.includes(targetText);
+    }
+    else if (startsWithWildCard) {
+        const targetText = wildcardPackageName.substring(1);
+        fn = (packageName) => packageName.endsWith(targetText);
+    }
+    else {
+        const targetText = wildcardPackageName.substring(0, wildcardPackageName.length - 1);
+        fn = (packageName) => packageName.startsWith(targetText);
+    }
+    return {
+        type: 'wildcard',
+        apply: fn
+    };
+}
+function createRegexFilter(regexPackageName) {
+    const regexPattern = regexPackageName.substring(1, regexPackageName.length - 1);
+    const regex = new RegExp(regexPattern);
+    return {
+        type: 'regex',
+        apply: (packageName) => regex.test(packageName)
+    };
+}
+function createExactMatchFilter(matchingPackageName) {
+    return {
+        type: 'string',
+        apply: (packageName) => packageName === matchingPackageName
+    };
+}
+
+
+/***/ }),
+
 /***/ 5544:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -189,7 +484,7 @@ exports.deletePackageVersions = exports.deletePackageVersion = void 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
-const graphql_1 = __nccwpck_require__(6320);
+const graphql_1 = __nccwpck_require__(9057);
 let deleted = 0;
 const mutation = `
   mutation deletePackageVersion($packageVersionId: ID!) {
@@ -239,7 +534,7 @@ exports.getOldestVersions = exports.queryForOldestVersions = void 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
-const graphql_1 = __nccwpck_require__(6320);
+const graphql_1 = __nccwpck_require__(9057);
 const query = `
   query getVersions($owner: String!, $repo: String!, $package: String!, $last: Int!) {
     repository(owner: $owner, name: $repo) {
@@ -354,42 +649,6 @@ function getOldestVersions(owner, repo, packageName, numVersions, startCursor, t
     }));
 }
 exports.getOldestVersions = getOldestVersions;
-
-
-/***/ }),
-
-/***/ 6320:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.graphql = void 0;
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const github_1 = __nccwpck_require__(5438);
-/**
- * Sends a GraphQL query request based on endpoint options
- *
- * @param {string} token Auth token
- * @param {string} query GraphQL query. Example: `'query { viewer { login } }'`.
- * @param {object} parameters URL, query or body parameters, as well as `headers`, `mediaType.{format|previews}`, `request`, or `baseUrl`.
- */
-function graphql(token, query, parameters) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const github = new github_1.GitHub(token);
-        return yield github.graphql(query, parameters);
-    });
-}
-exports.graphql = graphql;
 
 
 /***/ }),
@@ -40071,6 +40330,7 @@ function getActionInput() {
         owner: core_1.getInput('owner') ? core_1.getInput('owner') : github_1.context.repo.owner,
         repo: core_1.getInput('repo') ? core_1.getInput('repo') : github_1.context.repo.repo,
         packageName: core_1.getInput('package-name'),
+        packageNames: core_1.getInput('package-names'),
         numOldVersionsToDelete: Number(core_1.getInput('num-old-versions-to-delete')),
         minVersionsToKeep: Number(core_1.getInput('min-versions-to-keep')),
         ignoreVersions: RegExp(core_1.getInput('ignore-versions')),
