@@ -27,6 +27,11 @@ inputs:
       Required if dynamically deleting oldest versions.
     required: false
 
+  package-type:
+    description: >
+      Type of the package containing the version to delete.
+    required: true
+
   num-old-versions-to-delete:
     description: >
       Number of versions to delete starting with the oldest version.
