@@ -3,6 +3,7 @@ export interface InputParams {
   owner?: string
   repo?: string
   packageName?: string
+  packageType?: string
   numOldVersionsToDelete?: number
   minVersionsToKeep?: number
   ignoreVersions?: RegExp
@@ -15,6 +16,7 @@ const defaultParams = {
   owner: '',
   repo: '',
   packageName: '',
+  packageType: '',
   numOldVersionsToDelete: 0,
   minVersionsToKeep: 0,
   ignoreVersions: new RegExp(''),
@@ -27,6 +29,7 @@ export class Input {
   owner: string
   repo: string
   packageName: string
+  packageType: string
   numOldVersionsToDelete: number
   minVersionsToKeep: number
   ignoreVersions: RegExp
@@ -41,6 +44,7 @@ export class Input {
     this.owner = validatedParams.owner
     this.repo = validatedParams.repo
     this.packageName = validatedParams.packageName
+    this.packageType = validatedParams.packageType
     this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete
     this.minVersionsToKeep = validatedParams.minVersionsToKeep
     this.ignoreVersions = validatedParams.ignoreVersions
@@ -64,6 +68,10 @@ export class Input {
       this.numOldVersionsToDelete > 1 &&
       (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')
     ) {
+      return false
+    }
+
+    if (this.packageType === '') {
       return false
     }
 
