@@ -21,9 +21,9 @@ const version_1 = __nccwpck_require__(4428);
 const operators_1 = __nccwpck_require__(7801);
 const RATE_LIMIT = 99;
 let totalCount = 0;
-function getVersionIds(owner, repo, packageName, numVersions, cursor, token) {
-    return version_1.getOldestVersions(owner, repo, packageName, numVersions, cursor, token).pipe(operators_1.expand(value => value.paginate
-        ? version_1.getOldestVersions(owner, repo, packageName, numVersions, value.cursor, token)
+function getVersionIds(owner, packageName, packageType, numVersions, page, token) {
+    return version_1.getOldestVersions(owner, packageName, packageType, numVersions, page, token).pipe(operators_1.expand(value => value.paginate
+        ? version_1.getOldestVersions(owner, packageName, packageType, numVersions, value.page, token)
         : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)), operators_1.map(value => value.versions));
 }
 exports.getVersionIds = getVersionIds;
@@ -39,7 +39,7 @@ function finalIds(input) {
                 input.numOldVersionsToDelete < RATE_LIMIT
                     ? input.numOldVersionsToDelete
                     : RATE_LIMIT;
-            return getVersionIds(input.owner, input.repo, input.packageName, RATE_LIMIT, '', input.token).pipe(
+            return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
             // This code block executes on batches of 100 versions starting from oldest
             operators_1.map(value => {
                 /*
@@ -52,12 +52,12 @@ function finalIds(input) {
                     input.numOldVersionsToDelete - value.length <= 0
                         ? 0
                         : input.numOldVersionsToDelete - value.length;
-                return value.map(info => info.id).slice(0, temp);
+                return value.map(info => info.id.toString()).slice(0, temp);
             }));
         }
         else {
             // This code block is when min-versions-to-keep is specified.
-            return getVersionIds(input.owner, input.repo, input.packageName, RATE_LIMIT, '', input.token).pipe(
+            return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
             // This code block executes on batches of 100 versions starting from oldest
             operators_1.map(value => {
                 /*
@@ -90,7 +90,7 @@ function finalIds(input) {
                     else {
                         input.numDeleted = input.numDeleted + toDelete;
                     }
-                    return value.map(info => info.id).slice(0, toDelete);
+                    return value.map(info => info.id.toString()).slice(0, toDelete);
                 }
                 else
                     return [];
@@ -278,161 +278,42 @@ exports.deletePackageVersions = deletePackageVersions;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getOldestVersions = exports.queryForOldestVersions = void 0;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+exports.getOldestVersions = void 0;
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
-const graphql_1 = __nccwpck_require__(6320);
-const query = `
-  query getVersions($owner: String!, $repo: String!, $package: String!, $last: Int!) {
-    repository(owner: $owner, name: $repo) {
-      packages(first: 1, names: [$package]) {
-        edges {
-          node {
-            name
-            versions(last: $last) {
-              totalCount
-              edges {
-                node {
-                  id
-                  version
-                }
-              }
-              pageInfo {
-                startCursor
-                hasPreviousPage
-              }
-            }
-          }
-        }
-      }
-    }
-  }`;
-const Paginatequery = `
-  query getVersions($owner: String!, $repo: String!, $package: String!, $last: Int!, $before: String!) {
-    repository(owner: $owner, name: $repo) {
-      packages(first: 1, names: [$package]) {
-        edges {
-          node {
-            name
-            versions(last: $last, before: $before) {
-              totalCount
-              edges {
-                node {
-                  id
-                  version
-                }
-              }
-              pageInfo{
-                startCursor
-                hasPreviousPage
-              }
-            }
-          }
-        }
-      }
-    }
-  }`;
-function queryForOldestVersions(owner, repo, packageName, numVersions, startCursor, token) {
-    if (startCursor === '') {
-        return rxjs_1.from(graphql_1.graphql(token, query, {
-            owner,
-            repo,
-            package: packageName,
-            last: numVersions,
-            headers: {
-                Accept: 'application/vnd.github.packages-preview+json'
-            }
-        })).pipe(operators_1.catchError((err) => {
-            const msg = 'query for oldest version failed.';
-            return rxjs_1.throwError(err.errors && err.errors.length > 0
-                ? `${msg} ${err.errors[0].message}`
-                : `${msg} verify input parameters are correct`);
-        }));
-    }
-    else {
-        return rxjs_1.from(graphql_1.graphql(token, Paginatequery, {
-            owner,
-            repo,
-            package: packageName,
-            last: numVersions,
-            before: startCursor,
-            headers: {
-                Accept: 'application/vnd.github.packages-preview+json'
-            }
-        })).pipe(operators_1.catchError((err) => {
-            const msg = 'query for oldest version failed.';
-            return rxjs_1.throwError(err.errors && err.errors.length > 0
-                ? `${msg} ${err.errors[0].message}`
-                : `${msg} verify input parameters are correct`);
-        }));
-    }
-}
-exports.queryForOldestVersions = queryForOldestVersions;
-function getOldestVersions(owner, repo, packageName, numVersions, startCursor, token) {
-    return queryForOldestVersions(owner, repo, packageName, numVersions, startCursor, token).pipe(operators_1.map(result => {
-        let r;
-        if (result.repository.packages.edges.length < 1) {
-            console.log(`package: ${packageName} not found for owner: ${owner} in repo: ${repo}`);
-            r = {
-                versions: [],
-                cursor: '',
-                paginate: false,
-                totalCount: 0
-            };
-            return r;
-        }
-        const versions = result.repository.packages.edges[0].node.versions.edges;
-        const pages = result.repository.packages.edges[0].node.versions.pageInfo;
-        const count = result.repository.packages.edges[0].node.versions.totalCount;
-        r = {
-            versions: versions
-                .map(value => ({ id: value.node.id, version: value.node.version }))
-                .reverse(),
-            cursor: pages.startCursor,
-            paginate: pages.hasPreviousPage,
-            totalCount: count
+const rest_1 = __nccwpck_require__(5375);
+function getOldestVersions(owner, packageName, packageType, numVersions, page, token) {
+    const octokit = new rest_1.Octokit({
+        auth: token
+    });
+    const package_type = packageType;
+    return rxjs_1.from(octokit.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
+        package_type,
+        package_name: packageName,
+        username: owner,
+        per_page: numVersions,
+        page
+    })).pipe(operators_1.catchError(err => {
+        const msg = 'get versions API failed.';
+        return rxjs_1.throwError(err.errors && err.errors.length > 0
+            ? `${msg} ${err.errors[0].message}`
+            : `${msg} ${err.message}`);
+    }), operators_1.map(response => {
+        return {
+            versions: response.data.map((version) => {
+                return {
+                    id: version.id,
+                    version: version.name
+                };
+            }),
+            page: page + 1,
+            paginate: response.data.length === numVersions,
+            totalCount: response.data.length
         };
-        return r;
     }));
 }
 exports.getOldestVersions = getOldestVersions;
-
-
-/***/ }),
-
-/***/ 6320:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.graphql = void 0;
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const github_1 = __nccwpck_require__(5438);
-/**
- * Sends a GraphQL query request based on endpoint options
- *
- * @param {string} token Auth token
- * @param {string} query GraphQL query. Example: `'query { viewer { login } }'`.
- * @param {object} parameters URL, query or body parameters, as well as `headers`, `mediaType.{format|previews}`, `request`, or `baseUrl`.
- */
-function graphql(token, query, parameters) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const github = new github_1.GitHub(token);
-        return yield github.graphql(query, parameters);
-    });
-}
-exports.graphql = graphql;
 
 
 /***/ }),
@@ -44091,6 +43972,7 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 const input_1 = __nccwpck_require__(8657);
@@ -44119,7 +44001,10 @@ function run() {
         return delete_1.deleteVersions(getActionInput()).pipe(operators_1.catchError(err => rxjs_1.throwError(err)));
     }
     catch (error) {
-        return rxjs_1.throwError(error.message);
+        if (error instanceof Error) {
+            return rxjs_1.throwError(error.message);
+        }
+        return rxjs_1.throwError(error);
     }
 }
 run().subscribe({

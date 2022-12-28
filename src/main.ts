@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {getInput, setFailed} from '@actions/core'
 import {context} from '@actions/github'
 import {Input} from './input'
@@ -31,7 +32,10 @@ function run(): Observable<boolean> {
       catchError(err => throwError(err))
     )
   } catch (error) {
-    return throwError(error.message)
+    if (error instanceof Error) {
+      return throwError(error.message)
+    }
+    return throwError(error)
   }
 }
 

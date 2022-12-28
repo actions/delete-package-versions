@@ -1,6 +1,12 @@
+/* eslint-disable i18n-text/no-en */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {Input} from './input'
 import {EMPTY, Observable, of, throwError} from 'rxjs'
-import {deletePackageVersions, getOldestVersions, VersionInfo} from './version'
+import {
+  deletePackageVersions,
+  getOldestVersions,
+  RestVersionInfo
+} from './version'
 import {concatMap, map, expand, tap} from 'rxjs/operators'
 
 const RATE_LIMIT = 99
@@ -8,28 +14,28 @@ let totalCount = 0
 
 export function getVersionIds(
   owner: string,
-  repo: string,
   packageName: string,
+  packageType: string,
   numVersions: number,
-  cursor: string,
+  page: number,
   token: string
-): Observable<VersionInfo[]> {
+): Observable<RestVersionInfo[]> {
   return getOldestVersions(
     owner,
-    repo,
     packageName,
+    packageType,
     numVersions,
-    cursor,
+    page,
     token
   ).pipe(
     expand(value =>
       value.paginate
         ? getOldestVersions(
             owner,
-            repo,
             packageName,
+            packageType,
             numVersions,
-            value.cursor,
+            value.page,
             token
           )
         : EMPTY
@@ -55,10 +61,10 @@ export function finalIds(input: Input): Observable<string[]> {
           : RATE_LIMIT
       return getVersionIds(
         input.owner,
-        input.repo,
         input.packageName,
+        input.packageType,
         RATE_LIMIT,
-        '',
+        1,
         input.token
       ).pipe(
         // This code block executes on batches of 100 versions starting from oldest
@@ -73,17 +79,17 @@ export function finalIds(input: Input): Observable<string[]> {
             input.numOldVersionsToDelete - value.length <= 0
               ? 0
               : input.numOldVersionsToDelete - value.length
-          return value.map(info => info.id).slice(0, temp)
+          return value.map(info => info.id.toString()).slice(0, temp)
         })
       )
     } else {
       // This code block is when min-versions-to-keep is specified.
       return getVersionIds(
         input.owner,
-        input.repo,
         input.packageName,
+        input.packageType,
         RATE_LIMIT,
-        '',
+        1,
         input.token
       ).pipe(
         // This code block executes on batches of 100 versions starting from oldest
@@ -117,7 +123,7 @@ export function finalIds(input: Input): Observable<string[]> {
             } else {
               input.numDeleted = input.numDeleted + toDelete
             }
-            return value.map(info => info.id).slice(0, toDelete)
+            return value.map(info => info.id.toString()).slice(0, toDelete)
           } else return []
         })
       )
