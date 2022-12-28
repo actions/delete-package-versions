@@ -6,7 +6,7 @@ import {deleteVersions} from './delete'
 import {catchError} from 'rxjs/operators'
 
 function getActionInput(): Input {
-  console.log("this is deletion using rest APIs")
+  console.log('this is deletion using rest APIs')
   return new Input({
     packageVersionIds: getInput('package-version-ids')
       ? getInput('package-version-ids').split(',')

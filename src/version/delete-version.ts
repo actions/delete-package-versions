@@ -1,7 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {from, Observable, merge, throwError, of} from 'rxjs'
 import {catchError, map, tap} from 'rxjs/operators'
-import {graphql} from './graphql'
 import {Octokit} from '@octokit/rest'
 
 let deleted = 0
@@ -27,9 +26,9 @@ export function deletePackageVersion(
   token: string
 ): Observable<boolean> {
   const octokit = new Octokit({
-    auth: token,
-  });
-  let package_version_id = +packageVersionId
+    auth: token
+  })
+  const package_version_id = +packageVersionId
   // const response = octokit.rest.packages.deletePackageVersionForUser({
   //   packageType,
   //   packageName,
@@ -64,10 +63,10 @@ export function deletePackageVersion(
 
   return from(
     octokit.rest.packages.deletePackageVersionForUser({
-      package_type: "npm",
+      package_type: 'npm',
       package_name: packageName,
       username: owner,
-      package_version_id: package_version_id,
+      package_version_id
     })
   ).pipe(
     catchError(err => {
@@ -80,8 +79,6 @@ export function deletePackageVersion(
     }),
     map(response => response.status === 204)
   )
-
-
 }
 
 export function deletePackageVersions(

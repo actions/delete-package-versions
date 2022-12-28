@@ -146,5 +146,15 @@ export function deleteVersions(input: Input): Observable<boolean> {
 
   const result = finalIds(input)
 
-  return result.pipe(concatMap(ids => deletePackageVersions(ids, input.owner, input.packageName, input.packageType, input.token)))
+  return result.pipe(
+    concatMap(ids =>
+      deletePackageVersions(
+        ids,
+        input.owner,
+        input.packageName,
+        input.packageType,
+        input.token
+      )
+    )
+  )
 }
