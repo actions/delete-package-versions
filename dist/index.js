@@ -42,6 +42,8 @@ function finalIds(input) {
             return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
             // This code block executes on batches of 100 versions starting from oldest
             operators_1.map(value => {
+                console.log('If block');
+                console.log(`value: ${JSON.stringify(value)}`);
                 /*
                 Here first filter out the versions that are to be ignored.
                 Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
@@ -60,6 +62,8 @@ function finalIds(input) {
             return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
             // This code block executes on batches of 100 versions starting from oldest
             operators_1.map(value => {
+                console.log('Else block');
+                console.log(`value: ${JSON.stringify(value)}`);
                 /*
                 Here totalCount is the total no of versions in the package.
                 First we update totalCount by removing no of ignored versions from it and also filter them out from value.
@@ -256,6 +260,8 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
 }
 exports.deletePackageVersion = deletePackageVersion;
 function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token) {
+    console.log(`Total versions to delete: ${packageVersionIds.length}`);
+    console.log(`Versions to delete: ${packageVersionIds}`);
     if (packageVersionIds.length === 0) {
         return rxjs_1.of(true);
     }
@@ -300,7 +306,7 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
             ? `${msg} ${err.errors[0].message}`
             : `${msg} ${err.message}`);
     }), operators_1.map(response => {
-        return {
+        const resp = {
             versions: response.data.map((version) => {
                 return {
                     id: version.id,
@@ -311,6 +317,8 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
             paginate: response.data.length === numVersions,
             totalCount: response.data.length
         };
+        console.log(`Response from getOldestVersions method: ${JSON.stringify(resp)}`);
+        return resp;
     }));
 }
 exports.getOldestVersions = getOldestVersions;

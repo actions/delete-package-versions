@@ -50,7 +50,7 @@ export function getOldestVersions(
       )
     }),
     map(response => {
-      return {
+      const resp = {
         versions: response.data.map((version: GetVersionsResponse[0]) => {
           return {
             id: version.id,
@@ -61,6 +61,10 @@ export function getOldestVersions(
         paginate: response.data.length === numVersions,
         totalCount: response.data.length
       }
+      console.log(
+        `Response from getOldestVersions method: ${JSON.stringify(resp)}`
+      )
+      return resp
     })
   )
 }

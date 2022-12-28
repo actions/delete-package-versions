@@ -69,6 +69,8 @@ export function finalIds(input: Input): Observable<string[]> {
       ).pipe(
         // This code block executes on batches of 100 versions starting from oldest
         map(value => {
+          console.log('If block')
+          console.log(`value: ${JSON.stringify(value)}`)
           /* 
           Here first filter out the versions that are to be ignored.
           Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
@@ -94,6 +96,8 @@ export function finalIds(input: Input): Observable<string[]> {
       ).pipe(
         // This code block executes on batches of 100 versions starting from oldest
         map(value => {
+          console.log('Else block')
+          console.log(`value: ${JSON.stringify(value)}`)
           /* 
           Here totalCount is the total no of versions in the package.
           First we update totalCount by removing no of ignored versions from it and also filter them out from value.
