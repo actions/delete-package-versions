@@ -71,7 +71,7 @@ export class Input {
       return false
     }
 
-    if (this.packageType === '') {
+    if (this.packageType === '' || this.packageName === '') {
       return false
     }
 
