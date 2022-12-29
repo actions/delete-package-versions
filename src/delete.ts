@@ -10,7 +10,7 @@ import {
 } from './version'
 import {concatMap, map, expand, tap} from 'rxjs/operators'
 
-const RATE_LIMIT = 1
+const RATE_LIMIT = 99
 let totalCount = 0
 
 export function getVersionIds(

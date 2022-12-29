@@ -20,7 +20,7 @@ const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const version_1 = __nccwpck_require__(4428);
 const operators_2 = __nccwpck_require__(7801);
-const RATE_LIMIT = 1;
+const RATE_LIMIT = 99;
 let totalCount = 0;
 function getVersionIds(owner, packageName, packageType, numVersions, page, token) {
     return version_1.getOldestVersions(owner, packageName, packageType, numVersions, page, token).pipe(operators_2.expand(value => value.paginate
