@@ -59,7 +59,7 @@ export function getOldestVersions(
             created_at: version.created_at
           }
         }),
-        page: page + 1,
+        page,
         paginate: response.data.length === numVersions,
         totalCount: response.data.length
       }

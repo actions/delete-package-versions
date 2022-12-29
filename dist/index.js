@@ -24,7 +24,7 @@ const RATE_LIMIT = 1;
 let totalCount = 0;
 function getVersionIds(owner, packageName, packageType, numVersions, page, token) {
     return version_1.getOldestVersions(owner, packageName, packageType, numVersions, page, token).pipe(operators_2.expand(value => value.paginate
-        ? version_1.getOldestVersions(owner, packageName, packageType, numVersions, value.page, token)
+        ? version_1.getOldestVersions(owner, packageName, packageType, numVersions, value.page + 1, token)
         : rxjs_1.EMPTY), operators_2.tap(value => (totalCount = totalCount + value.totalCount)), operators_1.reduce((acc, value) => acc.concat(value.versions), []));
 }
 exports.getVersionIds = getVersionIds;
@@ -33,86 +33,33 @@ function finalIds(input) {
         return rxjs_1.of(input.packageVersionIds);
     }
     if (input.hasOldestVersionQueryInfo()) {
-        if (input.minVersionsToKeep < 0) {
-            // This code block is when num-old-versions-to-delete is specified.
-            // Setting input.numOldVersionsToDelete is set as minimum of input.numOldVersionsToDelete and RATE_LIMIT
-            input.numOldVersionsToDelete =
-                input.numOldVersionsToDelete < RATE_LIMIT
-                    ? input.numOldVersionsToDelete
-                    : RATE_LIMIT;
-            return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
-            // This code block executes on batches of 100 versions starting from oldest
-            operators_2.map(value => {
-                console.log('If block');
-                console.log(`value: ${JSON.stringify(value)}`);
-                // we need to delete oldest versions first
-                value.sort((a, b) => {
-                    return (new Date(a.created_at).getTime() -
-                        new Date(b.created_at).getTime());
-                });
-                console.log(`sorted value: ${JSON.stringify(value)}`);
-                /*
-                Here first filter out the versions that are to be ignored.
-                Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
-                */
-                value = value.filter(info => !input.ignoreVersions.test(info.version));
-                const temp = input.numOldVersionsToDelete;
-                input.numOldVersionsToDelete =
-                    input.numOldVersionsToDelete - value.length <= 0
-                        ? 0
-                        : input.numOldVersionsToDelete - value.length;
-                return value.map(info => info.id.toString()).slice(0, temp);
-            }));
-        }
-        else {
-            // This code block is when min-versions-to-keep is specified.
-            return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
-            // This code block executes on batches of 100 versions starting from oldest
-            operators_2.map(value => {
-                console.log('Else block');
-                console.log(`value: ${JSON.stringify(value)}`);
-                // we need to delete oldest versions first
-                value.sort((a, b) => {
-                    return (new Date(a.created_at).getTime() -
-                        new Date(b.created_at).getTime());
-                });
-                console.log(`sorted value: ${JSON.stringify(value)}`);
-                /*
-                Here totalCount is the total no of versions in the package.
-                First we update totalCount by removing no of ignored versions from it and also filter them out from value.
-                toDelete is the no of versions that need to be deleted and input.numDeleted is the total no of versions deleted before this batch.
-                We calculate this from total no of versions in the package, the min no of versions to keep and the no of versions we have deleted in earlier batch.
-                Then we update toDelete to not exceed the length of current batch of versions.
-                Now toDelete holds the no of versions to be deleted from the current batch of versions.
-                */
-                totalCount =
-                    totalCount -
-                        value.filter(info => input.ignoreVersions.test(info.version)).length;
-                value = value.filter(info => !input.ignoreVersions.test(info.version));
-                let toDelete = totalCount - input.minVersionsToKeep - input.numDeleted;
-                toDelete = toDelete > value.length ? value.length : toDelete;
-                //Checking here if we have any versions to delete and whether we are within the RATE_LIMIT.
-                if (toDelete > 0 && input.numDeleted < RATE_LIMIT) {
-                    /*
-                    Checking here if we can delete all the versions left in the current batch.
-                    input.numDeleted + toDelete should not exceed RATE_LIMIT.
-                    If it is exceeding we only delete the no of versions from this batch that are allowed within the RATE_LIMIT.
-                    i.e. diff between RATE_LIMIT and versions deleted till now (input.numDeleted)
-                    input.numDeleted is updated accordingly.
-                    */
-                    if (input.numDeleted + toDelete > RATE_LIMIT) {
-                        toDelete = RATE_LIMIT - input.numDeleted;
-                        input.numDeleted = RATE_LIMIT;
-                    }
-                    else {
-                        input.numDeleted = input.numDeleted + toDelete;
-                    }
-                    return value.map(info => info.id.toString()).slice(0, toDelete);
-                }
-                else
-                    return [];
-            }));
-        }
+        return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
+        // This code block executes on all versions of a package starting from oldest
+        operators_2.map(value => {
+            console.log('If block');
+            console.log(`value: ${JSON.stringify(value)}`);
+            // we need to delete oldest versions first
+            value.sort((a, b) => {
+                return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+            });
+            console.log(`sorted value: ${JSON.stringify(value)}`);
+            /*
+              Here first filter out the versions that are to be ignored.
+              Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
+              */
+            value = value.filter(info => !input.ignoreVersions.test(info.version));
+            let toDelete = 0;
+            if (input.minVersionsToKeep < 0) {
+                toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, RATE_LIMIT));
+            }
+            else {
+                toDelete = Math.min(value.length - input.minVersionsToKeep, RATE_LIMIT);
+            }
+            console.log(`toDelete is ${toDelete}`);
+            if (toDelete < 0)
+                return [];
+            return value.map(info => info.id.toString()).slice(0, toDelete);
+        }));
     }
     return rxjs_1.throwError("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input");
 }
@@ -208,59 +155,20 @@ exports.Input = Input;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deletePackageVersions = exports.deletePackageVersion = void 0;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const rest_1 = __nccwpck_require__(5375);
 let deleted = 0;
-// export interface DeletePackageVersionAPIResponse {
-//   deletePackageVersion: {
-//     success: boolean
-//   }
-// }
-// const mutation = `
-//   mutation deletePackageVersion($packageVersionId: ID!) {
-//       deletePackageVersion(input: {packageVersionId: $packageVersionId}) {
-//           success
-//       }
-//   }`
 function deletePackageVersion(packageVersionId, owner, packageName, packageType, token) {
     const octokit = new rest_1.Octokit({
         auth: token
     });
     const package_version_id = +packageVersionId;
-    // const response = octokit.rest.packages.deletePackageVersionForUser({
-    //   packageType,
-    //   packageName,
-    //   owner,
-    //   packageVersionId,
-    // });
-    // if (response.status != 200) {
-    //   throw new Error(
-    //     `Unexpected response from GitHub API. Status: ${response.status}, Data: ${response.data}`
-    //   )
-    // }
+    const package_type = packageType;
     deleted += 1;
-    // return from(
-    //   graphql(token, mutation, {
-    //     packageVersionId,
-    //     headers: {
-    //       Accept: 'application/vnd.github.package-deletes-preview+json'
-    //     }
-    //   }) as Promise<DeletePackageVersionMutationResponse>
-    // ).pipe(
-    //   catchError(err => {
-    //     const msg = 'delete version mutation failed.'
-    //     return throwError(
-    //       err.errors && err.errors.length > 0
-    //         ? `${msg} ${err.errors[0].message}`
-    //         : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`
-    //     )
-    //   }),
-    //   map(response => response.deletePackageVersion.success)
-    // )
     return rxjs_1.from(octokit.rest.packages.deletePackageVersionForUser({
-        package_type: 'npm',
+        package_type,
         package_name: packageName,
         username: owner,
         package_version_id
@@ -327,7 +235,7 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
                     created_at: version.created_at
                 };
             }),
-            page: page + 1,
+            page,
             paginate: response.data.length === numVersions,
             totalCount: response.data.length
         };
