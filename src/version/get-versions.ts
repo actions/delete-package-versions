@@ -7,6 +7,7 @@ import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods/dis
 export interface RestVersionInfo {
   id: number
   version: string
+  created_at: string
 }
 
 export interface RestQueryInfo {
@@ -54,7 +55,8 @@ export function getOldestVersions(
         versions: response.data.map((version: GetVersionsResponse[0]) => {
           return {
             id: version.id,
-            version: version.name
+            version: version.name,
+            created_at: version.created_at
           }
         }),
         page: page + 1,

@@ -17,14 +17,15 @@ module.exports = JSON.parse('{"name":"@octokit/rest","version":"16.43.2","publis
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deleteVersions = exports.finalIds = exports.getVersionIds = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
-const version_1 = __nccwpck_require__(4428);
 const operators_1 = __nccwpck_require__(7801);
-const RATE_LIMIT = 99;
+const version_1 = __nccwpck_require__(4428);
+const operators_2 = __nccwpck_require__(7801);
+const RATE_LIMIT = 1;
 let totalCount = 0;
 function getVersionIds(owner, packageName, packageType, numVersions, page, token) {
-    return version_1.getOldestVersions(owner, packageName, packageType, numVersions, page, token).pipe(operators_1.expand(value => value.paginate
+    return version_1.getOldestVersions(owner, packageName, packageType, numVersions, page, token).pipe(operators_2.expand(value => value.paginate
         ? version_1.getOldestVersions(owner, packageName, packageType, numVersions, value.page, token)
-        : rxjs_1.EMPTY), operators_1.tap(value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)), operators_1.map(value => value.versions));
+        : rxjs_1.EMPTY), operators_2.tap(value => (totalCount = totalCount + value.totalCount)), operators_1.reduce((acc, value) => acc.concat(value.versions), []));
 }
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
@@ -41,9 +42,15 @@ function finalIds(input) {
                     : RATE_LIMIT;
             return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
             // This code block executes on batches of 100 versions starting from oldest
-            operators_1.map(value => {
+            operators_2.map(value => {
                 console.log('If block');
                 console.log(`value: ${JSON.stringify(value)}`);
+                // we need to delete oldest versions first
+                value.sort((a, b) => {
+                    return (new Date(a.created_at).getTime() -
+                        new Date(b.created_at).getTime());
+                });
+                console.log(`sorted value: ${JSON.stringify(value)}`);
                 /*
                 Here first filter out the versions that are to be ignored.
                 Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
@@ -61,9 +68,15 @@ function finalIds(input) {
             // This code block is when min-versions-to-keep is specified.
             return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
             // This code block executes on batches of 100 versions starting from oldest
-            operators_1.map(value => {
+            operators_2.map(value => {
                 console.log('Else block');
                 console.log(`value: ${JSON.stringify(value)}`);
+                // we need to delete oldest versions first
+                value.sort((a, b) => {
+                    return (new Date(a.created_at).getTime() -
+                        new Date(b.created_at).getTime());
+                });
+                console.log(`sorted value: ${JSON.stringify(value)}`);
                 /*
                 Here totalCount is the total no of versions in the package.
                 First we update totalCount by removing no of ignored versions from it and also filter them out from value.
@@ -116,7 +129,7 @@ function deleteVersions(input) {
         return rxjs_1.of(true);
     }
     const result = finalIds(input);
-    return result.pipe(operators_1.concatMap(ids => version_1.deletePackageVersions(ids, input.owner, input.packageName, input.packageType, input.token)));
+    return result.pipe(operators_2.concatMap(ids => version_1.deletePackageVersions(ids, input.owner, input.packageName, input.packageType, input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
@@ -310,7 +323,8 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
             versions: response.data.map((version) => {
                 return {
                     id: version.id,
-                    version: version.name
+                    version: version.name,
+                    created_at: version.created_at
                 };
             }),
             page: page + 1,
@@ -24733,51 +24747,6 @@ module.exports = uniq;
 
 /***/ }),
 
-/***/ 7493:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-const os = __nccwpck_require__(2087);
-
-const nameMap = new Map([
-	[21, ['Monterey', '12']],
-	[20, ['Big Sur', '11']],
-	[19, ['Catalina', '10.15']],
-	[18, ['Mojave', '10.14']],
-	[17, ['High Sierra', '10.13']],
-	[16, ['Sierra', '10.12']],
-	[15, ['El Capitan', '10.11']],
-	[14, ['Yosemite', '10.10']],
-	[13, ['Mavericks', '10.9']],
-	[12, ['Mountain Lion', '10.8']],
-	[11, ['Lion', '10.7']],
-	[10, ['Snow Leopard', '10.6']],
-	[9, ['Leopard', '10.5']],
-	[8, ['Tiger', '10.4']],
-	[7, ['Panther', '10.3']],
-	[6, ['Jaguar', '10.2']],
-	[5, ['Puma', '10.1']]
-]);
-
-const macosRelease = release => {
-	release = Number((release || os.release()).split('.')[0]);
-
-	const [name, version] = nameMap.get(release);
-
-	return {
-		name,
-		version
-	};
-};
-
-module.exports = macosRelease;
-// TODO: remove this in the next major version
-module.exports.default = macosRelease;
-
-
-/***/ }),
-
 /***/ 8560:
 /***/ ((module) => {
 
@@ -26851,7 +26820,7 @@ function onceStrict (fn) {
 "use strict";
 
 const os = __nccwpck_require__(2087);
-const macosRelease = __nccwpck_require__(7493);
+const macosRelease = __nccwpck_require__(9787);
 const winRelease = __nccwpck_require__(3515);
 
 const osName = (platform, release) => {
@@ -26895,6 +26864,51 @@ const osName = (platform, release) => {
 };
 
 module.exports = osName;
+
+
+/***/ }),
+
+/***/ 9787:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const os = __nccwpck_require__(2087);
+
+const nameMap = new Map([
+	[21, ['Monterey', '12']],
+	[20, ['Big Sur', '11']],
+	[19, ['Catalina', '10.15']],
+	[18, ['Mojave', '10.14']],
+	[17, ['High Sierra', '10.13']],
+	[16, ['Sierra', '10.12']],
+	[15, ['El Capitan', '10.11']],
+	[14, ['Yosemite', '10.10']],
+	[13, ['Mavericks', '10.9']],
+	[12, ['Mountain Lion', '10.8']],
+	[11, ['Lion', '10.7']],
+	[10, ['Snow Leopard', '10.6']],
+	[9, ['Leopard', '10.5']],
+	[8, ['Tiger', '10.4']],
+	[7, ['Panther', '10.3']],
+	[6, ['Jaguar', '10.2']],
+	[5, ['Puma', '10.1']]
+]);
+
+const macosRelease = release => {
+	release = Number((release || os.release()).split('.')[0]);
+
+	const [name, version] = nameMap.get(release);
+
+	return {
+		name,
+		version
+	};
+};
+
+module.exports = macosRelease;
+// TODO: remove this in the next major version
+module.exports.default = macosRelease;
 
 
 /***/ }),

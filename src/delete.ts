@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {Input} from './input'
 import {EMPTY, Observable, of, throwError} from 'rxjs'
+import {reduce} from 'rxjs/operators'
 import {
   deletePackageVersions,
   getOldestVersions,
@@ -9,7 +10,7 @@ import {
 } from './version'
 import {concatMap, map, expand, tap} from 'rxjs/operators'
 
-const RATE_LIMIT = 99
+const RATE_LIMIT = 1
 let totalCount = 0
 
 export function getVersionIds(
@@ -40,10 +41,8 @@ export function getVersionIds(
           )
         : EMPTY
     ),
-    tap(
-      value => (totalCount = totalCount === 0 ? value.totalCount : totalCount)
-    ),
-    map(value => value.versions)
+    tap(value => (totalCount = totalCount + value.totalCount)),
+    reduce((acc, value) => acc.concat(value.versions), [] as RestVersionInfo[])
   )
 }
 
@@ -71,6 +70,14 @@ export function finalIds(input: Input): Observable<string[]> {
         map(value => {
           console.log('If block')
           console.log(`value: ${JSON.stringify(value)}`)
+          // we need to delete oldest versions first
+          value.sort((a, b) => {
+            return (
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+            )
+          })
+          console.log(`sorted value: ${JSON.stringify(value)}`)
           /* 
           Here first filter out the versions that are to be ignored.
           Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
@@ -98,6 +105,14 @@ export function finalIds(input: Input): Observable<string[]> {
         map(value => {
           console.log('Else block')
           console.log(`value: ${JSON.stringify(value)}`)
+          // we need to delete oldest versions first
+          value.sort((a, b) => {
+            return (
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+            )
+          })
+          console.log(`sorted value: ${JSON.stringify(value)}`)
           /* 
           Here totalCount is the total no of versions in the package.
           First we update totalCount by removing no of ignored versions from it and also filter them out from value.
