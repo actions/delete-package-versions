@@ -7,13 +7,11 @@ import {deleteVersions} from './delete'
 import {catchError} from 'rxjs/operators'
 
 function getActionInput(): Input {
-  console.log('this is deletion using rest APIs')
   return new Input({
     packageVersionIds: getInput('package-version-ids')
       ? getInput('package-version-ids').split(',')
       : [],
     owner: getInput('owner') ? getInput('owner') : context.repo.owner,
-    repo: getInput('repo') ? getInput('repo') : context.repo.repo,
     packageName: getInput('package-name'),
     packageType: getInput('package-type'),
     numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),

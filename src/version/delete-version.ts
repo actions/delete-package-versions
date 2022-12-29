@@ -48,9 +48,6 @@ export function deletePackageVersions(
   packageType: string,
   token: string
 ): Observable<boolean> {
-  console.log(`Total versions to delete: ${packageVersionIds.length}`)
-  console.log(`Versions to delete: ${packageVersionIds}`)
-
   if (packageVersionIds.length === 0) {
     return of(true)
   }

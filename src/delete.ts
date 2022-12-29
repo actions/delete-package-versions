@@ -61,15 +61,12 @@ export function finalIds(input: Input): Observable<string[]> {
     ).pipe(
       // This code block executes on all versions of a package starting from oldest
       map(value => {
-        console.log('If block')
-        console.log(`value: ${JSON.stringify(value)}`)
         // we need to delete oldest versions first
         value.sort((a, b) => {
           return (
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           )
         })
-        console.log(`sorted value: ${JSON.stringify(value)}`)
         /* 
           Here first filter out the versions that are to be ignored.
           Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
@@ -87,7 +84,6 @@ export function finalIds(input: Input): Observable<string[]> {
             RATE_LIMIT
           )
         }
-        console.log(`toDelete is ${toDelete}`)
         if (toDelete < 0) return []
         return value.map(info => info.id.toString()).slice(0, toDelete)
       })

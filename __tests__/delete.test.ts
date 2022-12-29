@@ -89,7 +89,6 @@ describe.skip('index tests -- call graphql', () => {
 const defaultInput: InputParams = {
   packageVersionIds: [],
   owner: 'namratajha',
-  repo: 'only-pkg',
   packageName: 'only-pkg',
   numOldVersionsToDelete: 1,
   minVersionsToKeep: -1,

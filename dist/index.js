@@ -36,13 +36,10 @@ function finalIds(input) {
         return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
         // This code block executes on all versions of a package starting from oldest
         operators_2.map(value => {
-            console.log('If block');
-            console.log(`value: ${JSON.stringify(value)}`);
             // we need to delete oldest versions first
             value.sort((a, b) => {
                 return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
             });
-            console.log(`sorted value: ${JSON.stringify(value)}`);
             /*
               Here first filter out the versions that are to be ignored.
               Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
@@ -55,7 +52,6 @@ function finalIds(input) {
             else {
                 toDelete = Math.min(value.length - input.minVersionsToKeep, RATE_LIMIT);
             }
-            console.log(`toDelete is ${toDelete}`);
             if (toDelete < 0)
                 return [];
             return value.map(info => info.id.toString()).slice(0, toDelete);
@@ -93,7 +89,6 @@ exports.Input = void 0;
 const defaultParams = {
     packageVersionIds: [],
     owner: '',
-    repo: '',
     packageName: '',
     packageType: '',
     numOldVersionsToDelete: 0,
@@ -107,7 +102,6 @@ class Input {
         const validatedParams = Object.assign(Object.assign({}, defaultParams), params);
         this.packageVersionIds = validatedParams.packageVersionIds;
         this.owner = validatedParams.owner;
-        this.repo = validatedParams.repo;
         this.packageName = validatedParams.packageName;
         this.packageType = validatedParams.packageType;
         this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete;
@@ -119,7 +113,6 @@ class Input {
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
-            this.repo &&
             this.packageName &&
             this.numOldVersionsToDelete >= 0 &&
             this.token);
@@ -181,8 +174,6 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
 }
 exports.deletePackageVersion = deletePackageVersion;
 function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token) {
-    console.log(`Total versions to delete: ${packageVersionIds.length}`);
-    console.log(`Versions to delete: ${packageVersionIds}`);
     if (packageVersionIds.length === 0) {
         return rxjs_1.of(true);
     }
@@ -239,7 +230,6 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
             paginate: response.data.length === numVersions,
             totalCount: response.data.length
         };
-        console.log(`Response from getOldestVersions method: ${JSON.stringify(resp)}`);
         return resp;
     }));
 }
@@ -43910,13 +43900,11 @@ const rxjs_1 = __nccwpck_require__(5805);
 const delete_1 = __nccwpck_require__(9645);
 const operators_1 = __nccwpck_require__(7801);
 function getActionInput() {
-    console.log('this is deletion using rest APIs');
     return new input_1.Input({
         packageVersionIds: core_1.getInput('package-version-ids')
             ? core_1.getInput('package-version-ids').split(',')
             : [],
         owner: core_1.getInput('owner') ? core_1.getInput('owner') : github_1.context.repo.owner,
-        repo: core_1.getInput('repo') ? core_1.getInput('repo') : github_1.context.repo.repo,
         packageName: core_1.getInput('package-name'),
         packageType: core_1.getInput('package-type'),
         numOldVersionsToDelete: Number(core_1.getInput('num-old-versions-to-delete')),
