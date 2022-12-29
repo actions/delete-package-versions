@@ -24,8 +24,7 @@ inputs:
   package-name:
     description: >
       Name of the package containing the version to delete.
-      Required if dynamically deleting oldest versions.
-    required: false
+    required: true
 
   package-type:
     description: >
