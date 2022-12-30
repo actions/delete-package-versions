@@ -37,6 +37,8 @@ describe('delete tests - mock rest', () => {
   })
 
   it('deletePackageVersions', done => {
+    let success = 0
+
     server.use(
       rest.delete(
         'https://api.github.com/users/test-owner/packages/npm/test-package/versions/*',
@@ -53,11 +55,20 @@ describe('delete tests - mock rest', () => {
       'npm',
       'test-token'
     )
-      .subscribe(result => {
-        expect(result).toBe(true)
-        // done() is called in the finally block
+      .subscribe(
+        result => {
+          expect(result).toBe(true)
+          success++
+        },
+        err => {
+          // should not get here
+          done.fail(err)
+        }
+      )
+      .add(() => {
+        expect(success).toBe(3)
+        done()
       })
-      .add(done)
   })
 
   it('deletePackageVersion - API error', done => {
@@ -85,5 +96,45 @@ describe('delete tests - mock rest', () => {
         done()
       }
     )
+  })
+
+  it('deletePackageVersions - API error for some versions', done => {
+    let success = 0
+    let failed = 0
+
+    server.use(
+      rest.delete(
+        'https://api.github.com/users/test-owner/packages/npm/test-package/versions/:versionId',
+        (req, res, ctx) => {
+          if (req.params.versionId === '456') {
+            return res(ctx.status(500))
+          }
+          return res(ctx.status(204))
+        }
+      )
+    )
+
+    deletePackageVersions(
+      ['123', '456', '789'],
+      'test-owner',
+      'test-package',
+      'npm',
+      'test-token'
+    )
+      .subscribe(
+        result => {
+          expect(result).toBe(true)
+          success++
+        },
+        err => {
+          expect(err).toContain('delete version API failed.')
+          failed++
+        }
+      )
+      .add(() => {
+        expect(success).toBe(2)
+        expect(failed).toBe(1)
+        done()
+      })
   })
 })
