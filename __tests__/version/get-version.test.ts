@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {rest} from 'msw'
 import {setupServer} from 'msw/node'
 import {
