@@ -35,4 +35,3 @@ jobs:
         package-name: 'action-ci-test-package'
         package-type: 'npm'
         num-old-versions-to-delete: 0
-        min-versions-to-keep: 0
