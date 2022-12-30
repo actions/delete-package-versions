@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {from, Observable, merge, throwError, of} from 'rxjs'
 import {catchError, map, tap} from 'rxjs/operators'
 import {Octokit} from '@octokit/rest'
 import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types'
 
 let deleted = 0
-type PackageType = RestEndpointMethodTypes['packages']['getAllPackageVersionsForPackageOwnedByUser']['parameters']['package_type']
+type PackageType =
+  RestEndpointMethodTypes['packages']['getAllPackageVersionsForPackageOwnedByUser']['parameters']['package_type']
 
 export function deletePackageVersion(
   packageVersionId: string,

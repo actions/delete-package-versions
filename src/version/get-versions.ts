@@ -17,8 +17,10 @@ export interface RestQueryInfo {
   totalCount: number
 }
 
-type PackageType = RestEndpointMethodTypes['packages']['getAllPackageVersionsForPackageOwnedByUser']['parameters']['package_type']
-type GetVersionsResponse = RestEndpointMethodTypes['packages']['getAllPackageVersionsForPackageOwnedByUser']['response']['data']
+type PackageType =
+  RestEndpointMethodTypes['packages']['getAllPackageVersionsForPackageOwnedByUser']['parameters']['package_type']
+type GetVersionsResponse =
+  RestEndpointMethodTypes['packages']['getAllPackageVersionsForPackageOwnedByUser']['response']['data']
 
 export function getOldestVersions(
   owner: string,
