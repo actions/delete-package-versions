@@ -2,13 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {Input} from './input'
 import {EMPTY, Observable, of, throwError} from 'rxjs'
-import {reduce} from 'rxjs/operators'
+import {reduce, concatMap, map, expand, tap} from 'rxjs/operators'
 import {
   deletePackageVersions,
   getOldestVersions,
   RestVersionInfo
 } from './version'
-import {concatMap, map, expand, tap} from 'rxjs/operators'
 
 const RATE_LIMIT = 99
 let totalCount = 0
