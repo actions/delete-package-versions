@@ -30,5 +30,6 @@ jobs:
       name: Smoke Test Delete Package Versions Action
       with:
         package-name: 'com.github.actions.test-package'
+        package-type: 'maven'
         num-old-versions-to-delete: 0
         min-versions-to-keep: 0
