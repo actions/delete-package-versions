@@ -6,9 +6,6 @@ on: # rebuild any PRs and main branch changes
     branches:
       - main
       - 'releases/*'
-
-permissions:
-  packages: write
   
 jobs:
 
@@ -24,6 +21,8 @@ jobs:
       name: Check Format, Lint, Run Unit Tests, Build and Package
 
   publish-test-version: # publish a test version of the package so next job can delete a version
+    permissions:
+      packages: write
     runs-on: ubuntu-latest
     needs: package
     steps:
@@ -42,6 +41,8 @@ jobs:
 
   smoke-test: # make sure the action works on a clean machine without building
     name: Smoke Test
+    permissions:
+      packages: write
     runs-on: ubuntu-latest
     needs: publish-test-version
     steps:
