@@ -23,6 +23,22 @@ jobs:
     - run: npm run pack
       name: Check Format, Lint, Run Unit Tests, Build and Package
 
+  publish-test-version: # publish a test version of the package so next job can delete a version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+      - run: |
+          cd test-fixtures
+          npm version $(date +%s).0.0
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+
   smoke-test: # make sure the action works on a clean machine without building
     name: Smoke Test
     runs-on: ubuntu-latest
@@ -34,4 +50,4 @@ jobs:
       with:
         package-name: 'action-ci-test-package'
         package-type: 'npm'
-        num-old-versions-to-delete: 0
+        num-old-versions-to-delete: 1

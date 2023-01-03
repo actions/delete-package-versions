@@ -1,0 +1,12 @@
+{
+  "name": "@actions/action-ci-test-package",
+  "version": "1.0.0",
+  "description": "Package used for CI in delete-package-versions action.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
