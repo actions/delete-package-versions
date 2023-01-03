@@ -6,10 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/actions/delete-package-versions.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC"
