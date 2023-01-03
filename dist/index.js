@@ -8,11 +8,11 @@
 
 /* eslint-disable i18n-text/no-en */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deleteVersions = exports.finalIds = exports.getVersionIds = void 0;
+exports.deleteVersions = exports.finalIds = exports.getVersionIds = exports.RATE_LIMIT = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const version_1 = __nccwpck_require__(4428);
-const RATE_LIMIT = 99;
+exports.RATE_LIMIT = 100;
 let totalCount = 0;
 function getVersionIds(owner, packageName, packageType, numVersions, page, token) {
     return (0, version_1.getOldestVersions)(owner, packageName, packageType, numVersions, page, token).pipe((0, operators_1.expand)(value => value.paginate
@@ -25,7 +25,7 @@ function finalIds(input) {
         return (0, rxjs_1.of)(input.packageVersionIds);
     }
     if (input.hasOldestVersionQueryInfo()) {
-        return getVersionIds(input.owner, input.packageName, input.packageType, RATE_LIMIT, 1, input.token).pipe(
+        return getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token).pipe(
         // This code block executes on all versions of a package starting from oldest
         (0, operators_1.map)(value => {
             // we need to delete oldest versions first
@@ -34,15 +34,15 @@ function finalIds(input) {
             });
             /*
               Here first filter out the versions that are to be ignored.
-              Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
+              Then compute number of versions to delete (toDelete) based on the inputs.
               */
             value = value.filter(info => !input.ignoreVersions.test(info.version));
             let toDelete = 0;
             if (input.minVersionsToKeep < 0) {
-                toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, RATE_LIMIT));
+                toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, exports.RATE_LIMIT));
             }
             else {
-                toDelete = Math.min(value.length - input.minVersionsToKeep, RATE_LIMIT);
+                toDelete = Math.min(value.length - input.minVersionsToKeep, exports.RATE_LIMIT);
             }
             if (toDelete < 0)
                 return [];

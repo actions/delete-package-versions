@@ -2,14 +2,12 @@
 import {rest} from 'msw'
 import {setupServer} from 'msw/node'
 import {Input, InputParams} from '../src/input'
-import {deleteVersions, finalIds} from '../src/delete'
+import {deleteVersions, finalIds, RATE_LIMIT} from '../src/delete'
 import {getMockedVersionsResponse} from './version/rest.mock'
 import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types'
 
 type GetVersionsResponseData =
   RestEndpointMethodTypes['packages']['getAllPackageVersionsForPackageOwnedByUser']['response']['data']
-
-const RATE_LIMIT = 99
 
 describe('index tests -- call rest', () => {
   let server = setupServer()

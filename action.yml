@@ -28,7 +28,7 @@ inputs:
 
   package-type:
     description: >
-      Type of the package containing the version to delete.
+      Type of package. Can be one of container, maven, npm, nuget, or rubygems.
     required: true
 
   num-old-versions-to-delete:

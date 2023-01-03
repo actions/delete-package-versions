@@ -6,8 +6,7 @@ import {
 } from '../../src/version'
 import {Observable} from 'rxjs'
 import {getMockedVersionsResponse} from './rest.mock'
-
-const RATE_LIMIT = 99
+import {RATE_LIMIT} from '../../src/delete'
 
 describe('get versions tests -- mock rest', () => {
   let server = setupServer()

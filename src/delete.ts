@@ -9,7 +9,7 @@ import {
   RestVersionInfo
 } from './version'
 
-const RATE_LIMIT = 99
+export const RATE_LIMIT = 100
 let totalCount = 0
 
 export function getVersionIds(
@@ -68,7 +68,7 @@ export function finalIds(input: Input): Observable<string[]> {
         })
         /* 
           Here first filter out the versions that are to be ignored.
-          Then update input.numOldeVersionsToDelete to the no of versions deleted from the next 100 versions batch.
+          Then compute number of versions to delete (toDelete) based on the inputs.
           */
         value = value.filter(info => !input.ignoreVersions.test(info.version))
         let toDelete = 0
