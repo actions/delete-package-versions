@@ -1,6 +1,6 @@
 # Delete Package Versions
 
-This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 99 versions in one run.
+This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 100 versions in one run.
 
 ### What It Can Do
 
@@ -92,7 +92,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
   ### Delete all pre-release versions except y latest pre-release package versions
 
-  To delete all pre release versions except y latest pre-release package versions in the same repo as the workflow the __package-name__, __min-versions-to-keep__ and __delete-only-pre-release-versions__ inputs are required.
+  To delete all pre release versions except y latest pre-release package versions in the 
+  as the workflow the __package-name__, __min-versions-to-keep__ and __delete-only-pre-release-versions__ inputs are required.
 
   __Example__
 
