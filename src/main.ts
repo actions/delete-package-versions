@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {getInput, setFailed} from '@actions/core'
 import {context} from '@actions/github'
 import {Input} from './input'
@@ -11,8 +12,8 @@ function getActionInput(): Input {
       ? getInput('package-version-ids').split(',')
       : [],
     owner: getInput('owner') ? getInput('owner') : context.repo.owner,
-    repo: getInput('repo') ? getInput('repo') : context.repo.repo,
     packageName: getInput('package-name'),
+    packageType: getInput('package-type'),
     numOldVersionsToDelete: Number(getInput('num-old-versions-to-delete')),
     minVersionsToKeep: Number(getInput('min-versions-to-keep')),
     ignoreVersions: RegExp(getInput('ignore-versions')),
@@ -29,7 +30,10 @@ function run(): Observable<boolean> {
       catchError(err => throwError(err))
     )
   } catch (error) {
-    return throwError(error.message)
+    if (error instanceof Error) {
+      return throwError(error.message)
+    }
+    return throwError(error)
   }
 }
 

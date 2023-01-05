@@ -15,17 +15,15 @@ inputs:
       Defaults to the owner of the repo running the action.
     required: false
 
-  repo:
-    description: >
-      Repo containing the package version to delete.
-      Defaults to the repo running the action.
-    required: false
-
   package-name:
     description: >
       Name of the package containing the version to delete.
-      Required if dynamically deleting oldest versions.
-    required: false
+    required: true
+
+  package-type:
+    description: >
+      Type of package. Can be one of container, maven, npm, nuget, or rubygems.
+    required: true
 
   num-old-versions-to-delete:
     description: >

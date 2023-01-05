@@ -1,8 +1,8 @@
 export interface InputParams {
   packageVersionIds?: string[]
   owner?: string
-  repo?: string
   packageName?: string
+  packageType?: string
   numOldVersionsToDelete?: number
   minVersionsToKeep?: number
   ignoreVersions?: RegExp
@@ -13,8 +13,8 @@ export interface InputParams {
 const defaultParams = {
   packageVersionIds: [],
   owner: '',
-  repo: '',
   packageName: '',
+  packageType: '',
   numOldVersionsToDelete: 0,
   minVersionsToKeep: 0,
   ignoreVersions: new RegExp(''),
@@ -25,8 +25,8 @@ const defaultParams = {
 export class Input {
   packageVersionIds: string[]
   owner: string
-  repo: string
   packageName: string
+  packageType: string
   numOldVersionsToDelete: number
   minVersionsToKeep: number
   ignoreVersions: RegExp
@@ -39,8 +39,8 @@ export class Input {
 
     this.packageVersionIds = validatedParams.packageVersionIds
     this.owner = validatedParams.owner
-    this.repo = validatedParams.repo
     this.packageName = validatedParams.packageName
+    this.packageType = validatedParams.packageType
     this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete
     this.minVersionsToKeep = validatedParams.minVersionsToKeep
     this.ignoreVersions = validatedParams.ignoreVersions
@@ -52,7 +52,6 @@ export class Input {
   hasOldestVersionQueryInfo(): boolean {
     return !!(
       this.owner &&
-      this.repo &&
       this.packageName &&
       this.numOldVersionsToDelete >= 0 &&
       this.token
@@ -64,6 +63,10 @@ export class Input {
       this.numOldVersionsToDelete > 1 &&
       (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')
     ) {
+      return false
+    }
+
+    if (this.packageType === '' || this.packageName === '') {
       return false
     }
 

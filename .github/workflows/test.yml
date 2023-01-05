@@ -7,6 +7,9 @@ on: # rebuild any PRs and main branch changes
       - main
       - 'releases/*'
 
+permissions:
+  packages: write
+  
 jobs:
 
   package: # make sure build/ci work properly
@@ -29,6 +32,6 @@ jobs:
     - uses: ./
       name: Smoke Test Delete Package Versions Action
       with:
-        package-name: 'com.github.actions.test-package'
+        package-name: 'action-ci-test-package'
+        package-type: 'npm'
         num-old-versions-to-delete: 0
-        min-versions-to-keep: 0
