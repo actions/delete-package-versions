@@ -47,7 +47,8 @@ export function getVersionIds(
 
 export function finalIds(input: Input): Observable<string[]> {
   if (input.packageVersionIds.length > 0) {
-    return of(input.packageVersionIds)
+    const toDelete = Math.min(input.packageVersionIds.length, RATE_LIMIT)
+    return of(input.packageVersionIds.slice(0, toDelete))
   }
   if (input.hasOldestVersionQueryInfo()) {
     return getVersionIds(

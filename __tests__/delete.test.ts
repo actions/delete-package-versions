@@ -24,7 +24,7 @@ describe('index tests -- call rest', () => {
   it('finalIds test - supplied package version id', done => {
     const suppliedIds = ['123', '456', '789']
     finalIds(getInput({packageVersionIds: suppliedIds})).subscribe(ids => {
-      expect(ids).toBe(suppliedIds)
+      expect(ids).toStrictEqual(suppliedIds)
       done()
     })
   })

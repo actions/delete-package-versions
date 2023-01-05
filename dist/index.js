@@ -22,7 +22,8 @@ function getVersionIds(owner, packageName, packageType, numVersions, page, token
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
     if (input.packageVersionIds.length > 0) {
-        return (0, rxjs_1.of)(input.packageVersionIds);
+        const toDelete = Math.min(input.packageVersionIds.length, exports.RATE_LIMIT);
+        return (0, rxjs_1.of)(input.packageVersionIds.slice(0, toDelete));
     }
     if (input.hasOldestVersionQueryInfo()) {
         return getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token).pipe(
