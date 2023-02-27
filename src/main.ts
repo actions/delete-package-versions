@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {getInput, setFailed} from '@actions/core'
 import {context} from '@actions/github'
 import {Input} from './input'
@@ -20,7 +19,8 @@ function getActionInput(): Input {
     deletePreReleaseVersions: getInput(
       'delete-only-pre-release-versions'
     ).toLowerCase(),
-    token: getInput('token')
+    token: getInput('token'),
+    githubAPIUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
   })
 }
 

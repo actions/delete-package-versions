@@ -8,6 +8,7 @@ export interface InputParams {
   ignoreVersions?: RegExp
   token?: string
   deletePreReleaseVersions?: string
+  githubAPIUrl?: string
 }
 
 const defaultParams = {
@@ -19,7 +20,8 @@ const defaultParams = {
   minVersionsToKeep: 0,
   ignoreVersions: new RegExp(''),
   deletePreReleaseVersions: '',
-  token: ''
+  token: '',
+  githubAPIUrl: 'https://api.github.com'
 }
 
 export class Input {
@@ -33,6 +35,7 @@ export class Input {
   deletePreReleaseVersions: string
   token: string
   numDeleted: number
+  githubAPIUrl: string
 
   constructor(params?: InputParams) {
     const validatedParams: Required<InputParams> = {...defaultParams, ...params}
@@ -47,6 +50,7 @@ export class Input {
     this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions
     this.token = validatedParams.token
     this.numDeleted = 0
+    this.githubAPIUrl = validatedParams.githubAPIUrl
   }
 
   hasOldestVersionQueryInfo(): boolean {

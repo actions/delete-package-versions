@@ -28,10 +28,12 @@ export function getOldestVersions(
   packageType: string,
   numVersions: number,
   page: number,
-  token: string
+  token: string,
+  githubAPIUrl: string
 ): Observable<RestQueryInfo> {
   const octokit = new Octokit({
-    auth: token
+    auth: token,
+    baseUrl: githubAPIUrl
   })
   const package_type: PackageType = packageType as PackageType
 

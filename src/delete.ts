@@ -18,7 +18,8 @@ export function getVersionIds(
   packageType: string,
   numVersions: number,
   page: number,
-  token: string
+  token: string,
+  githubAPIUrl: string
 ): Observable<RestVersionInfo[]> {
   return getOldestVersions(
     owner,
@@ -26,7 +27,8 @@ export function getVersionIds(
     packageType,
     numVersions,
     page,
-    token
+    token,
+    githubAPIUrl
   ).pipe(
     expand(value =>
       value.paginate
@@ -36,7 +38,8 @@ export function getVersionIds(
             packageType,
             numVersions,
             value.page + 1,
-            token
+            token,
+            githubAPIUrl
           )
         : EMPTY
     ),
@@ -57,7 +60,8 @@ export function finalIds(input: Input): Observable<string[]> {
       input.packageType,
       RATE_LIMIT,
       1,
-      input.token
+      input.token,
+      input.githubAPIUrl
     ).pipe(
       // This code block executes on all versions of a package starting from oldest
       map(value => {
@@ -119,7 +123,8 @@ export function deleteVersions(input: Input): Observable<boolean> {
         input.owner,
         input.packageName,
         input.packageType,
-        input.token
+        input.token,
+        input.githubAPIUrl
       )
     )
   )

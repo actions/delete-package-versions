@@ -12,10 +12,12 @@ export function deletePackageVersion(
   owner: string,
   packageName: string,
   packageType: string,
-  token: string
+  token: string,
+  githubAPIUrl: string
 ): Observable<boolean> {
   const octokit = new Octokit({
-    auth: token
+    auth: token,
+    baseUrl: githubAPIUrl
   })
   const package_version_id = +packageVersionId
   const package_type: PackageType = packageType as PackageType
@@ -46,14 +48,22 @@ export function deletePackageVersions(
   owner: string,
   packageName: string,
   packageType: string,
-  token: string
+  token: string,
+  githubAPIUrl: string
 ): Observable<boolean> {
   if (packageVersionIds.length === 0) {
     return of(true)
   }
 
   const deletes = packageVersionIds.map(id =>
-    deletePackageVersion(id, owner, packageName, packageType, token).pipe(
+    deletePackageVersion(
+      id,
+      owner,
+      packageName,
+      packageType,
+      token,
+      githubAPIUrl
+    ).pipe(
       tap(result => {
         if (!result) {
           console.log(`version with id: ${id}, not deleted`)
