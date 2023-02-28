@@ -8,6 +8,7 @@ export interface RestVersionInfo {
   id: number
   version: string
   created_at: string
+  tagged: boolean
 }
 
 export interface RestQueryInfo {
@@ -57,10 +58,20 @@ export function getOldestVersions(
     map(response => {
       const resp = {
         versions: response.data.map((version: GetVersionsResponse[0]) => {
+          let tagged = false
+          if (
+            package_type === 'container' &&
+            version.metadata &&
+            version.metadata.container
+          ) {
+            tagged = version.metadata.container.tags.length > 0
+          }
+
           return {
             id: version.id,
             version: version.name,
-            created_at: version.created_at
+            created_at: version.created_at,
+            tagged
           }
         }),
         page,

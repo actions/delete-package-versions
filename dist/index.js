@@ -38,6 +38,9 @@ function finalIds(input) {
               Then compute number of versions to delete (toDelete) based on the inputs.
               */
             value = value.filter(info => !input.ignoreVersions.test(info.version));
+            if (input.deleteUntaggedVersions) {
+                value = value.filter(info => !info.tagged);
+            }
             let toDelete = 0;
             if (input.minVersionsToKeep < 0) {
                 toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, exports.RATE_LIMIT));
@@ -89,7 +92,8 @@ const defaultParams = {
     ignoreVersions: new RegExp(''),
     deletePreReleaseVersions: '',
     token: '',
-    githubAPIUrl: 'https://api.github.com'
+    githubAPIUrl: 'https://api.github.com',
+    deleteUntaggedVersions: false
 };
 class Input {
     constructor(params) {
@@ -105,6 +109,7 @@ class Input {
         this.token = validatedParams.token;
         this.numDeleted = 0;
         this.githubAPIUrl = validatedParams.githubAPIUrl;
+        this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions;
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
@@ -124,6 +129,9 @@ class Input {
             this.minVersionsToKeep =
                 this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
+        }
+        if (this.packageType.toLowerCase() !== 'container') {
+            this.deleteUntaggedVersions = false;
         }
         if (this.minVersionsToKeep >= 0) {
             this.numOldVersionsToDelete = 0;
@@ -216,10 +224,17 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
     }), (0, operators_1.map)(response => {
         const resp = {
             versions: response.data.map((version) => {
+                let tagged = false;
+                if (package_type === 'container' &&
+                    version.metadata &&
+                    version.metadata.container) {
+                    tagged = version.metadata.container.tags.length > 0;
+                }
                 return {
                     id: version.id,
                     version: version.name,
-                    created_at: version.created_at
+                    created_at: version.created_at,
+                    tagged
                 };
             }),
             page,
@@ -43919,7 +43934,8 @@ function getActionInput() {
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),
         deletePreReleaseVersions: (0, core_1.getInput)('delete-only-pre-release-versions').toLowerCase(),
         token: (0, core_1.getInput)('token'),
-        githubAPIUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
+        githubAPIUrl: process.env.GITHUB_API_URL || 'https://api.github.com',
+        deleteUntaggedVersions: Boolean((0, core_1.getInput)('delete-only-untagged-versions').toLowerCase())
     });
 }
 function run() {

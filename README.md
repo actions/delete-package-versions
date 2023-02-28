@@ -58,6 +58,11 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Cannot be used with `num-old-versions-to-delete` and `ignore-versions`.
   delete-only-pre-release-versions:
 
+  # If true it will delete only the untagged versions in case of container package.
+  # Does not work for other package types and will be ignored.
+  # Defaults to false.
+  delete-only-untagged-versions:
+
   # The token used to authenticate with GitHub Packages.
   # Defaults to github.token.
   # Required if the repo running the workflow does not have access to delete the package.
