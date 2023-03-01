@@ -71,6 +71,45 @@ describe('delete tests - mock rest', () => {
       })
   })
 
+  it('deletePackageVersions - GHES', done => {
+    process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
+
+    let success = 0
+
+    server.use(
+      rest.delete(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions/*',
+        (req, res, ctx) => {
+          return res(ctx.status(204))
+        }
+      )
+    )
+
+    deletePackageVersions(
+      ['123', '456', '789'],
+      'test-owner',
+      'test-package',
+      'npm',
+      'test-token'
+    )
+      .subscribe(
+        result => {
+          expect(result).toBe(true)
+          success++
+        },
+        err => {
+          // should not get here
+          done.fail(err)
+        }
+      )
+      .add(() => {
+        expect(success).toBe(3)
+
+        delete process.env.GITHUB_API_URL
+        done()
+      })
+  })
+
   it('deletePackageVersion - API error', done => {
     server.use(
       rest.delete(
