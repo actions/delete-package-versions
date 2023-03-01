@@ -9,7 +9,7 @@ import {GetPackagesQueryResponse} from '../../src/packages'
 export function getMockedPackagesQueryResponse(
   numPackages: number
 ): GetPackagesQueryResponse {
-  const packages = []
+  const packages: any[]  = []
   for (let i = 1; i <= numPackages; ++i) {
     packages.push({
       node: {
