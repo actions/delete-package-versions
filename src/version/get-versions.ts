@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {from, Observable, merge, throwError, of} from 'rxjs'
+import {from, Observable, merge, throwError, of, EMPTY} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 import {Octokit} from '@octokit/rest'
 import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types'
@@ -45,12 +45,7 @@ export function getOldestVersions(
     })
   ).pipe(
     catchError(err => {
-      const msg = 'get versions API failed.'
-      return throwError(
-        err.errors && err.errors.length > 0
-          ? `${msg} ${err.errors[0].message}`
-          : `${msg} ${err.message}`
-      )
+      return EMPTY
     }),
     map(response => {
       const resp = {

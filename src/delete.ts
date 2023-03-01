@@ -2,7 +2,7 @@
 
 import {Input} from './input'
 import {EMPTY, Observable, of, throwError} from 'rxjs'
-import {reduce, concatMap, map, expand, tap, mergeMap} from 'rxjs/operators'
+import {reduce, concatMap, map, expand, tap, mergeMap, catchError} from 'rxjs/operators'
 import {
   deletePackageVersions,
   getOldestVersions,
