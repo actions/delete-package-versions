@@ -97,7 +97,6 @@ interface Params {
   numVersions?: number
   page?: number
   token?: string
-  githubAPIUrl?: string
 }
 
 const defaultParams = {
@@ -106,8 +105,7 @@ const defaultParams = {
   packageType: 'npm',
   numVersions: RATE_LIMIT,
   page: 1,
-  token: 'test-token',
-  githubAPIUrl: 'https://api.github.com'
+  token: 'test-token'
 }
 
 function getOldestVersions(params?: Params): Observable<RestQueryInfo> {
@@ -118,7 +116,6 @@ function getOldestVersions(params?: Params): Observable<RestQueryInfo> {
     p.packageType,
     p.numVersions,
     p.page,
-    p.token,
-    p.githubAPIUrl
+    p.token
   )
 }

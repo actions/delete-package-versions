@@ -14,9 +14,9 @@ const operators_1 = __nccwpck_require__(7801);
 const version_1 = __nccwpck_require__(4428);
 exports.RATE_LIMIT = 100;
 let totalCount = 0;
-function getVersionIds(owner, packageName, packageType, numVersions, page, token, githubAPIUrl) {
-    return (0, version_1.getOldestVersions)(owner, packageName, packageType, numVersions, page, token, githubAPIUrl).pipe((0, operators_1.expand)(value => value.paginate
-        ? (0, version_1.getOldestVersions)(owner, packageName, packageType, numVersions, value.page + 1, token, githubAPIUrl)
+function getVersionIds(owner, packageName, packageType, numVersions, page, token) {
+    return (0, version_1.getOldestVersions)(owner, packageName, packageType, numVersions, page, token).pipe((0, operators_1.expand)(value => value.paginate
+        ? (0, version_1.getOldestVersions)(owner, packageName, packageType, numVersions, value.page + 1, token)
         : rxjs_1.EMPTY), (0, operators_1.tap)(value => (totalCount = totalCount + value.totalCount)), (0, operators_1.reduce)((acc, value) => acc.concat(value.versions), []));
 }
 exports.getVersionIds = getVersionIds;
@@ -26,7 +26,7 @@ function finalIds(input) {
         return (0, rxjs_1.of)(input.packageVersionIds.slice(0, toDelete));
     }
     if (input.hasOldestVersionQueryInfo()) {
-        return getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token, input.githubAPIUrl).pipe(
+        return getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token).pipe(
         // This code block executes on all versions of a package starting from oldest
         (0, operators_1.map)(value => {
             // we need to delete oldest versions first
@@ -65,7 +65,7 @@ function deleteVersions(input) {
         return (0, rxjs_1.of)(true);
     }
     const result = finalIds(input);
-    return result.pipe((0, operators_1.concatMap)(ids => (0, version_1.deletePackageVersions)(ids, input.owner, input.packageName, input.packageType, input.token, input.githubAPIUrl)));
+    return result.pipe((0, operators_1.concatMap)(ids => (0, version_1.deletePackageVersions)(ids, input.owner, input.packageName, input.packageType, input.token)));
 }
 exports.deleteVersions = deleteVersions;
 
@@ -88,8 +88,7 @@ const defaultParams = {
     minVersionsToKeep: 0,
     ignoreVersions: new RegExp(''),
     deletePreReleaseVersions: '',
-    token: '',
-    githubAPIUrl: 'https://api.github.com'
+    token: ''
 };
 class Input {
     constructor(params) {
@@ -104,7 +103,6 @@ class Input {
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
         this.numDeleted = 0;
-        this.githubAPIUrl = validatedParams.githubAPIUrl;
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
@@ -147,10 +145,10 @@ const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const rest_1 = __nccwpck_require__(5375);
 let deleted = 0;
-function deletePackageVersion(packageVersionId, owner, packageName, packageType, token, githubAPIUrl) {
+function deletePackageVersion(packageVersionId, owner, packageName, packageType, token) {
     const octokit = new rest_1.Octokit({
         auth: token,
-        baseUrl: githubAPIUrl
+        baseUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
     });
     const package_version_id = +packageVersionId;
     const package_type = packageType;
@@ -168,11 +166,11 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
     }), (0, operators_1.map)(response => response.status === 204));
 }
 exports.deletePackageVersion = deletePackageVersion;
-function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token, githubAPIUrl) {
+function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token) {
     if (packageVersionIds.length === 0) {
         return (0, rxjs_1.of)(true);
     }
-    const deletes = packageVersionIds.map(id => deletePackageVersion(id, owner, packageName, packageType, token, githubAPIUrl).pipe((0, operators_1.tap)(result => {
+    const deletes = packageVersionIds.map(id => deletePackageVersion(id, owner, packageName, packageType, token).pipe((0, operators_1.tap)(result => {
         if (!result) {
             console.log(`version with id: ${id}, not deleted`);
         }
@@ -196,10 +194,10 @@ exports.getOldestVersions = void 0;
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const rest_1 = __nccwpck_require__(5375);
-function getOldestVersions(owner, packageName, packageType, numVersions, page, token, githubAPIUrl) {
+function getOldestVersions(owner, packageName, packageType, numVersions, page, token) {
     const octokit = new rest_1.Octokit({
         auth: token,
-        baseUrl: githubAPIUrl
+        baseUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
     });
     const package_type = packageType;
     return (0, rxjs_1.from)(octokit.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
@@ -43918,8 +43916,7 @@ function getActionInput() {
         minVersionsToKeep: Number((0, core_1.getInput)('min-versions-to-keep')),
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),
         deletePreReleaseVersions: (0, core_1.getInput)('delete-only-pre-release-versions').toLowerCase(),
-        token: (0, core_1.getInput)('token'),
-        githubAPIUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
+        token: (0, core_1.getInput)('token')
     });
 }
 function run() {

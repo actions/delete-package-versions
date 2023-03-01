@@ -29,8 +29,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     ).subscribe(result => {
       expect(result).toBe(true)
       done()
@@ -54,8 +53,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     )
       .subscribe(
         result => {
@@ -88,8 +86,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     ).subscribe(
       () => {
         done.fail('should not get here.')
@@ -122,8 +119,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     )
       .subscribe(
         result => {
