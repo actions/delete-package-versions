@@ -147,7 +147,8 @@ const rest_1 = __nccwpck_require__(5375);
 let deleted = 0;
 function deletePackageVersion(packageVersionId, owner, packageName, packageType, token) {
     const octokit = new rest_1.Octokit({
-        auth: token
+        auth: token,
+        baseUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
     });
     const package_version_id = +packageVersionId;
     const package_type = packageType;
@@ -195,7 +196,8 @@ const operators_1 = __nccwpck_require__(7801);
 const rest_1 = __nccwpck_require__(5375);
 function getOldestVersions(owner, packageName, packageType, numVersions, page, token) {
     const octokit = new rest_1.Octokit({
-        auth: token
+        auth: token,
+        baseUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
     });
     const package_type = packageType;
     return (0, rxjs_1.from)(octokit.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
@@ -43896,7 +43898,6 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 const input_1 = __nccwpck_require__(8657);

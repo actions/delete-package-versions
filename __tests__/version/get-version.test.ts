@@ -46,6 +46,37 @@ describe('get versions tests -- mock rest', () => {
     })
   })
 
+  it('getOldestVersions -- success - GHES', done => {
+    const numVersions = RATE_LIMIT
+    const resp = getMockedVersionsResponse(numVersions)
+
+    // set GITHUB_API_URL to a different base url
+    process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
+
+    server.use(
+      rest.get(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions',
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(resp))
+        }
+      )
+    )
+
+    getOldestVersions({numVersions}).subscribe(result => {
+      expect(result.versions.length).toBe(numVersions)
+      for (let i = 0; i < numVersions; i++) {
+        expect(result.versions[i].id).toBe(resp[i].id)
+        expect(result.versions[i].version).toBe(resp[i].name)
+        expect(result.versions[i].created_at).toBe(resp[i].created_at)
+      }
+      expect(result.paginate).toBe(true)
+      expect(result.totalCount).toBe(numVersions)
+
+      delete process.env.GITHUB_API_URL
+      done()
+    })
+  })
+
   it('getOldestVersions -- paginate is false when fetched versions is less than page size', done => {
     const numVersions = 5
 

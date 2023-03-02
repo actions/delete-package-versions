@@ -55,6 +55,36 @@ describe('index tests -- call rest', () => {
     })
   })
 
+  it('finalIDs test - success - GHES', done => {
+    process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
+
+    const numVersions = 10
+    let apiCalled = 0
+
+    const versions = getMockedVersionsResponse(numVersions)
+
+    server.use(
+      rest.get(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions',
+        (req, res, ctx) => {
+          apiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    finalIds(getInput()).subscribe(ids => {
+      expect(apiCalled).toBe(1)
+      expect(ids.length).toBe(numVersions)
+      for (let i = 0; i < numVersions; i++) {
+        expect(ids[i]).toBe(versions[i].id.toString())
+      }
+
+      delete process.env.GITHUB_API_URL
+      done()
+    })
+  })
+
   it('finalIDs test - success - pagination', done => {
     const numVersions = RATE_LIMIT * 2
     let apiCalled = 0
@@ -340,6 +370,53 @@ describe('index tests -- call rest', () => {
         for (let i = 0; i < numVersions; i++) {
           expect(versionsDeleted[i]).toBe(versions[i].id.toString())
         }
+        done()
+      })
+  })
+
+  it('deleteVersions test - success complete flow - GHES', done => {
+    process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
+
+    const numVersions = 10
+    let getApiCalled = 0
+    let deleteApiCalled = 0
+
+    const versions = getMockedVersionsResponse(numVersions)
+    const versionsDeleted: string[] = []
+
+    server.use(
+      rest.get(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions',
+        (req, res, ctx) => {
+          getApiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    server.use(
+      rest.delete(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions/:versionId',
+        (req, res, ctx) => {
+          deleteApiCalled++
+          versionsDeleted.push(req.params.versionId as string)
+          return res(ctx.status(204))
+        }
+      )
+    )
+
+    deleteVersions(getInput())
+      .subscribe(result => {
+        expect(result).toBe(true)
+      })
+      .add(() => {
+        expect(getApiCalled).toBe(1)
+        expect(deleteApiCalled).toBe(numVersions)
+        for (let i = 0; i < numVersions; i++) {
+          expect(versionsDeleted[i]).toBe(versions[i].id.toString())
+        }
+
+        delete process.env.GITHUB_API_URL
         done()
       })
   })
