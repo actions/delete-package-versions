@@ -43932,7 +43932,7 @@ function getActionInput() {
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),
         deletePreReleaseVersions: (0, core_1.getInput)('delete-only-pre-release-versions').toLowerCase(),
         token: (0, core_1.getInput)('token'),
-        deleteUntaggedVersions: Boolean((0, core_1.getInput)('delete-only-untagged-versions').toLowerCase())
+        deleteUntaggedVersions: (0, core_1.getInput)('delete-untagged-versions').toLowerCase() === 'true'
     });
 }
 function run() {
