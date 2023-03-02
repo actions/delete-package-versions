@@ -255,6 +255,53 @@ describe('index tests -- call rest', () => {
     })
   })
 
+  it('finalIds test - delete only untagged versions with minVersionsToKeep', done => {
+    const numVersions = 50
+    const numTaggedVersions = 20
+    const numUntaggedVersions = numVersions - numTaggedVersions
+
+    const taggedVersions = getMockedVersionsResponse(
+      numTaggedVersions,
+      0,
+      'container',
+      true
+    )
+    const untaggedVersions = getMockedVersionsResponse(
+      numUntaggedVersions,
+      numTaggedVersions,
+      'container',
+      false
+    )
+    const versions = taggedVersions.concat(untaggedVersions)
+
+    let apiCalled = 0
+
+    server.use(
+      rest.get(
+        'https://api.github.com/users/test-owner/packages/container/test-package/versions',
+        (req, res, ctx) => {
+          apiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    finalIds(
+      getInput({
+        minVersionsToKeep: 10,
+        deleteUntaggedVersions: true,
+        packageType: 'container'
+      })
+    ).subscribe(ids => {
+      expect(apiCalled).toBe(1)
+      expect(ids.length).toBe(numUntaggedVersions - 10)
+      for (let i = 0; i < numUntaggedVersions - 10; i++) {
+        expect(ids[i]).toBe(untaggedVersions[i].id.toString())
+      }
+      done()
+    })
+  })
+
   it('finalIds test - no versions deleted if API error even once', done => {
     const numVersions = RATE_LIMIT * 2
     let apiCalled = 0
