@@ -1,5 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {GraphQlQueryResponse} from '@octokit/graphql/dist-types/types'
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {Observable, from, throwError} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 import {graphql} from '../common/graphql'
