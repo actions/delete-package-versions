@@ -20,7 +20,6 @@ function getActionInput(): Input {
       'delete-only-pre-release-versions'
     ).toLowerCase(),
     token: getInput('token'),
-    githubAPIUrl: process.env.GITHUB_API_URL || 'https://api.github.com',
     deleteUntaggedVersions: Boolean(
       getInput('delete-only-untagged-versions').toLowerCase()
     )

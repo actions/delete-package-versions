@@ -29,8 +29,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     ).subscribe(result => {
       expect(result).toBe(true)
       done()
@@ -54,8 +53,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     )
       .subscribe(
         result => {
@@ -69,6 +67,45 @@ describe('delete tests - mock rest', () => {
       )
       .add(() => {
         expect(success).toBe(3)
+        done()
+      })
+  })
+
+  it('deletePackageVersions - GHES', done => {
+    process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
+
+    let success = 0
+
+    server.use(
+      rest.delete(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions/*',
+        (req, res, ctx) => {
+          return res(ctx.status(204))
+        }
+      )
+    )
+
+    deletePackageVersions(
+      ['123', '456', '789'],
+      'test-owner',
+      'test-package',
+      'npm',
+      'test-token'
+    )
+      .subscribe(
+        result => {
+          expect(result).toBe(true)
+          success++
+        },
+        err => {
+          // should not get here
+          done.fail(err)
+        }
+      )
+      .add(() => {
+        expect(success).toBe(3)
+
+        delete process.env.GITHUB_API_URL
         done()
       })
   })
@@ -88,8 +125,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     ).subscribe(
       () => {
         done.fail('should not get here.')
@@ -122,8 +158,7 @@ describe('delete tests - mock rest', () => {
       'test-owner',
       'test-package',
       'npm',
-      'test-token',
-      'https://api.github.com'
+      'test-token'
     )
       .subscribe(
         result => {

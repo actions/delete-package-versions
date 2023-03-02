@@ -8,7 +8,6 @@ export interface InputParams {
   ignoreVersions?: RegExp
   token?: string
   deletePreReleaseVersions?: string
-  githubAPIUrl?: string
   deleteUntaggedVersions?: boolean
 }
 
@@ -22,7 +21,6 @@ const defaultParams = {
   ignoreVersions: new RegExp(''),
   deletePreReleaseVersions: '',
   token: '',
-  githubAPIUrl: 'https://api.github.com',
   deleteUntaggedVersions: false
 }
 
@@ -37,7 +35,6 @@ export class Input {
   deletePreReleaseVersions: string
   token: string
   numDeleted: number
-  githubAPIUrl: string
   deleteUntaggedVersions: boolean
 
   constructor(params?: InputParams) {
@@ -53,7 +50,6 @@ export class Input {
     this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions
     this.token = validatedParams.token
     this.numDeleted = 0
-    this.githubAPIUrl = validatedParams.githubAPIUrl
     this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions
   }
 
