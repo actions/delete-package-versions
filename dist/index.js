@@ -38,7 +38,7 @@ function finalIds(input) {
               Then compute number of versions to delete (toDelete) based on the inputs.
               */
             value = value.filter(info => !input.ignoreVersions.test(info.version));
-            if (input.deleteUntaggedVersions) {
+            if (input.deleteUntaggedVersions === 'true') {
                 value = value.filter(info => !info.tagged);
             }
             let toDelete = 0;
@@ -92,7 +92,7 @@ const defaultParams = {
     ignoreVersions: new RegExp(''),
     deletePreReleaseVersions: '',
     token: '',
-    deleteUntaggedVersions: false
+    deleteUntaggedVersions: ''
 };
 class Input {
     constructor(params) {
@@ -129,7 +129,7 @@ class Input {
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
         }
         if (this.packageType.toLowerCase() !== 'container') {
-            this.deleteUntaggedVersions = false;
+            this.deleteUntaggedVersions = 'false';
         }
         if (this.minVersionsToKeep >= 0) {
             this.numOldVersionsToDelete = 0;
@@ -43932,7 +43932,7 @@ function getActionInput() {
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),
         deletePreReleaseVersions: (0, core_1.getInput)('delete-only-pre-release-versions').toLowerCase(),
         token: (0, core_1.getInput)('token'),
-        deleteUntaggedVersions: (0, core_1.getInput)('delete-untagged-versions').toLowerCase() === 'true'
+        deleteUntaggedVersions: (0, core_1.getInput)('delete-only-untagged-versions').toLowerCase()
     });
 }
 function run() {

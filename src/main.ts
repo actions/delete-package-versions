@@ -20,8 +20,9 @@ function getActionInput(): Input {
       'delete-only-pre-release-versions'
     ).toLowerCase(),
     token: getInput('token'),
-    deleteUntaggedVersions:
-      getInput('delete-untagged-versions').toLowerCase() === 'true'
+    deleteUntaggedVersions: getInput(
+      'delete-only-untagged-versions'
+    ).toLowerCase()
   })
 }
 

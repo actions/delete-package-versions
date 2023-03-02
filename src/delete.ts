@@ -73,7 +73,7 @@ export function finalIds(input: Input): Observable<string[]> {
           */
         value = value.filter(info => !input.ignoreVersions.test(info.version))
 
-        if (input.deleteUntaggedVersions) {
+        if (input.deleteUntaggedVersions === 'true') {
           value = value.filter(info => !info.tagged)
         }
 

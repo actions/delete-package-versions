@@ -289,7 +289,7 @@ describe('index tests -- call rest', () => {
     finalIds(
       getInput({
         minVersionsToKeep: 10,
-        deleteUntaggedVersions: true,
+        deleteUntaggedVersions: 'true',
         packageType: 'container'
       })
     ).subscribe(ids => {
