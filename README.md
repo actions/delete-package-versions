@@ -403,7 +403,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 # GitHub Enterprise Server
 
-This action works with GitHub Enterprise Server. It uses the `GITHUB_API_URL` environment variable to determine the GitHub Enterprise Server URL. The environment variable is automatically set in workflows. GitHub Connect should be configured on the server to allow using the action from dotcom. See - [Enabling automatic access to GitHub.com actions using GitHub Connect](https://docs.github.com/en/enterprise-server/admin/github-actions/managing-access-to-actions-from-githubcom/enabling-automatic-access-to-githubcom-actions-using-github-connect)
+This action works with GitHub Enterprise Server. It uses the `GITHUB_API_URL` environment variable to determine the GitHub Enterprise Server URL. The environment variable is automatically set in workflows. GitHub Connect should be configured on the server to allow using the action from GitHub.com. See - [Enabling automatic access to GitHub.com actions using GitHub Connect](https://docs.github.com/en/enterprise-server/admin/github-actions/managing-access-to-actions-from-githubcom/enabling-automatic-access-to-githubcom-actions-using-github-connect)
 
 # License
 
