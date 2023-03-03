@@ -58,6 +58,11 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Cannot be used with `num-old-versions-to-delete` and `ignore-versions`.
   delete-only-pre-release-versions:
 
+  # If true it will delete only the untagged versions in case of container package.
+  # Does not work for other package types and will be ignored.
+  # Defaults to false.
+  delete-only-untagged-versions:
+
   # The token used to authenticate with GitHub Packages.
   # Defaults to github.token.
   # Required if the repo running the workflow does not have access to delete the package.
@@ -88,6 +93,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 - [Valid Input Combinations](#valid-input-combinations)
 - [Scenarios](#scenarios)
     - [Delete all pre-release versions except y latest pre-release package versions](#delete-all-pre-release-versions-except-y-latest-pre-release-package-versions)
+    - [Delete all untagged container versions except y latest untagged versions](#delete-all-untagged-container-versions-except-y-latest-untagged-versions)
     - [Delete all except y latest versions while ignoring particular package versions](#delete-all-except-y-latest-versions-while-ignoring-particular-package-versions)
     - [Delete oldest x number of versions while ignoring particular package versions](#delete-oldest-x-number-of-versions-while-ignoring-particular-package-versions)
     - [Delete all except y latest versions of a package](#delete-all-except-y-latest-versions-of-a-package)
@@ -95,8 +101,9 @@ This action deletes versions of a package from [GitHub Packages](https://github.
     - [Delete oldest version of a package](#delete-oldest-version-of-a-package)
     - [Delete a specific version of a package](#delete-a-specific-version-of-a-package)
     - [Delete multiple specific versions of a package](#delete-multiple-specific-versions-of-a-package)
+- [GitHub Enterprise Server](#github-enterprise-server)
 - [License](#license)
-  
+
 
   ### Delete all pre-release versions except y latest pre-release package versions
 
@@ -129,6 +136,25 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       token: ${{ secrets.GITHUB_PAT }}
       min-versions-to-keep: 10
       delete-only-pre-release-versions: "true"
+  ```
+
+  <br>
+
+  ### Delete all untagged container versions except y latest untagged versions
+
+  To delete all untagged versions of a container package except y latest untagged versions, the __package-name__, __package-type__, __min-versions-to-keep__ and __delete-only-untagged-versions__ inputs are required. __package-type__ must be container for this scenario.
+
+  __Example__
+
+  Delete all untagged versions except latest 10
+
+  ```yaml
+  - uses: actions/delete-package-versions@v4
+    with: 
+      package-name: 'test-package'
+      package-type: 'container'
+      min-versions-to-keep: 10
+      delete-only-untagged-versions: 'true'
   ```
 
   <br>
@@ -375,6 +401,10 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       token: ${{ secrets.PAT }}
   ```
 
+# GitHub Enterprise Server
+
+This action works with GitHub Enterprise Server. It uses the `GITHUB_API_URL` environment variable to determine the GitHub Enterprise Server URL. The environment variable is automatically set in workflows. GitHub Connect should be configured on the server to allow using the action from dotcom. See - [Enabling automatic access to GitHub.com actions using GitHub Connect](https://docs.github.com/en/enterprise-server/admin/github-actions/managing-access-to-actions-from-githubcom/enabling-automatic-access-to-githubcom-actions-using-github-connect)
+
 # License
 
 The scripts and documentation in this project are released under the [MIT License](https://github.com/actions/delete-package-versions/blob/main/LICENSE)
@@ -382,4 +412,3 @@ The scripts and documentation in this project are released under the [MIT Licens
 [api]: https://docs.github.com/en/rest/packages
 [token]: https://help.github.com/en/packages/publishing-and-managing-packages/about-github-packages#about-tokens
 [secret]: https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets
-

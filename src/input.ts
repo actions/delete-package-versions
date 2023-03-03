@@ -8,6 +8,7 @@ export interface InputParams {
   ignoreVersions?: RegExp
   token?: string
   deletePreReleaseVersions?: string
+  deleteUntaggedVersions?: string
 }
 
 const defaultParams = {
@@ -19,7 +20,8 @@ const defaultParams = {
   minVersionsToKeep: 0,
   ignoreVersions: new RegExp(''),
   deletePreReleaseVersions: '',
-  token: ''
+  token: '',
+  deleteUntaggedVersions: ''
 }
 
 export class Input {
@@ -33,6 +35,7 @@ export class Input {
   deletePreReleaseVersions: string
   token: string
   numDeleted: number
+  deleteUntaggedVersions: string
 
   constructor(params?: InputParams) {
     const validatedParams: Required<InputParams> = {...defaultParams, ...params}
@@ -47,6 +50,7 @@ export class Input {
     this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions
     this.token = validatedParams.token
     this.numDeleted = 0
+    this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions
   }
 
   hasOldestVersionQueryInfo(): boolean {
@@ -74,6 +78,10 @@ export class Input {
       this.minVersionsToKeep =
         this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0
       this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$')
+    }
+
+    if (this.packageType.toLowerCase() !== 'container') {
+      this.deleteUntaggedVersions = 'false'
     }
 
     if (this.minVersionsToKeep >= 0) {

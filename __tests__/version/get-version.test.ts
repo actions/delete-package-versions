@@ -77,6 +77,54 @@ describe('get versions tests -- mock rest', () => {
     })
   })
 
+  it('getOldestVersions -- success - container tagged versions', done => {
+    const numVersions = 6
+    const numTaggedVersions = 3
+    const numUntaggedVersions = numVersions - numTaggedVersions
+
+    const respTagged = getMockedVersionsResponse(
+      numTaggedVersions,
+      0,
+      'container',
+      true
+    )
+    const respUntagged = getMockedVersionsResponse(
+      numUntaggedVersions,
+      numTaggedVersions,
+      'container',
+      false
+    )
+    const resp = respTagged.concat(respUntagged)
+
+    server.use(
+      rest.get(
+        'https://api.github.com/users/test-owner/packages/container/test-package/versions',
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(resp))
+        }
+      )
+    )
+
+    getOldestVersions({numVersions, packageType: 'container'}).subscribe(
+      result => {
+        expect(result.versions.length).toBe(numVersions)
+        for (let i = 0; i < numVersions; i++) {
+          expect(result.versions[i].id).toBe(resp[i].id)
+          expect(result.versions[i].version).toBe(resp[i].name)
+          expect(result.versions[i].created_at).toBe(resp[i].created_at)
+          if (i < numTaggedVersions) {
+            expect(result.versions[i].tagged).toBe(true)
+          } else {
+            expect(result.versions[i].tagged).toBe(false)
+          }
+        }
+        expect(result.paginate).toBe(true)
+        expect(result.totalCount).toBe(numVersions)
+        done()
+      }
+    )
+  })
+
   it('getOldestVersions -- paginate is false when fetched versions is less than page size', done => {
     const numVersions = 5
 
