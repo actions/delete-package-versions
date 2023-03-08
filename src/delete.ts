@@ -22,7 +22,7 @@ import {
 } from './version'
 import {getRepoPackages, getPackageNameFilter, PackageInfo} from './packages'
 
-export const RATE_LIMIT = 1000
+export const RATE_LIMIT = 100
 let totalCount = 0
 
 export function getPackageNames(
