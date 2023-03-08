@@ -22,8 +22,6 @@ export function deletePackageVersion(
   const package_type: PackageType = packageType as PackageType
   deleted += 1
 
-  console.log(`packageName: ${packageName}`)
-
   return from(
     octokit.rest.packages.deletePackageVersionForUser({
       package_type,

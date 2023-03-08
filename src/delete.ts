@@ -78,6 +78,7 @@ export function finalIds(input: Input): Observable<string[]> {
   }
   if (input.hasOldestVersionQueryInfo()) {
     const filter = getPackageNameFilter(input.packageNames)
+    console.log(filter)
     if (!filter.isEmpty) {
       return getPackageNames(
         input.owner,
@@ -88,6 +89,7 @@ export function finalIds(input: Input): Observable<string[]> {
       )
         .pipe(
           mergeMap(value => {
+            console.log(value)
             return value
               .filter(info => filter.apply(info.name))
               .map(info =>

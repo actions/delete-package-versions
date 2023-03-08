@@ -70,9 +70,11 @@ function finalIds(input) {
     }
     if (input.hasOldestVersionQueryInfo()) {
         const filter = (0, packages_1.getPackageNameFilter)(input.packageNames);
+        console.log(filter);
         if (!filter.isEmpty) {
             return getPackageNames(input.owner, input.repo, exports.RATE_LIMIT, '', input.token)
                 .pipe((0, operators_1.mergeMap)(value => {
+                console.log(value);
                 return value
                     .filter(info => filter.apply(info.name))
                     .map(info => finalIds(new input_1.Input(Object.assign(Object.assign({}, input), { packageNames: '', packageName: info.name }))));
@@ -462,7 +464,6 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
     const package_version_id = +packageVersionId;
     const package_type = packageType;
     deleted += 1;
-    console.log(`packageName: ${packageName}`);
     return (0, rxjs_1.from)(octokit.rest.packages.deletePackageVersionForUser({
         package_type,
         package_name: packageName,
