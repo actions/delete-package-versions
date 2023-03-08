@@ -462,15 +462,13 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
     const package_version_id = +packageVersionId;
     const package_type = packageType;
     deleted += 1;
+    console.log(packageName);
     return (0, rxjs_1.from)(octokit.rest.packages.deletePackageVersionForUser({
         package_type,
         package_name: packageName,
         username: owner,
         package_version_id
-    })).pipe((0, operators_1.catchError)(err => {
-        console.log(err);
-        return rxjs_1.EMPTY;
-    }), (0, operators_1.map)(response => response.status === 204));
+    })).pipe((0, operators_1.catchError)(() => rxjs_1.EMPTY), (0, operators_1.map)(response => response.status === 204));
 }
 exports.deletePackageVersion = deletePackageVersion;
 function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token) {
