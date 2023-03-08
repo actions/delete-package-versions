@@ -30,7 +30,10 @@ export function deletePackageVersion(
       package_version_id
     })
   ).pipe(
-    catchError(() => EMPTY),
+    catchError(err => {
+      console.log(err)
+      return EMPTY
+    }),
     map(response => response.status === 204)
   )
 }

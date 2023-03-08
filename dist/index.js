@@ -479,7 +479,10 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
         package_name: packageName,
         username: owner,
         package_version_id
-    })).pipe((0, operators_1.catchError)(() => rxjs_1.EMPTY), (0, operators_1.map)(response => response.status === 204));
+    })).pipe((0, operators_1.catchError)(err => {
+        console.log(err);
+        return rxjs_1.EMPTY;
+    }), (0, operators_1.map)(response => response.status === 204));
 }
 exports.deletePackageVersion = deletePackageVersion;
 function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token) {
