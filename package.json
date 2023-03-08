@@ -5,7 +5,7 @@
   "description": "TypeScript template action",
   "main": "lib/main.js",
   "scripts": {
-    "format": "prettier --write **/*.ts",
+    "format": "prettier --write --fix **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts --fix",
     "lint-check": "eslint src/**/*.ts",

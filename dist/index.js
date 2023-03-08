@@ -467,12 +467,7 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
         package_name: packageName,
         username: owner,
         package_version_id
-    })).pipe((0, operators_1.catchError)(err => {
-        const msg = 'delete version API failed.';
-        return (0, rxjs_1.throwError)(err.errors && err.errors.length > 0
-            ? `${msg} ${err.errors[0].message}`
-            : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`);
-    }), (0, operators_1.map)(response => response.status === 204));
+    })).pipe((0, operators_1.map)(response => response.status === 204));
 }
 exports.deletePackageVersion = deletePackageVersion;
 function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token) {
