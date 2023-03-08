@@ -1,5 +1,5 @@
-import {from, Observable, merge, of} from 'rxjs'
-import {map, tap} from 'rxjs/operators'
+import {from, Observable, merge, of, EMPTY} from 'rxjs'
+import {catchError, map, tap} from 'rxjs/operators'
 import {Octokit} from '@octokit/rest'
 import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types'
 
@@ -29,7 +29,10 @@ export function deletePackageVersion(
       username: owner,
       package_version_id
     })
-  ).pipe(map(response => response.status === 204))
+  ).pipe(
+    catchError(() => EMPTY),
+    map(response => response.status === 204)
+  )
 }
 
 export function deletePackageVersions(
