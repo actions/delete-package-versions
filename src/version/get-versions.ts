@@ -61,9 +61,6 @@ export function getOldestVersions(
             tagged = version.metadata.container.tags.length > 0
           }
 
-          console.log(version.id)
-          console.log(version.name)
-
           return {
             id: version.id,
             version: version.name,

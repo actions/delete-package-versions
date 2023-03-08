@@ -468,10 +468,7 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
         username: owner,
         package_version_id
     })).pipe((0, operators_1.catchError)(err => {
-        const msg = 'delete version API failed.';
-        console.log(err.errors && err.errors.length > 0
-            ? `${msg} ${err.errors[0].message}`
-            : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`);
+        console.log(err);
         return rxjs_1.EMPTY;
     }), (0, operators_1.map)(response => response.status === 204));
 }
@@ -527,8 +524,6 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
                     version.metadata.container) {
                     tagged = version.metadata.container.tags.length > 0;
                 }
-                console.log(version.id);
-                console.log(version.name);
                 return {
                     id: version.id,
                     version: version.name,

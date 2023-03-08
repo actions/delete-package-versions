@@ -31,12 +31,7 @@ export function deletePackageVersion(
     })
   ).pipe(
     catchError(err => {
-      const msg = 'delete version API failed.'
-      console.log(
-        err.errors && err.errors.length > 0
-          ? `${msg} ${err.errors[0].message}`
-          : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`
-      )
+      console.log(err)
       return EMPTY
     }),
     map(response => response.status === 204)
