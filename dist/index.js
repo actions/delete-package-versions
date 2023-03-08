@@ -49,7 +49,7 @@ const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const version_1 = __nccwpck_require__(4428);
 const packages_1 = __nccwpck_require__(221);
-exports.RATE_LIMIT = 100;
+exports.RATE_LIMIT = 1000;
 let totalCount = 0;
 function getPackageNames(owner, repo, numPackages, cursor, token) {
     return (0, packages_1.getRepoPackages)(owner, repo, numPackages, cursor, token).pipe((0, operators_1.expand)(value => value.paginate
