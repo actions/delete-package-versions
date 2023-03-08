@@ -64,50 +64,58 @@ function getVersionIds(owner, packageName, packageType, numVersions, page, token
 }
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
-    console.log(`finalIds packageName: ${input.packageName}`);
     if (input.packageVersionIds.length > 0) {
         const toDelete = Math.min(input.packageVersionIds.length, exports.RATE_LIMIT);
-        return (0, rxjs_1.of)(input.packageVersionIds.slice(0, toDelete));
+        return (0, rxjs_1.of)({
+            versions: input.packageVersionIds.slice(0, toDelete),
+            name: input.packageName
+        });
     }
-    if (input.hasOldestVersionQueryInfo()) {
-        const filter = (0, packages_1.getPackageNameFilter)(input.packageNames);
-        if (!filter.isEmpty) {
-            return getPackageNames(input.owner, input.repo, exports.RATE_LIMIT, '', input.token)
-                .pipe((0, operators_1.mergeMap)(value => {
-                return value
-                    .filter(info => filter.apply(info.name))
-                    .map(info => finalIds(new input_1.Input(Object.assign(Object.assign({}, input), { packageNames: '', packageName: info.name }))));
-            }))
-                .pipe((0, operators_1.mergeMap)(val => val));
+    if (!input.hasOldestVersionQueryInfo()) {
+        return (0, rxjs_1.throwError)("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input");
+    }
+    const filter = (0, packages_1.getPackageNameFilter)(input.packageNames);
+    if (!filter.isEmpty) {
+        return getPackageNames(input.owner, input.repo, exports.RATE_LIMIT, '', input.token)
+            .pipe((0, operators_1.mergeMap)(value => {
+            return value
+                .filter(info => filter.apply(info.name))
+                .map(info => finalIds(new input_1.Input(Object.assign(Object.assign({}, input), { packageNames: '', packageName: info.name }))));
+        }))
+            .pipe((0, operators_1.mergeMap)(val => val));
+    }
+    const versions = getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token).pipe(
+    // This code block executes on all versions of a package starting from oldest
+    (0, operators_1.map)(value => {
+        // we need to delete oldest versions first
+        value.sort((a, b) => {
+            return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        });
+        /*
+          Here first filter out the versions that are to be ignored.
+          Then compute number of versions to delete (toDelete) based on the inputs.
+          */
+        value = value.filter(info => !input.ignoreVersions.test(info.version));
+        if (input.deleteUntaggedVersions === 'true') {
+            value = value.filter(info => !info.tagged);
         }
-        return getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token).pipe(
-        // This code block executes on all versions of a package starting from oldest
-        (0, operators_1.map)(value => {
-            // we need to delete oldest versions first
-            value.sort((a, b) => {
-                return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-            });
-            /*
-              Here first filter out the versions that are to be ignored.
-              Then compute number of versions to delete (toDelete) based on the inputs.
-              */
-            value = value.filter(info => !input.ignoreVersions.test(info.version));
-            if (input.deleteUntaggedVersions === 'true') {
-                value = value.filter(info => !info.tagged);
-            }
-            let toDelete = 0;
-            if (input.minVersionsToKeep < 0) {
-                toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, exports.RATE_LIMIT));
-            }
-            else {
-                toDelete = Math.min(value.length - input.minVersionsToKeep, exports.RATE_LIMIT);
-            }
-            if (toDelete < 0)
-                return [];
-            return value.map(info => info.id.toString()).slice(0, toDelete);
-        }));
-    }
-    return (0, rxjs_1.throwError)("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input");
+        let toDelete = 0;
+        if (input.minVersionsToKeep < 0) {
+            toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, exports.RATE_LIMIT));
+        }
+        else {
+            toDelete = Math.min(value.length - input.minVersionsToKeep, exports.RATE_LIMIT);
+        }
+        if (toDelete < 0)
+            return [];
+        return value.map(info => info.id.toString()).slice(0, toDelete);
+    }));
+    return versions.pipe((0, operators_1.map)(data => {
+        return {
+            versions: data,
+            name: input.packageName
+        };
+    }));
 }
 exports.finalIds = finalIds;
 function deleteVersions(input) {
@@ -122,8 +130,10 @@ function deleteVersions(input) {
         return (0, rxjs_1.of)(true);
     }
     const result = finalIds(input);
-    console.log(`deleteVersions packageName: ${input.packageName}`);
-    return result.pipe((0, operators_1.concatMap)(ids => (0, version_1.deletePackageVersions)(ids, input.owner, input.packageName, input.packageType, input.token)));
+    return result.pipe((0, operators_1.concatMap)(data => {
+        console.log(`clearing ${data.versions.length} versions from ${data.name}`);
+        return (0, version_1.deletePackageVersions)(data.versions, input.owner, data.name, input.packageType, input.token);
+    }));
 }
 exports.deleteVersions = deleteVersions;
 
