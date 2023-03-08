@@ -116,8 +116,13 @@ class Input {
             this.token);
     }
     checkInput() {
+        if (this.packageType.toLowerCase() !== 'container') {
+            this.deleteUntaggedVersions = 'false';
+        }
         if (this.numOldVersionsToDelete > 1 &&
-            (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')) {
+            (this.minVersionsToKeep >= 0 ||
+                this.deletePreReleaseVersions === 'true' ||
+                this.deleteUntaggedVersions === 'true')) {
             return false;
         }
         if (this.packageType === '' || this.packageName === '') {
@@ -128,8 +133,9 @@ class Input {
                 this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
         }
-        if (this.packageType.toLowerCase() !== 'container') {
-            this.deleteUntaggedVersions = 'false';
+        if (this.deleteUntaggedVersions === 'true') {
+            this.minVersionsToKeep =
+                this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
         }
         if (this.minVersionsToKeep >= 0) {
             this.numOldVersionsToDelete = 0;
