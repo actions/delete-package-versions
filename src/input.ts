@@ -62,10 +62,18 @@ export class Input {
   }
 
   hasOldestVersionQueryInfo(): boolean {
+    console.log('owner: ' + this.owner)
+    console.log('repo: ' + this.repo)
+    console.log('packageName: ' + this.packageName)
+    console.log('packageNames: ' + this.packageNames)
+    console.log('numOldVersionsToDelete: ' + this.numOldVersionsToDelete)
+    console.log('token: ' + this.token)
+
     return !!(
       this.owner &&
       this.repo &&
-      (this.packageName || this.packageNames) &&
+      this.packageName &&
+      this.packageNames &&
       this.numOldVersionsToDelete >= 0 &&
       this.token
     )
@@ -76,7 +84,6 @@ export class Input {
       this.numOldVersionsToDelete > 1 &&
       (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')
     ) {
-      console.log('check 1 failed')
       return false
     }
 
