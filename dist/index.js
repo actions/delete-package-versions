@@ -64,17 +64,16 @@ function getVersionIds(owner, packageName, packageType, numVersions, page, token
 }
 exports.getVersionIds = getVersionIds;
 function finalIds(input) {
+    console.log(`finalIds packageName: ${input.packageName}`);
     if (input.packageVersionIds.length > 0) {
         const toDelete = Math.min(input.packageVersionIds.length, exports.RATE_LIMIT);
         return (0, rxjs_1.of)(input.packageVersionIds.slice(0, toDelete));
     }
     if (input.hasOldestVersionQueryInfo()) {
         const filter = (0, packages_1.getPackageNameFilter)(input.packageNames);
-        console.log(filter);
         if (!filter.isEmpty) {
             return getPackageNames(input.owner, input.repo, exports.RATE_LIMIT, '', input.token)
                 .pipe((0, operators_1.mergeMap)(value => {
-                console.log(value);
                 return value
                     .filter(info => filter.apply(info.name))
                     .map(info => finalIds(new input_1.Input(Object.assign(Object.assign({}, input), { packageNames: '', packageName: info.name }))));
@@ -123,6 +122,7 @@ function deleteVersions(input) {
         return (0, rxjs_1.of)(true);
     }
     const result = finalIds(input);
+    console.log(`deleteVersions packageName: ${input.packageName}`);
     return result.pipe((0, operators_1.concatMap)(ids => (0, version_1.deletePackageVersions)(ids, input.owner, input.packageName, input.packageType, input.token)));
 }
 exports.deleteVersions = deleteVersions;

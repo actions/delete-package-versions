@@ -72,13 +72,14 @@ export function getVersionIds(
 }
 
 export function finalIds(input: Input): Observable<string[]> {
+  console.log(`finalIds packageName: ${input.packageName}`)
+
   if (input.packageVersionIds.length > 0) {
     const toDelete = Math.min(input.packageVersionIds.length, RATE_LIMIT)
     return of(input.packageVersionIds.slice(0, toDelete))
   }
   if (input.hasOldestVersionQueryInfo()) {
     const filter = getPackageNameFilter(input.packageNames)
-    console.log(filter)
     if (!filter.isEmpty) {
       return getPackageNames(
         input.owner,
@@ -89,7 +90,6 @@ export function finalIds(input: Input): Observable<string[]> {
       )
         .pipe(
           mergeMap(value => {
-            console.log(value)
             return value
               .filter(info => filter.apply(info.name))
               .map(info =>
@@ -172,6 +172,7 @@ export function deleteVersions(input: Input): Observable<boolean> {
 
   const result = finalIds(input)
 
+  console.log(`deleteVersions packageName: ${input.packageName}`)
   return result.pipe(
     concatMap(ids =>
       deletePackageVersions(
