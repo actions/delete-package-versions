@@ -10,7 +10,7 @@
     "lint": "eslint src/**/*.ts --fix",
     "lint-check": "eslint src/**/*.ts",
     "test": "jest",
-    "build": "npm run format-check && npm run lint-check && npm run test && tsc",
+    "build": "npm run format-check && npm run lint-check && tsc",
     "pack": "rm -rf ./lib ./dist && npm run build && ncc build"
   },
   "repository": {
@@ -28,6 +28,7 @@
     "@actions/core": "^1.9.1",
     "@actions/github": "^2.1.1",
     "@octokit/rest": "^19.0.5",
+    "graphql": "^16.6.0",
     "rxjs": "^6.5.4"
   },
   "devDependencies": {

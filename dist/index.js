@@ -1,6 +1,41 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 9057:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.graphql = void 0;
+const github_1 = __nccwpck_require__(5438);
+/**
+ * Sends a GraphQL query request based on endpoint options
+ *
+ * @param {string} token Auth token
+ * @param {string} query GraphQL query. Example: `'query { viewer { login } }'`.
+ * @param {object} parameters URL, query or body parameters, as well as `headers`, `mediaType.{format|previews}`, `request`, or `baseUrl`.
+ */
+function graphql(token, query, parameters) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const github = new github_1.GitHub(token);
+        return yield github.graphql(query, parameters);
+    });
+}
+exports.graphql = graphql;
+
+
+/***/ }),
+
 /***/ 9645:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -8,12 +43,20 @@
 
 /* eslint-disable i18n-text/no-en */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deleteVersions = exports.finalIds = exports.getVersionIds = exports.RATE_LIMIT = void 0;
+exports.deleteVersions = exports.finalIds = exports.getVersionIds = exports.getPackageNames = exports.RATE_LIMIT = void 0;
+const input_1 = __nccwpck_require__(8657);
 const rxjs_1 = __nccwpck_require__(5805);
 const operators_1 = __nccwpck_require__(7801);
 const version_1 = __nccwpck_require__(4428);
+const packages_1 = __nccwpck_require__(221);
 exports.RATE_LIMIT = 100;
 let totalCount = 0;
+function getPackageNames(owner, repo, numPackages, cursor, token) {
+    return (0, packages_1.getRepoPackages)(owner, repo, numPackages, cursor, token).pipe((0, operators_1.expand)(value => value.paginate
+        ? (0, packages_1.getRepoPackages)(owner, repo, numPackages, value.cursor, token)
+        : rxjs_1.EMPTY), (0, operators_1.map)(value => value.packages));
+}
+exports.getPackageNames = getPackageNames;
 function getVersionIds(owner, packageName, packageType, numVersions, page, token) {
     return (0, version_1.getOldestVersions)(owner, packageName, packageType, numVersions, page, token).pipe((0, operators_1.expand)(value => value.paginate
         ? (0, version_1.getOldestVersions)(owner, packageName, packageType, numVersions, value.page + 1, token)
@@ -23,37 +66,56 @@ exports.getVersionIds = getVersionIds;
 function finalIds(input) {
     if (input.packageVersionIds.length > 0) {
         const toDelete = Math.min(input.packageVersionIds.length, exports.RATE_LIMIT);
-        return (0, rxjs_1.of)(input.packageVersionIds.slice(0, toDelete));
+        return (0, rxjs_1.of)({
+            versions: input.packageVersionIds.slice(0, toDelete),
+            name: input.packageName
+        });
     }
-    if (input.hasOldestVersionQueryInfo()) {
-        return getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token).pipe(
-        // This code block executes on all versions of a package starting from oldest
-        (0, operators_1.map)(value => {
-            // we need to delete oldest versions first
-            value.sort((a, b) => {
-                return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-            });
-            /*
-              Here first filter out the versions that are to be ignored.
-              Then compute number of versions to delete (toDelete) based on the inputs.
-              */
-            value = value.filter(info => !input.ignoreVersions.test(info.version));
-            if (input.deleteUntaggedVersions === 'true') {
-                value = value.filter(info => !info.tagged);
-            }
-            let toDelete = 0;
-            if (input.minVersionsToKeep < 0) {
-                toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, exports.RATE_LIMIT));
-            }
-            else {
-                toDelete = Math.min(value.length - input.minVersionsToKeep, exports.RATE_LIMIT);
-            }
-            if (toDelete < 0)
-                return [];
-            return value.map(info => info.id.toString()).slice(0, toDelete);
-        }));
+    if (!input.hasOldestVersionQueryInfo()) {
+        return (0, rxjs_1.throwError)("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input");
     }
-    return (0, rxjs_1.throwError)("Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input");
+    const filter = (0, packages_1.getPackageNameFilter)(input.packageNames);
+    if (!filter.isEmpty) {
+        return getPackageNames(input.owner, input.repo, exports.RATE_LIMIT, '', input.token)
+            .pipe((0, operators_1.mergeMap)(value => {
+            return value
+                .filter(info => filter.apply(info.name))
+                .map(info => finalIds(new input_1.Input(Object.assign(Object.assign({}, input), { packageNames: '', packageName: info.name }))));
+        }))
+            .pipe((0, operators_1.mergeMap)(val => val));
+    }
+    const versions = getVersionIds(input.owner, input.packageName, input.packageType, exports.RATE_LIMIT, 1, input.token).pipe(
+    // This code block executes on all versions of a package starting from oldest
+    (0, operators_1.map)(value => {
+        // we need to delete oldest versions first
+        value.sort((a, b) => {
+            return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        });
+        /*
+          Here first filter out the versions that are to be ignored.
+          Then compute number of versions to delete (toDelete) based on the inputs.
+          */
+        value = value.filter(info => !input.ignoreVersions.test(info.version));
+        if (input.deleteUntaggedVersions === 'true') {
+            value = value.filter(info => !info.tagged);
+        }
+        let toDelete = 0;
+        if (input.minVersionsToKeep < 0) {
+            toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, exports.RATE_LIMIT));
+        }
+        else {
+            toDelete = Math.min(value.length - input.minVersionsToKeep, exports.RATE_LIMIT);
+        }
+        if (toDelete < 0)
+            return [];
+        return value.map(info => info.id.toString()).slice(0, toDelete);
+    }));
+    return versions.pipe((0, operators_1.map)(data => {
+        return {
+            versions: data,
+            name: input.packageName
+        };
+    }));
 }
 exports.finalIds = finalIds;
 function deleteVersions(input) {
@@ -68,7 +130,10 @@ function deleteVersions(input) {
         return (0, rxjs_1.of)(true);
     }
     const result = finalIds(input);
-    return result.pipe((0, operators_1.concatMap)(ids => (0, version_1.deletePackageVersions)(ids, input.owner, input.packageName, input.packageType, input.token)));
+    return result.pipe((0, operators_1.concatMap)(data => {
+        console.log(`clearing ${data.versions.length} versions from ${data.name}`);
+        return (0, version_1.deletePackageVersions)(data.versions, input.owner, data.name, input.packageType, input.token);
+    }));
 }
 exports.deleteVersions = deleteVersions;
 
@@ -85,8 +150,10 @@ exports.Input = void 0;
 const defaultParams = {
     packageVersionIds: [],
     owner: '',
+    repo: '',
     packageName: '',
     packageType: '',
+    packageNames: '',
     numOldVersionsToDelete: 0,
     minVersionsToKeep: 0,
     ignoreVersions: new RegExp(''),
@@ -99,8 +166,10 @@ class Input {
         const validatedParams = Object.assign(Object.assign({}, defaultParams), params);
         this.packageVersionIds = validatedParams.packageVersionIds;
         this.owner = validatedParams.owner;
+        this.repo = validatedParams.repo;
         this.packageName = validatedParams.packageName;
         this.packageType = validatedParams.packageType;
+        this.packageNames = validatedParams.packageNames;
         this.numOldVersionsToDelete = validatedParams.numOldVersionsToDelete;
         this.minVersionsToKeep = validatedParams.minVersionsToKeep;
         this.ignoreVersions = validatedParams.ignoreVersions;
@@ -111,7 +180,8 @@ class Input {
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
-            this.packageName &&
+            this.repo &&
+            (this.packageName || this.packageNames) &&
             this.numOldVersionsToDelete >= 0 &&
             this.token);
     }
@@ -120,7 +190,8 @@ class Input {
             (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')) {
             return false;
         }
-        if (this.packageType === '' || this.packageName === '') {
+        if (this.packageType === '' ||
+            (this.packageName === '' && this.packageNames === '')) {
             return false;
         }
         if (this.deletePreReleaseVersions === 'true') {
@@ -138,6 +209,248 @@ class Input {
     }
 }
 exports.Input = Input;
+
+
+/***/ }),
+
+/***/ 6436:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRepoPackages = exports.queryForRepoPackages = void 0;
+const rxjs_1 = __nccwpck_require__(5805);
+const operators_1 = __nccwpck_require__(7801);
+const graphql_1 = __nccwpck_require__(9057);
+const query = `
+  query getPackages($owner: String!, $repo: String!, $first: Int!){
+    repository(owner: $owner, name: $repo) {
+      packages(first:$first){
+        edges {
+          node {
+            name
+            id
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }`;
+const Paginatequery = `
+  query getPackages($owner: String!, $repo: String!, $first: Int!, $after: String!){
+    repository(owner: $owner, name: $repo) {
+      packages(first:$first){
+        edges {
+          node {
+            name
+            id
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }`;
+function queryForRepoPackages(owner, repo, numPackages, startCursor, token) {
+    if (startCursor === '') {
+        return (0, rxjs_1.from)((0, graphql_1.graphql)(token, query, {
+            owner,
+            repo,
+            first: numPackages,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe((0, operators_1.catchError)((err) => {
+            const msg = 'query for packages failed.';
+            return (0, rxjs_1.throwError)(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct ${JSON.stringify(err, null, 2)}`);
+        }));
+    }
+    else {
+        return (0, rxjs_1.from)((0, graphql_1.graphql)(token, Paginatequery, {
+            owner,
+            repo,
+            first: numPackages,
+            before: startCursor,
+            headers: {
+                Accept: 'application/vnd.github.packages-preview+json'
+            }
+        })).pipe((0, operators_1.catchError)((err) => {
+            const msg = 'query for packages failed.';
+            return (0, rxjs_1.throwError)(err.errors && err.errors.length > 0
+                ? `${msg} ${err.errors[0].message}`
+                : `${msg} verify input parameters are correct`);
+        }));
+    }
+}
+exports.queryForRepoPackages = queryForRepoPackages;
+function getRepoPackages(owner, repo, numPackages, startCursor, token) {
+    return queryForRepoPackages(owner, repo, numPackages, startCursor, token).pipe((0, operators_1.map)(result => {
+        let r;
+        if (result.repository.packages.edges.length < 1) {
+            console.log(`package: No packages found for owner: ${owner} in repo: ${repo}`);
+            r = {
+                packages: [],
+                cursor: '',
+                paginate: false
+            };
+            return r;
+        }
+        const packages = result.repository.packages.edges;
+        const pages = result.repository.packages.pageInfo;
+        r = {
+            packages: packages.map(value => ({
+                id: value.node.id,
+                name: value.node.name
+            })),
+            cursor: pages.endCursor,
+            paginate: pages.hasNextPage
+        };
+        return r;
+    }));
+}
+exports.getRepoPackages = getRepoPackages;
+
+
+/***/ }),
+
+/***/ 221:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__nccwpck_require__(6436), exports);
+__exportStar(__nccwpck_require__(2539), exports);
+
+
+/***/ }),
+
+/***/ 2539:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getPackageNameFilter = void 0;
+/**
+ * Used to apply memoization on getPackageNameFilter
+ */
+const resultCache = {};
+/**
+ * Get a filter based on package names to match
+ *
+ * @param packageNames - serialized package names filter as string
+ * @returns the respective package filter
+ */
+function getPackageNameFilter(packageNames) {
+    if (resultCache[packageNames]) {
+        return resultCache[packageNames];
+    }
+    const result = calculatePackageNameFilter(packageNames);
+    resultCache[packageNames] = result;
+    return result;
+}
+exports.getPackageNameFilter = getPackageNameFilter;
+const emptyFilter = Object.freeze({
+    subfilters: Object.freeze([]),
+    isEmpty: true,
+    apply: () => false
+});
+/**
+ * Generates a filter based package names to match
+ *
+ * @param packageNames - serialized package names filter as string
+ * @returns the respective package filter
+ */
+function calculatePackageNameFilter(packageNames) {
+    if (packageNames === '') {
+        return emptyFilter;
+    }
+    const separatedPackageNames = packageNames
+        .split(',')
+        .map(name => name.trim())
+        .filter(name => name !== '');
+    if (separatedPackageNames.length <= 0) {
+        return emptyFilter;
+    }
+    const subfilters = separatedPackageNames.map(createFilter);
+    return {
+        subfilters,
+        isEmpty: subfilters.length <= 0,
+        apply: names => subfilters.some(filter => filter.apply(names))
+    };
+}
+function createFilter(packageName) {
+    if (packageName.startsWith('*') || packageName.endsWith('*')) {
+        return createWildcardFilter(packageName);
+    }
+    else if (packageName.startsWith('/') && packageName.endsWith('/')) {
+        return createRegexFilter(packageName);
+    }
+    else {
+        return createExactMatchFilter(packageName);
+    }
+}
+function createWildcardFilter(wildcardPackageName) {
+    const startsWithWildCard = wildcardPackageName.startsWith('*');
+    const endsWithWildCard = wildcardPackageName.endsWith('*');
+    let fn;
+    if (wildcardPackageName === '*') {
+        fn = () => true;
+    }
+    else if (startsWithWildCard && endsWithWildCard) {
+        const targetText = wildcardPackageName.substring(1, wildcardPackageName.length - 1);
+        fn = (packageName) => packageName.includes(targetText);
+    }
+    else if (startsWithWildCard) {
+        const targetText = wildcardPackageName.substring(1);
+        fn = (packageName) => packageName.endsWith(targetText);
+    }
+    else {
+        const targetText = wildcardPackageName.substring(0, wildcardPackageName.length - 1);
+        fn = (packageName) => packageName.startsWith(targetText);
+    }
+    return {
+        type: 'wildcard',
+        apply: fn
+    };
+}
+function createRegexFilter(regexPackageName) {
+    const regexPattern = regexPackageName.substring(1, regexPackageName.length - 1);
+    const regex = new RegExp(regexPattern);
+    return {
+        type: 'regex',
+        apply: (packageName) => regex.test(packageName)
+    };
+}
+function createExactMatchFilter(matchingPackageName) {
+    return {
+        type: 'string',
+        apply: (packageName) => packageName === matchingPackageName
+    };
+}
 
 
 /***/ }),
@@ -167,10 +480,8 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
         username: owner,
         package_version_id
     })).pipe((0, operators_1.catchError)(err => {
-        const msg = 'delete version API failed.';
-        return (0, rxjs_1.throwError)(err.errors && err.errors.length > 0
-            ? `${msg} ${err.errors[0].message}`
-            : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`);
+        console.log(err);
+        return rxjs_1.EMPTY;
     }), (0, operators_1.map)(response => response.status === 204));
 }
 exports.deletePackageVersion = deletePackageVersion;
@@ -215,10 +526,7 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
         per_page: numVersions,
         page
     })).pipe((0, operators_1.catchError)(err => {
-        const msg = 'get versions API failed.';
-        return (0, rxjs_1.throwError)(err.errors && err.errors.length > 0
-            ? `${msg} ${err.errors[0].message}`
-            : `${msg} ${err.message}`);
+        return rxjs_1.EMPTY;
     }), (0, operators_1.map)(response => {
         const resp = {
             versions: response.data.map((version) => {
@@ -43925,8 +44233,10 @@ function getActionInput() {
             ? (0, core_1.getInput)('package-version-ids').split(',')
             : [],
         owner: (0, core_1.getInput)('owner') ? (0, core_1.getInput)('owner') : github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
         packageName: (0, core_1.getInput)('package-name'),
         packageType: (0, core_1.getInput)('package-type'),
+        packageNames: (0, core_1.getInput)('package-names'),
         numOldVersionsToDelete: Number((0, core_1.getInput)('num-old-versions-to-delete')),
         minVersionsToKeep: Number((0, core_1.getInput)('min-versions-to-keep')),
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),

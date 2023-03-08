@@ -1,16 +1,46 @@
 /* eslint-disable i18n-text/no-en */
 
 import {Input} from './input'
-import {EMPTY, Observable, of, throwError} from 'rxjs'
-import {reduce, concatMap, map, expand, tap} from 'rxjs/operators'
+import {EMPTY, merge, Observable, of, throwError} from 'rxjs'
+import {
+  reduce,
+  concatMap,
+  map,
+  expand,
+  tap,
+  mergeMap,
+  catchError,
+  mergeAll,
+  finalize,
+  exhaust,
+  toArray
+} from 'rxjs/operators'
 import {
   deletePackageVersions,
   getOldestVersions,
   RestVersionInfo
 } from './version'
+import {getRepoPackages, getPackageNameFilter, PackageInfo} from './packages'
 
 export const RATE_LIMIT = 100
 let totalCount = 0
+
+export function getPackageNames(
+  owner: string,
+  repo: string,
+  numPackages: number,
+  cursor: string,
+  token: string
+): Observable<PackageInfo[]> {
+  return getRepoPackages(owner, repo, numPackages, cursor, token).pipe(
+    expand(value =>
+      value.paginate
+        ? getRepoPackages(owner, repo, numPackages, value.cursor, token)
+        : EMPTY
+    ),
+    map(value => value.packages)
+  )
+}
 
 export function getVersionIds(
   owner: string,
@@ -45,57 +75,89 @@ export function getVersionIds(
   )
 }
 
-export function finalIds(input: Input): Observable<string[]> {
+export function finalIds(input: Input): Observable<PackageNameAndVersions> {
   if (input.packageVersionIds.length > 0) {
     const toDelete = Math.min(input.packageVersionIds.length, RATE_LIMIT)
-    return of(input.packageVersionIds.slice(0, toDelete))
+    return of({
+      versions: input.packageVersionIds.slice(0, toDelete),
+      name: input.packageName
+    })
   }
-  if (input.hasOldestVersionQueryInfo()) {
-    return getVersionIds(
-      input.owner,
-      input.packageName,
-      input.packageType,
-      RATE_LIMIT,
-      1,
-      input.token
-    ).pipe(
-      // This code block executes on all versions of a package starting from oldest
-      map(value => {
-        // we need to delete oldest versions first
-        value.sort((a, b) => {
-          return (
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-          )
-        })
-        /* 
-          Here first filter out the versions that are to be ignored.
-          Then compute number of versions to delete (toDelete) based on the inputs.
-          */
-        value = value.filter(info => !input.ignoreVersions.test(info.version))
 
-        if (input.deleteUntaggedVersions === 'true') {
-          value = value.filter(info => !info.tagged)
-        }
-
-        let toDelete = 0
-        if (input.minVersionsToKeep < 0) {
-          toDelete = Math.min(
-            value.length,
-            Math.min(input.numOldVersionsToDelete, RATE_LIMIT)
-          )
-        } else {
-          toDelete = Math.min(
-            value.length - input.minVersionsToKeep,
-            RATE_LIMIT
-          )
-        }
-        if (toDelete < 0) return []
-        return value.map(info => info.id.toString()).slice(0, toDelete)
-      })
+  if (!input.hasOldestVersionQueryInfo()) {
+    return throwError(
+      "Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input"
     )
   }
-  return throwError(
-    "Could not get packageVersionIds. Explicitly specify using the 'package-version-ids' input"
+
+  const filter = getPackageNameFilter(input.packageNames)
+  if (!filter.isEmpty) {
+    return getPackageNames(input.owner, input.repo, RATE_LIMIT, '', input.token)
+      .pipe(
+        mergeMap(value => {
+          return value
+            .filter(info => filter.apply(info.name))
+            .map(info =>
+              finalIds(
+                new Input({
+                  ...input,
+                  packageNames: '',
+                  packageName: info.name
+                })
+              )
+            )
+        })
+      )
+      .pipe(mergeMap(val => val))
+  }
+
+  const versions = getVersionIds(
+    input.owner,
+    input.packageName,
+    input.packageType,
+    RATE_LIMIT,
+    1,
+    input.token
+  ).pipe(
+    // This code block executes on all versions of a package starting from oldest
+    map(value => {
+      // we need to delete oldest versions first
+      value.sort((a, b) => {
+        return (
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
+      })
+      /* 
+        Here first filter out the versions that are to be ignored.
+        Then compute number of versions to delete (toDelete) based on the inputs.
+        */
+      value = value.filter(info => !input.ignoreVersions.test(info.version))
+
+      if (input.deleteUntaggedVersions === 'true') {
+        value = value.filter(info => !info.tagged)
+      }
+
+      let toDelete = 0
+      if (input.minVersionsToKeep < 0) {
+        toDelete = Math.min(
+          value.length,
+          Math.min(input.numOldVersionsToDelete, RATE_LIMIT)
+        )
+      } else {
+        toDelete = Math.min(value.length - input.minVersionsToKeep, RATE_LIMIT)
+      }
+      if (toDelete < 0) return []
+      return value.map(info => info.id.toString()).slice(0, toDelete)
+    })
+  )
+
+  return versions.pipe(
+    map(data => {
+      return {
+        versions: data,
+        name: input.packageName
+      }
+    })
   )
 }
 
@@ -118,14 +180,21 @@ export function deleteVersions(input: Input): Observable<boolean> {
   const result = finalIds(input)
 
   return result.pipe(
-    concatMap(ids =>
-      deletePackageVersions(
-        ids,
+    concatMap(data => {
+      console.log(`clearing ${data.versions.length} versions from ${data.name}`)
+
+      return deletePackageVersions(
+        data.versions,
         input.owner,
-        input.packageName,
+        data.name,
         input.packageType,
         input.token
       )
-    )
+    })
   )
+}
+
+export interface PackageNameAndVersions {
+  versions: string[]
+  name: string
 }

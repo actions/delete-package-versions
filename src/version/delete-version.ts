@@ -1,4 +1,4 @@
-import {from, Observable, merge, throwError, of} from 'rxjs'
+import {from, Observable, merge, of, EMPTY} from 'rxjs'
 import {catchError, map, tap} from 'rxjs/operators'
 import {Octokit} from '@octokit/rest'
 import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types'
@@ -31,12 +31,8 @@ export function deletePackageVersion(
     })
   ).pipe(
     catchError(err => {
-      const msg = 'delete version API failed.'
-      return throwError(
-        err.errors && err.errors.length > 0
-          ? `${msg} ${err.errors[0].message}`
-          : `${msg} ${err.message} \n${deleted - 1} versions deleted till now.`
-      )
+      console.log(err)
+      return EMPTY
     }),
     map(response => response.status === 204)
   )

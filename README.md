@@ -8,8 +8,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 * Delete all package versions except n most recent versions
 * Delete oldest version(s)
 * Ignore version(s) from deletion through regex
-* Delete version(s) of a package that is hosted from a repo having access to package
-* Delete version(s) of a package that is hosted from a repo not having access to package
+* Delete version(s) of packages that are hosted in the same repo that is executing the workflow
+* Delete version(s) of packages that are hosted in a different repo than the one executing the workflow
 * Delete a single version
 * Delete multiple versions
 * Delete specific version(s)
@@ -28,13 +28,24 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Required if deleting a version from a package hosted in a different org than the one executing the workflow.
   owner:
 
-  # Name of the package.
-  # Required
-  package-name:
-
   # Type of the package. Can be one of container, maven, npm, nuget, or rubygems.
   # Required
   package-type:
+  
+  # Defaults to an empty string.
+  # Required if `package-version-ids` or `package-names` input is not given.
+  package-name:
+
+  # Names of the package.
+  # Can be one of the following:
+  # - a single package name
+  # - a group of packages that matches a wildcard at start, end, both sides, or all packages (e.g. "package*")
+  # - a group of packages that matches a regex, must start with slash at the beginning and end (e.g. "/package.*/")
+  # - a comma separated list of the previous cases (e.g. "package-lorem, *-ipsum, /.*dolor/")
+  # Defaults to an empty string.
+  # Required if `package-version-ids` or `package-name` input is not given.
+  package-names:
+
 
   # The number of old versions to delete starting from the oldest version.
   # Defaults to 1.
@@ -75,7 +86,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
 # Valid Input Combinations
 
-`owner`, `package-name`, `package-type` and `token` can be used with the following combinations in a workflow - 
+`owner`, `repo`, `package-name` (or `package-names`) and `token` can be used with the following combinations in a workflow - 
 
   - `num-old-versions-to-delete`
   - `min-versions-to-keep` 
@@ -104,6 +115,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 - [License](#license)
 
 
+  
   ### Delete all pre-release versions except y latest pre-release package versions
 
   To delete all pre release versions except y latest pre-release package versions, the __package-name__, __min-versions-to-keep__ and __delete-only-pre-release-versions__ inputs are required.
@@ -266,6 +278,41 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       owner: 'github'
       package-name: 'test-package'
       package-type: 'npm'
+      token: ${{ secrets.PAT }}
+      min-versions-to-keep: 2
+  ```
+
+  <br>
+
+  ### Delete all except y latest versions of a package
+
+  To delete all except y latest versions of all packages hosted in the same repo as the workflow the __package-names__ and __min-versions-to-keep__ inputs are required.
+
+  __Example__
+
+  Delete all except latest 2 versions of a package hosted in the same repo as the workflow
+
+  ```yaml
+  - uses: actions/delete-package-versions@v3
+    with:
+      package-names: '*'
+      min-versions-to-keep: 2
+  ```
+
+  To delete all except y latest versions of all packages hosted in a repo other than the workflow the __owner__, __repo__, __package-names__, __token__ and __min-versions-to-keep__ inputs are required.
+
+  The [token][token] needs the delete packages and read packages scope. It is recommended [to store the token as a secret][secret]. In this example the [token][token] was stored as a secret named __GITHUB_PAT__.
+
+  __Example__
+
+  Delete all except latest 2 versions of a package hosted in a repo other than the workflow
+
+  ```yaml
+  - uses: actions/delete-package-versions@v3
+    with:
+      owner: 'github'
+      repo: 'packages'
+      package-names: '*'
       token: ${{ secrets.PAT }}
       min-versions-to-keep: 2
   ```
