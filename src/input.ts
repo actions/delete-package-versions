@@ -84,7 +84,7 @@ export class Input {
       this.packageName === '' ||
       this.packageNames === ''
     ) {
-      return false
+      return false 
     }
 
     if (this.deletePreReleaseVersions === 'true') {
