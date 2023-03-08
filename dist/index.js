@@ -462,6 +462,8 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
     const package_version_id = +packageVersionId;
     const package_type = packageType;
     deleted += 1;
+    console.log(package_version_id);
+    console.log(package_type);
     return (0, rxjs_1.from)(octokit.rest.packages.deletePackageVersionForUser({
         package_type,
         package_name: packageName,
