@@ -82,10 +82,8 @@ export class Input {
 
     if (
       this.packageType === '' ||
-      this.packageName === '' ||
-      this.packageNames === ''
+      (this.packageName === '' && this.packageNames === '')
     ) {
-      console.log('check 2 failed')
       return false
     }
 

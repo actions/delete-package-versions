@@ -180,9 +180,7 @@ class Input {
             return false;
         }
         if (this.packageType === '' ||
-            this.packageName === '' ||
-            this.packageNames === '') {
-            console.log('check 2 failed');
+            (this.packageName === '' && this.packageNames === '')) {
             return false;
         }
         if (this.deletePreReleaseVersions === 'true') {
