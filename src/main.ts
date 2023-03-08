@@ -11,6 +11,7 @@ function getActionInput(): Input {
       ? getInput('package-version-ids').split(',')
       : [],
     owner: getInput('owner') ? getInput('owner') : context.repo.owner,
+    repo: context.repo.repo,
     packageName: getInput('package-name'),
     packageType: getInput('package-type'),
     packageNames: getInput('package-names'),

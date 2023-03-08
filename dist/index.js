@@ -167,16 +167,9 @@ class Input {
         this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions;
     }
     hasOldestVersionQueryInfo() {
-        console.log('owner: ' + this.owner);
-        console.log('repo: ' + this.repo);
-        console.log('packageName: ' + this.packageName);
-        console.log('packageNames: ' + this.packageNames);
-        console.log('numOldVersionsToDelete: ' + this.numOldVersionsToDelete);
-        console.log('token: ' + this.token);
         return !!(this.owner &&
             this.repo &&
-            this.packageName &&
-            this.packageNames &&
+            (this.packageName || this.packageNames) &&
             this.numOldVersionsToDelete >= 0 &&
             this.token);
     }
@@ -44230,6 +44223,7 @@ function getActionInput() {
             ? (0, core_1.getInput)('package-version-ids').split(',')
             : [],
         owner: (0, core_1.getInput)('owner') ? (0, core_1.getInput)('owner') : github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
         packageName: (0, core_1.getInput)('package-name'),
         packageType: (0, core_1.getInput)('package-type'),
         packageNames: (0, core_1.getInput)('package-names'),
