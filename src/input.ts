@@ -76,6 +76,7 @@ export class Input {
       this.numOldVersionsToDelete > 1 &&
       (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')
     ) {
+      console.log('check 1 failed')
       return false
     }
 
@@ -84,7 +85,8 @@ export class Input {
       this.packageName === '' ||
       this.packageNames === ''
     ) {
-      return false 
+      console.log('check 2 failed')
+      return false
     }
 
     if (this.deletePreReleaseVersions === 'true') {
