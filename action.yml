@@ -68,6 +68,13 @@ inputs:
     required: false
     default: "false"
 
+  delete-only-untagged-versions:
+    description: >
+      Deletes only untagged versions in case of a container package. Does not work for other package types.
+      By default this is set to false
+    required: false
+    default: "false"
+
   token:
     description: >
       Token with the necessary scopes to delete package versions.

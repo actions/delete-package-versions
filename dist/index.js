@@ -91,6 +91,9 @@ function finalIds(input) {
               Then compute number of versions to delete (toDelete) based on the inputs.
               */
             value = value.filter(info => !input.ignoreVersions.test(info.version));
+            if (input.deleteUntaggedVersions === 'true') {
+                value = value.filter(info => !info.tagged);
+            }
             let toDelete = 0;
             if (input.minVersionsToKeep < 0) {
                 toDelete = Math.min(value.length, Math.min(input.numOldVersionsToDelete, exports.RATE_LIMIT));
@@ -143,7 +146,8 @@ const defaultParams = {
     minVersionsToKeep: 0,
     ignoreVersions: new RegExp(''),
     deletePreReleaseVersions: '',
-    token: ''
+    token: '',
+    deleteUntaggedVersions: ''
 };
 class Input {
     constructor(params) {
@@ -160,6 +164,7 @@ class Input {
         this.deletePreReleaseVersions = validatedParams.deletePreReleaseVersions;
         this.token = validatedParams.token;
         this.numDeleted = 0;
+        this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions;
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
@@ -182,6 +187,9 @@ class Input {
             this.minVersionsToKeep =
                 this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
+        }
+        if (this.packageType.toLowerCase() !== 'container') {
+            this.deleteUntaggedVersions = 'false';
         }
         if (this.minVersionsToKeep >= 0) {
             this.numOldVersionsToDelete = 0;
@@ -449,7 +457,8 @@ const rest_1 = __nccwpck_require__(5375);
 let deleted = 0;
 function deletePackageVersion(packageVersionId, owner, packageName, packageType, token) {
     const octokit = new rest_1.Octokit({
-        auth: token
+        auth: token,
+        baseUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
     });
     const package_version_id = +packageVersionId;
     const package_type = packageType;
@@ -497,7 +506,8 @@ const operators_1 = __nccwpck_require__(7801);
 const rest_1 = __nccwpck_require__(5375);
 function getOldestVersions(owner, packageName, packageType, numVersions, page, token) {
     const octokit = new rest_1.Octokit({
-        auth: token
+        auth: token,
+        baseUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
     });
     const package_type = packageType;
     return (0, rxjs_1.from)(octokit.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
@@ -511,10 +521,17 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
     }), (0, operators_1.map)(response => {
         const resp = {
             versions: response.data.map((version) => {
+                let tagged = false;
+                if (package_type === 'container' &&
+                    version.metadata &&
+                    version.metadata.container) {
+                    tagged = version.metadata.container.tags.length > 0;
+                }
                 return {
                     id: version.id,
                     version: version.name,
-                    created_at: version.created_at
+                    created_at: version.created_at,
+                    tagged
                 };
             }),
             page,
@@ -44195,7 +44212,6 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 const input_1 = __nccwpck_require__(8657);
@@ -44215,7 +44231,8 @@ function getActionInput() {
         minVersionsToKeep: Number((0, core_1.getInput)('min-versions-to-keep')),
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),
         deletePreReleaseVersions: (0, core_1.getInput)('delete-only-pre-release-versions').toLowerCase(),
-        token: (0, core_1.getInput)('token')
+        token: (0, core_1.getInput)('token'),
+        deleteUntaggedVersions: (0, core_1.getInput)('delete-only-untagged-versions').toLowerCase()
     });
 }
 function run() {

@@ -125,6 +125,11 @@ export function finalIds(input: Input): Observable<string[]> {
           Then compute number of versions to delete (toDelete) based on the inputs.
           */
         value = value.filter(info => !input.ignoreVersions.test(info.version))
+
+        if (input.deleteUntaggedVersions === 'true') {
+          value = value.filter(info => !info.tagged)
+        }
+
         let toDelete = 0
         if (input.minVersionsToKeep < 0) {
           toDelete = Math.min(

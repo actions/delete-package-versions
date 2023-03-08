@@ -55,6 +55,36 @@ describe('index tests -- call rest', () => {
     })
   })
 
+  it('finalIDs test - success - GHES', done => {
+    process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
+
+    const numVersions = 10
+    let apiCalled = 0
+
+    const versions = getMockedVersionsResponse(numVersions)
+
+    server.use(
+      rest.get(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions',
+        (req, res, ctx) => {
+          apiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    finalIds(getInput()).subscribe(ids => {
+      expect(apiCalled).toBe(1)
+      expect(ids.length).toBe(numVersions)
+      for (let i = 0; i < numVersions; i++) {
+        expect(ids[i]).toBe(versions[i].id.toString())
+      }
+
+      delete process.env.GITHUB_API_URL
+      done()
+    })
+  })
+
   it('finalIDs test - success - pagination', done => {
     const numVersions = RATE_LIMIT * 2
     let apiCalled = 0
@@ -225,6 +255,53 @@ describe('index tests -- call rest', () => {
     })
   })
 
+  it('finalIds test - delete only untagged versions with minVersionsToKeep', done => {
+    const numVersions = 50
+    const numTaggedVersions = 20
+    const numUntaggedVersions = numVersions - numTaggedVersions
+
+    const taggedVersions = getMockedVersionsResponse(
+      numTaggedVersions,
+      0,
+      'container',
+      true
+    )
+    const untaggedVersions = getMockedVersionsResponse(
+      numUntaggedVersions,
+      numTaggedVersions,
+      'container',
+      false
+    )
+    const versions = taggedVersions.concat(untaggedVersions)
+
+    let apiCalled = 0
+
+    server.use(
+      rest.get(
+        'https://api.github.com/users/test-owner/packages/container/test-package/versions',
+        (req, res, ctx) => {
+          apiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    finalIds(
+      getInput({
+        minVersionsToKeep: 10,
+        deleteUntaggedVersions: 'true',
+        packageType: 'container'
+      })
+    ).subscribe(ids => {
+      expect(apiCalled).toBe(1)
+      expect(ids.length).toBe(numUntaggedVersions - 10)
+      for (let i = 0; i < numUntaggedVersions - 10; i++) {
+        expect(ids[i]).toBe(untaggedVersions[i].id.toString())
+      }
+      done()
+    })
+  })
+
   it('finalIds test - no versions deleted if API error even once', done => {
     const numVersions = RATE_LIMIT * 2
     let apiCalled = 0
@@ -340,6 +417,53 @@ describe('index tests -- call rest', () => {
         for (let i = 0; i < numVersions; i++) {
           expect(versionsDeleted[i]).toBe(versions[i].id.toString())
         }
+        done()
+      })
+  })
+
+  it('deleteVersions test - success complete flow - GHES', done => {
+    process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
+
+    const numVersions = 10
+    let getApiCalled = 0
+    let deleteApiCalled = 0
+
+    const versions = getMockedVersionsResponse(numVersions)
+    const versionsDeleted: string[] = []
+
+    server.use(
+      rest.get(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions',
+        (req, res, ctx) => {
+          getApiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    server.use(
+      rest.delete(
+        'https://github.someghesinstance.com/api/v3/users/test-owner/packages/npm/test-package/versions/:versionId',
+        (req, res, ctx) => {
+          deleteApiCalled++
+          versionsDeleted.push(req.params.versionId as string)
+          return res(ctx.status(204))
+        }
+      )
+    )
+
+    deleteVersions(getInput())
+      .subscribe(result => {
+        expect(result).toBe(true)
+      })
+      .add(() => {
+        expect(getApiCalled).toBe(1)
+        expect(deleteApiCalled).toBe(numVersions)
+        for (let i = 0; i < numVersions; i++) {
+          expect(versionsDeleted[i]).toBe(versions[i].id.toString())
+        }
+
+        delete process.env.GITHUB_API_URL
         done()
       })
   })

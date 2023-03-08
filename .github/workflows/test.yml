@@ -18,6 +18,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       name: Checkout Delete Package Versions Repo
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
     - run: npm install
       name: NPM Install
     - run: npm run pack
@@ -29,6 +32,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       name: Checkout Delete Package Versions Repo
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
     - uses: ./
       name: Smoke Test Delete Package Versions Action
       with:

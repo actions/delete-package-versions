@@ -15,7 +15,8 @@ export function deletePackageVersion(
   token: string
 ): Observable<boolean> {
   const octokit = new Octokit({
-    auth: token
+    auth: token,
+    baseUrl: process.env.GITHUB_API_URL || 'https://api.github.com'
   })
   const package_version_id = +packageVersionId
   const package_type: PackageType = packageType as PackageType
