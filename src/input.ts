@@ -75,7 +75,11 @@ export class Input {
       return false
     }
 
-    if (this.packageType === '' || this.packageName === '') {
+    if (
+      this.packageType === '' ||
+      this.packageName === '' ||
+      this.packageNames === ''
+    ) {
       return false
     }
 

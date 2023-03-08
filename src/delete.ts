@@ -2,14 +2,21 @@
 
 import {Input} from './input'
 import {EMPTY, Observable, of, throwError} from 'rxjs'
-import {reduce, concatMap, map, expand, tap, mergeMap, catchError} from 'rxjs/operators'
+import {
+  reduce,
+  concatMap,
+  map,
+  expand,
+  tap,
+  mergeMap,
+  catchError
+} from 'rxjs/operators'
 import {
   deletePackageVersions,
   getOldestVersions,
   RestVersionInfo
 } from './version'
 import {getRepoPackages, getPackageNameFilter, PackageInfo} from './packages'
-
 
 export const RATE_LIMIT = 100
 let totalCount = 0
@@ -70,7 +77,6 @@ export function finalIds(input: Input): Observable<string[]> {
     return of(input.packageVersionIds.slice(0, toDelete))
   }
   if (input.hasOldestVersionQueryInfo()) {
-
     const filter = getPackageNameFilter(input.packageNames)
     if (!filter.isEmpty) {
       return getPackageNames(

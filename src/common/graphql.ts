@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {GitHub} from '@actions/github'
 import {GraphQlQueryResponseData} from '@octokit/graphql/dist-types/types'
 import {RequestParameters} from '@octokit/types/dist-types/RequestParameters'
