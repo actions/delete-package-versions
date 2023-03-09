@@ -58,6 +58,8 @@ inputs:
   delete-only-untagged-versions:
     description: >
       Deletes only untagged versions in case of a container package. Does not work for other package types.
+      The number of untagged versions to keep can be specified by min-versions-to-keep.
+      When this is set num-old-versions-to-delete will not be taken into account.
       By default this is set to false
     required: false
     default: "false"

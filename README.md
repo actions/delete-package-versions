@@ -84,6 +84,8 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   - `num-old-versions-to-delete` + `ignore-versions`
   - `min-versions-to-keep` + `ignore-versions`
   - `min-versions-to-keep` + `delete-only-pre-release-versions`
+  - `delete-only-untagged-versions`
+  - `min-versions-to-keep` + `delete-only-untagged-versions`
 
 # Scenarios
 

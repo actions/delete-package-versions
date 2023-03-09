@@ -31,6 +31,9 @@ function finalIds(input) {
         (0, operators_1.map)(value => {
             // we need to delete oldest versions first
             value.sort((a, b) => {
+                if (a.created_at === b.created_at) {
+                    return a.id - b.id;
+                }
                 return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
             });
             /*
@@ -116,8 +119,13 @@ class Input {
             this.token);
     }
     checkInput() {
+        if (this.packageType.toLowerCase() !== 'container') {
+            this.deleteUntaggedVersions = 'false';
+        }
         if (this.numOldVersionsToDelete > 1 &&
-            (this.minVersionsToKeep >= 0 || this.deletePreReleaseVersions === 'true')) {
+            (this.minVersionsToKeep >= 0 ||
+                this.deletePreReleaseVersions === 'true' ||
+                this.deleteUntaggedVersions === 'true')) {
             return false;
         }
         if (this.packageType === '' || this.packageName === '') {
@@ -128,8 +136,9 @@ class Input {
                 this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
             this.ignoreVersions = new RegExp('^(0|[1-9]\\d*)((\\.(0|[1-9]\\d*))*)$');
         }
-        if (this.packageType.toLowerCase() !== 'container') {
-            this.deleteUntaggedVersions = 'false';
+        if (this.deleteUntaggedVersions === 'true') {
+            this.minVersionsToKeep =
+                this.minVersionsToKeep > 0 ? this.minVersionsToKeep : 0;
         }
         if (this.minVersionsToKeep >= 0) {
             this.numOldVersionsToDelete = 0;
