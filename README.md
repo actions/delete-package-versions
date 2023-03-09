@@ -60,7 +60,10 @@ This action deletes versions of a package from [GitHub Packages](https://github.
 
   # If true it will delete only the untagged versions in case of container package.
   # Does not work for other package types and will be ignored.
+  # The number of untagged versions to keep can be set by using `min-versions-to-keep` value with this.
+  # When `min-versions-to-keep` is 0, all untagged versions get deleted.
   # Defaults to false.
+  # Cannot be used with `num-old-versions-to-delete`.
   delete-only-untagged-versions:
 
   # The token used to authenticate with GitHub Packages.
