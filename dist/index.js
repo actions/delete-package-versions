@@ -31,6 +31,9 @@ function finalIds(input) {
         (0, operators_1.map)(value => {
             // we need to delete oldest versions first
             value.sort((a, b) => {
+                if (a.created_at === b.created_at) {
+                    return a.id - b.id;
+                }
                 return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
             });
             /*
