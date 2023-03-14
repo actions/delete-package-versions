@@ -1,14 +1,14 @@
-name: Repository dispatch for Integration Tests
+name: Repository dispatch event for Integration Tests
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build:
+  repository_dispatch_event:
     runs-on: ubuntu-latest
     steps:
-      - name: Repository Dispatch
+      - name: Repository Dispatch Event
         uses: peter-evans/repository-dispatch@26b39ed245ab8f31526069329e112ab2fb224588
         with:
           token: ${{ secrets.ITS_PAT }}
