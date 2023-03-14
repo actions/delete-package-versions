@@ -1,0 +1,16 @@
+name: Repository dispatch for Integration Tests
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.ITS_PAT }}
+          repository: ${{ secrets.ITS_REPO }}
+          event-type: delete-package-versions-its
