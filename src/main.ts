@@ -22,7 +22,8 @@ function getActionInput(): Input {
     token: getInput('token'),
     deleteUntaggedVersions: getInput(
       'delete-only-untagged-versions'
-    ).toLowerCase()
+    ).toLowerCase(),
+    includeTags: getInput('ignore-versions-include-tags').toLowerCase()
   })
 }
 

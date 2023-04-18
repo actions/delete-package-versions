@@ -64,6 +64,13 @@ inputs:
     required: false
     default: "false"
 
+  ignore-versions-include-tags:
+    description: >
+      Next to the version also ignore tags matching the ignore-versions regex. 
+      By default this is set to false
+    required: false
+    default: "false"
+
   token:
     description: >
       Token with the necessary scopes to delete package versions.
