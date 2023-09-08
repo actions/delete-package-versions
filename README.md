@@ -1,4 +1,4 @@
-# Delete Package Versions
+# Delete Package Versions 
 
 This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 100 versions in one run.
 
