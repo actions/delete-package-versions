@@ -46,7 +46,7 @@ const query = `
   }`
 
 const Paginatequery = `
-  query getPackages($owner: String!, $repo: String!, $first: Int!, $after: String!){
+  query getPackages($owner: String!, $repo: String!, $first: Int!){
     repository(owner: $owner, name: $repo) {
       packages(first:$first){
         edges {
