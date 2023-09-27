@@ -241,7 +241,7 @@ const query = `
     }
   }`;
 const Paginatequery = `
-  query getPackages($owner: String!, $repo: String!, $first: Int!){
+  query getPackages($owner: String!, $repo: String!, $first: Int!, $after: String!){
     repository(owner: $owner, name: $repo) {
       packages(first:$first){
         edges {
@@ -279,11 +279,13 @@ function queryForRepoPackages(owner, repo, numPackages, startCursor, token) {
             repo,
             first: numPackages,
             before: startCursor,
+            after: '',
             headers: {
                 Accept: 'application/vnd.github.packages-preview+json'
             }
         })).pipe((0, operators_1.catchError)((err) => {
             const msg = 'query for packages failed.';
+            console.log(err);
             return (0, rxjs_1.throwError)(err.errors && err.errors.length > 0
                 ? `${msg} ${err.errors[0].message}`
                 : `${msg} verify input parameters are correct`);

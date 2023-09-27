@@ -46,7 +46,7 @@ const query = `
   }`
 
 const Paginatequery = `
-  query getPackages($owner: String!, $repo: String!, $first: Int!){
+  query getPackages($owner: String!, $repo: String!, $first: Int!, $after: String!){
     repository(owner: $owner, name: $repo) {
       packages(first:$first){
         edges {
@@ -101,6 +101,7 @@ export function queryForRepoPackages(
         repo,
         first: numPackages,
         before: startCursor,
+        after: '',
         headers: {
           Accept: 'application/vnd.github.packages-preview+json'
         }
@@ -108,6 +109,7 @@ export function queryForRepoPackages(
     ).pipe(
       catchError((err: GraphQlQueryResponse<unknown>) => {
         const msg = 'query for packages failed.'
+        console.log(err)
         return throwError(
           err.errors && err.errors.length > 0
             ? `${msg} ${err.errors[0].message}`
