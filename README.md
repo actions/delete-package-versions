@@ -177,7 +177,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       package-name: 'test-package'
       package-type: 'npm'
       min-versions-to-keep: 3
-      ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
+      ignore-versions: '^(0|[1-9]\d*)\.0\.0$'
   ```
 
   To delete all except y latest versions while ignoring particular package versions from a repo not having access to package, the __owner__, __package-name__, __token__, __min-versions-to-keep__ and __ignore-versions__ inputs are required.
@@ -196,7 +196,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       package-type: 'npm'
       token: ${{ secrets.GITHUB_PAT }}
       min-versions-to-keep: 3
-      ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
+      ignore-versions: '^(0|[1-9]\d*)\.0\.0$'
   ```
 
   <br>
@@ -217,7 +217,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       package-name: 'test-package'
       package-type: 'npm'
       num-old-versions-to-delete: 3
-      ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
+      ignore-versions: '^(0|[1-9]\d*)\.0\.0$'
   ```
 
   To delete oldest x number of versions while ignoring all the major package versions from a repo not having access to package, the __owner__, __package-name__, __token__, __num-oldest-versions-to-delete__ and __ignore-versions__ inputs are required.
@@ -236,7 +236,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
       package-type: 'npm'
       token: ${{ secrets.PAT }}
       num-old-versions-to-delete: 3
-      ignore-versions: '^(0|[1-9]\\d*)\\.0\\.0$'
+      ignore-versions: '^(0|[1-9]\d*)\.0\.0$'
   ```
 
   <br>
