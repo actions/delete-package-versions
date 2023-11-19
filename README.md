@@ -1,4 +1,11 @@
-# Delete Package Versions
+- uses: actions/delete-package-versions@v4
+  with: 
+    owner: 'github'
+    package-name: 'test-package'
+    package-type: 'npm'
+    token: ${{ secrets.GITHUB_PAT }}
+    min-versions-to-keep: 10
+    delete-only-pre-release-versions: "true"# Delete Package Versions
 
 This action deletes versions of a package from [GitHub Packages](https://github.com/features/packages). This action will only delete a maximum of 100 versions in one run.
 
