@@ -1,4 +1,4 @@
-import {getInput, setFailed} from '@actions/core'
+import {getBooleanInput, getInput, setFailed} from '@actions/core'
 import {context} from '@actions/github'
 import {Input} from './input'
 import {Observable, throwError} from 'rxjs'
@@ -22,7 +22,8 @@ function getActionInput(): Input {
     token: getInput('token'),
     deleteUntaggedVersions: getInput(
       'delete-only-untagged-versions'
-    ).toLowerCase()
+    ).toLowerCase(),
+    dryRun: getBooleanInput('dry-run')
   })
 }
 

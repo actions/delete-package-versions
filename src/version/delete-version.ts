@@ -47,9 +47,18 @@ export function deletePackageVersions(
   owner: string,
   packageName: string,
   packageType: string,
-  token: string
+  token: string,
+  dryRun = false
 ): Observable<boolean> {
   if (packageVersionIds.length === 0) {
+    return of(true)
+  }
+  if (dryRun) {
+    for (const id of packageVersionIds) {
+      console.log(
+        `version with id: ${id} to be deleted by setting dry-run: false`
+      )
+    }
     return of(true)
   }
 
@@ -58,6 +67,8 @@ export function deletePackageVersions(
       tap(result => {
         if (!result) {
           console.log(`version with id: ${id}, not deleted`)
+        } else {
+          console.debug(`version with id: ${id} deleted`)
         }
       })
     )
