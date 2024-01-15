@@ -20,7 +20,7 @@ jobs:
       name: Checkout Delete Package Versions Repo
     - uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 20
     - run: npm install
       name: NPM Install
     - run: npm run pack
@@ -34,7 +34,7 @@ jobs:
       name: Checkout Delete Package Versions Repo
     - uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 20
     - uses: ./
       name: Smoke Test Delete Package Versions Action
       with:
