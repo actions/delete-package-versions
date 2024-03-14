@@ -32,7 +32,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Required
   package-name:
 
-  # Type of the package. Can be one of docker, maven, npm, nuget, or rubygems.
+  # Type of the package. Can be one of docker (v4 or older), container (v5 or newer), maven, npm, nuget, or rubygems.
   # Required
   package-type:
 
