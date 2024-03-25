@@ -421,6 +421,47 @@ describe('index tests -- call rest', () => {
       })
   })
 
+  it('deleteVersions test - dryRun', done => {
+    const numVersions = 10
+    let getApiCalled = 0
+    let deleteApiCalled = 0
+
+    const versions = getMockedVersionsResponse(numVersions)
+    const versionsDeleted: string[] = []
+
+    server.use(
+      rest.get(
+        'https://api.github.com/users/test-owner/packages/npm/test-package/versions',
+        (req, res, ctx) => {
+          getApiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    server.use(
+      rest.delete(
+        'https://api.github.com/users/test-owner/packages/npm/test-package/versions/:versionId',
+        (req, res, ctx) => {
+          deleteApiCalled++
+          versionsDeleted.push(req.params.versionId as string)
+          return res(ctx.status(204))
+        }
+      )
+    )
+
+    deleteVersions(getInput({dryRun: true}))
+      .subscribe(result => {
+        expect(result).toBe(true)
+      })
+      .add(() => {
+        expect(getApiCalled).toBe(1)
+        expect(deleteApiCalled).toBe(0)
+        expect(versionsDeleted.length).toBe(0)
+        done()
+      })
+  })
+
   it('deleteVersions test - success complete flow - GHES', done => {
     process.env.GITHUB_API_URL = 'https://github.someghesinstance.com/api/v3'
 
@@ -477,7 +518,8 @@ const defaultInput: InputParams = {
   numOldVersionsToDelete: RATE_LIMIT,
   minVersionsToKeep: -1,
   ignoreVersions: RegExp('^$'),
-  token: 'test-token'
+  token: 'test-token',
+  dryRun: false
 }
 
 function getInput(params?: InputParams): Input {

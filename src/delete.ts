@@ -127,7 +127,8 @@ export function deleteVersions(input: Input): Observable<boolean> {
         input.owner,
         input.packageName,
         input.packageType,
-        input.token
+        input.token,
+        input.dryRun
       )
     )
   )
