@@ -41,6 +41,10 @@ function finalIds(input) {
               Then compute number of versions to delete (toDelete) based on the inputs.
               */
             value = value.filter(info => !input.ignoreVersions.test(info.version));
+            // Filter out tags that are to be ignored only when including tags is enabled
+            if (input.includeTags === 'true') {
+                value = value.filter(info => !info.tags.some(tag => input.ignoreVersions.test(tag)));
+            }
             if (input.deleteUntaggedVersions === 'true') {
                 value = value.filter(info => !info.tagged);
             }
@@ -95,7 +99,8 @@ const defaultParams = {
     ignoreVersions: new RegExp(''),
     deletePreReleaseVersions: '',
     token: '',
-    deleteUntaggedVersions: ''
+    deleteUntaggedVersions: '',
+    includeTags: ''
 };
 class Input {
     constructor(params) {
@@ -111,6 +116,7 @@ class Input {
         this.token = validatedParams.token;
         this.numDeleted = 0;
         this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions;
+        this.includeTags = validatedParams.includeTags;
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
@@ -231,17 +237,18 @@ function getOldestVersions(owner, packageName, packageType, numVersions, page, t
     }), (0, operators_1.map)(response => {
         const resp = {
             versions: response.data.map((version) => {
-                let tagged = false;
+                let tags = [];
                 if (package_type === 'container' &&
                     version.metadata &&
                     version.metadata.container) {
-                    tagged = version.metadata.container.tags.length > 0;
+                    tags = version.metadata.container.tags;
                 }
                 return {
                     id: version.id,
                     version: version.name,
                     created_at: version.created_at,
-                    tagged
+                    tagged: tags.length > 0,
+                    tags
                 };
             }),
             page,
@@ -43941,7 +43948,8 @@ function getActionInput() {
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),
         deletePreReleaseVersions: (0, core_1.getInput)('delete-only-pre-release-versions').toLowerCase(),
         token: (0, core_1.getInput)('token'),
-        deleteUntaggedVersions: (0, core_1.getInput)('delete-only-untagged-versions').toLowerCase()
+        deleteUntaggedVersions: (0, core_1.getInput)('delete-only-untagged-versions').toLowerCase(),
+        includeTags: (0, core_1.getInput)('ignore-versions-include-tags').toLowerCase()
     });
 }
 function run() {
