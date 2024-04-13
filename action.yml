@@ -63,6 +63,13 @@ inputs:
       By default this is set to false
     required: false
     default: "false"
+  
+  dry-run:
+    description: >
+      If true, action deletes nothing and only logs the versions that would be deleted.
+      By default this is set to false
+    required: false
+    default: "false"
 
   token:
     description: >
