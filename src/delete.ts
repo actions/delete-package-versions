@@ -74,10 +74,31 @@ export function finalIds(input: Input): Observable<string[]> {
           Here first filter out the versions that are to be ignored.
           Then compute number of versions to delete (toDelete) based on the inputs.
           */
+        allValues = value ------------- Make a copy of all values
         value = value.filter(info => !input.ignoreVersions.test(info.version))
 
         if (input.deleteUntaggedVersions === 'true') {
-          value = value.filter(info => !info.tagged)
+            // Previous Code: 
+            // This loses untagged packages that belong to multi-arch containers that are tagged
+            // value = value.filter(info => !info.tagged)
+
+            // PSEUDOCODE TO FIX THIS:
+            // Step 1: Save a copy of the original value array into valueAll
+            let valueAll = value
+            
+            // Step 2: Save list of IDs that are tagged
+            const taggedIDs = valueAll.filter(info => info.tagged).map(info => info.id);
+            
+            // Step 3: Create a list of IDs that not tagged, but they are subIDs and the parent ID (multi-arch container) is tagged
+            const subIDs = valueAll
+              .filter(info => info.tagged)
+              .flatMap(info => info.subIDs);
+            
+            // Step 4: Filter valueAll based on the IDs obtained in steps 2 and 3 -> Only those should be removed
+            value = valueAll.filter(info => !taggedIDs.includes(info.id) && !subIDs.includes(info.id));
+            
+            // Result: value is now filtered and does not contain any tagged packages, or untagged packages that relate to multi-arch packages where the parent package is not tagged
+  
         }
 
         let toDelete = 0
