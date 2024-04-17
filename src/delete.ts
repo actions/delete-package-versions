@@ -70,35 +70,45 @@ export function finalIds(input: Input): Observable<string[]> {
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           )
         })
+
         /* 
           Here first filter out the versions that are to be ignored.
           Then compute number of versions to delete (toDelete) based on the inputs.
-          */
-        allValues = value ------------- Make a copy of all values
+        */
         value = value.filter(info => !input.ignoreVersions.test(info.version))
+
+        /* 
+            Step 0:
+            Iterate over value to extract subIDs and create a new array.
+            This new array just contains the subIDs and shows to which parentID (= Multi Arch package) the are linked and whether that parentId is tagged
+        */
+        value.forEach(value => {
+          const { id, tagged, subIds } = version;
+          
+          // Add parentID to the subIDs array with tagged status
+          subIds.forEach(subId => {
+            subIdsArray.push({
+              subId: subId,
+              parentId: id,
+              tagged: tagged
+            });
+          });
+        });
+
+
 
         if (input.deleteUntaggedVersions === 'true') {
             // Previous Code: 
-            // This loses untagged packages that belong to multi-arch containers that are tagged
             // value = value.filter(info => !info.tagged)
+            // Problem: This loses untagged packages that belong to multi-arch containers that are tagged
 
-            // PSEUDOCODE TO FIX THIS:
-            // Step 1: Save a copy of the original value array into valueAll
-            let valueAll = value
-            
-            // Step 2: Save list of IDs that are tagged
-            const taggedIDs = valueAll.filter(info => info.tagged).map(info => info.id);
-            
-            // Step 3: Create a list of IDs that not tagged, but they are subIDs and the parent ID (multi-arch container) is tagged
-            const subIDs = valueAll
-              .filter(info => info.tagged)
-              .flatMap(info => info.subIDs);
-            
-            // Step 4: Filter valueAll based on the IDs obtained in steps 2 and 3 -> Only those should be removed
-            value = valueAll.filter(info => !taggedIDs.includes(info.id) && !subIDs.includes(info.id));
-            
-            // Result: value is now filtered and does not contain any tagged packages, or untagged packages that relate to multi-arch packages where the parent package is not tagged
-  
+            // PSEUDOCODE TO FIX THIS:        
+            // Keep only packages that are not subpackages and not tagged; or that are subpackages and the parent package is not tagged
+            value = value.filter(info =>
+              (!info.tagged && !subIdsArray.some(subIdInfo => subIdInfo.subId === info.id)) ||
+              (subIdsArray.some(subIdInfo => subIdInfo.subId === info.id && !subIdInfo.tagged))
+            );
+
         }
 
         let toDelete = 0
@@ -108,13 +118,38 @@ export function finalIds(input: Input): Observable<string[]> {
             Math.min(input.numOldVersionsToDelete, RATE_LIMIT)
           )
         } else {
+          /*
+            Keeps only n packages
+            If deleteUntaggedVersions is true, then all tagged versions are kept, plus a number of untagged versions (minVersionsToKeep)
+            If deleteUntaggedVersions is false, then just n versions should remain. 
+            In both cases, sub-packages should not be counted (keen n real packages, not n subpackages) 
+            Problem with current code: when determining n-versions, also subpackages are counted (rather than just counting real packages)
+          */
+         // PSEUDOCODE TO FIX THIS:  
+         // Step 1: Create an array that does not include the subpackages to calculate which ones need to be retained
+          const valueWithoutSub = value.filter(info => (!subIdsArray.some(subIdInfo => subIdInfo.subId === info.id)))
           toDelete = Math.min(
-            value.length - input.minVersionsToKeep,
+            valueWithoutSub.length - input.minVersionsToKeep,
             RATE_LIMIT
           )
         }
         if (toDelete < 0) return []
-        return value.map(info => info.id.toString()).slice(0, toDelete)
+        
+        // Step 2: Filter out the parent packages that need to be retained
+        valueWithoutSub = valueWithoutSub.map(info => info.id.toString()).slice(0, toDelete)
+        
+        // Step 3: Filter out from value all packages that meet either of these two conditions:
+        // a. all parent packages flagged for deletion
+        // b. all subpackages that belong to these parent packages that are flagged for deletion
+        value = value.filter(info => 
+          valueWithoutSub.some(item => item.id === info.id) ||  
+          subIdsArray.some(subIdInfo => 
+            subIdInfo.subId === info.id && 
+            valueWithoutSub.some(item => item.id === subIdInfo.parentId)
+          )
+        );
+ 
+        return value
       })
     )
   }
