@@ -112,12 +112,6 @@ export function finalIds(input: Input): Observable<string[]> {
         }
 
         let toDelete = 0
-        if (input.minVersionsToKeep < 0) {
-          toDelete = Math.min(
-            value.length,
-            Math.min(input.numOldVersionsToDelete, RATE_LIMIT)
-          )
-        } else {
           /*
             Keeps only n packages
             If deleteUntaggedVersions is true, then all tagged versions are kept, plus a number of untagged versions (minVersionsToKeep)
@@ -126,8 +120,15 @@ export function finalIds(input: Input): Observable<string[]> {
             Problem with current code: when determining n-versions, also subpackages are counted (rather than just counting real packages)
           */
          // PSEUDOCODE TO FIX THIS:  
-         // Step 1: Create an array that does not include the subpackages to calculate which ones need to be retained
-          const valueWithoutSub = value.filter(info => (!subIdsArray.some(subIdInfo => subIdInfo.subId === info.id)))
+         // Step 1: Create an array that does not include the subpackages to calculate which ones need to be retained / deleted
+        const valueWithoutSub = value.filter(info => (!subIdsArray.some(subIdInfo => subIdInfo.subId === info.id)))   
+
+        if (input.minVersionsToKeep < 0) {
+          toDelete = Math.min(
+            valueWithoutSub.length,
+            Math.min(input.numOldVersionsToDelete, RATE_LIMIT)
+          )
+        } else {
           toDelete = Math.min(
             valueWithoutSub.length - input.minVersionsToKeep,
             RATE_LIMIT
