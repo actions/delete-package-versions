@@ -9,6 +9,7 @@ export interface InputParams {
   token?: string
   deletePreReleaseVersions?: string
   deleteUntaggedVersions?: string
+  includeTags?: string
 }
 
 const defaultParams = {
@@ -21,7 +22,8 @@ const defaultParams = {
   ignoreVersions: new RegExp(''),
   deletePreReleaseVersions: '',
   token: '',
-  deleteUntaggedVersions: ''
+  deleteUntaggedVersions: '',
+  includeTags: ''
 }
 
 export class Input {
@@ -36,6 +38,7 @@ export class Input {
   token: string
   numDeleted: number
   deleteUntaggedVersions: string
+  includeTags: string
 
   constructor(params?: InputParams) {
     const validatedParams: Required<InputParams> = {...defaultParams, ...params}
@@ -51,6 +54,7 @@ export class Input {
     this.token = validatedParams.token
     this.numDeleted = 0
     this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions
+    this.includeTags = validatedParams.includeTags
   }
 
   hasOldestVersionQueryInfo(): boolean {
@@ -65,6 +69,7 @@ export class Input {
   checkInput(): boolean {
     if (this.packageType.toLowerCase() !== 'container') {
       this.deleteUntaggedVersions = 'false'
+      this.includeTags = 'false'
     }
 
     if (
