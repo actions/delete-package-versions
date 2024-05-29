@@ -113,7 +113,7 @@ This action deletes versions of a package from [GitHub Packages](https://github.
     - [Delete oldest version of a package](#delete-oldest-version-of-a-package)
     - [Delete a specific version of a package](#delete-a-specific-version-of-a-package)
     - [Delete multiple specific versions of a package](#delete-multiple-specific-versions-of-a-package)
-    - [Delete all white ignoring particular tags](#delete-all-while-ignoring-particular-tags)
+    - [Delete all while ignoring particular tags](#delete-all-while-ignoring-particular-tags)
     - [Delete all except y latest versions while ignoring particular tags](#delete-all-except-y-latest-versions-while-ignoring-particular-tags)
 - [License](#license)
 
