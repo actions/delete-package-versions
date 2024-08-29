@@ -76,6 +76,13 @@ export function finalIds(input: Input): Observable<string[]> {
           */
         value = value.filter(info => !input.ignoreVersions.test(info.version))
 
+        // Filter out tags that are to be ignored only when including tags is enabled
+        if (input.includeTags === 'true') {
+          value = value.filter(
+            info => !info.tags.some(tag => input.ignoreVersions.test(tag))
+          )
+        }
+
         if (input.deleteUntaggedVersions === 'true') {
           value = value.filter(info => !info.tagged)
         }
