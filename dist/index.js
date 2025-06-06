@@ -71,7 +71,7 @@ function deleteVersions(input) {
         return (0, rxjs_1.of)(true);
     }
     const result = finalIds(input);
-    return result.pipe((0, operators_1.concatMap)(ids => (0, version_1.deletePackageVersions)(ids, input.owner, input.packageName, input.packageType, input.token)));
+    return result.pipe((0, operators_1.concatMap)(ids => (0, version_1.deletePackageVersions)(ids, input.owner, input.packageName, input.packageType, input.token, input.dryRun)));
 }
 exports.deleteVersions = deleteVersions;
 
@@ -95,7 +95,8 @@ const defaultParams = {
     ignoreVersions: new RegExp(''),
     deletePreReleaseVersions: '',
     token: '',
-    deleteUntaggedVersions: ''
+    deleteUntaggedVersions: '',
+    dryRun: false
 };
 class Input {
     constructor(params) {
@@ -111,6 +112,7 @@ class Input {
         this.token = validatedParams.token;
         this.numDeleted = 0;
         this.deleteUntaggedVersions = validatedParams.deleteUntaggedVersions;
+        this.dryRun = validatedParams.dryRun;
     }
     hasOldestVersionQueryInfo() {
         return !!(this.owner &&
@@ -183,13 +185,22 @@ function deletePackageVersion(packageVersionId, owner, packageName, packageType,
     }), (0, operators_1.map)(response => response.status === 204));
 }
 exports.deletePackageVersion = deletePackageVersion;
-function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token) {
+function deletePackageVersions(packageVersionIds, owner, packageName, packageType, token, dryRun = false) {
     if (packageVersionIds.length === 0) {
+        return (0, rxjs_1.of)(true);
+    }
+    if (dryRun) {
+        for (const id of packageVersionIds) {
+            console.log(`version with id: ${id} to be deleted by setting dry-run: false`);
+        }
         return (0, rxjs_1.of)(true);
     }
     const deletes = packageVersionIds.map(id => deletePackageVersion(id, owner, packageName, packageType, token).pipe((0, operators_1.tap)(result => {
         if (!result) {
             console.log(`version with id: ${id}, not deleted`);
+        }
+        else {
+            console.debug(`version with id: ${id} deleted`);
         }
     })));
     console.log(`Total versions deleted till now: ${deleted}`);
@@ -43941,7 +43952,8 @@ function getActionInput() {
         ignoreVersions: RegExp((0, core_1.getInput)('ignore-versions')),
         deletePreReleaseVersions: (0, core_1.getInput)('delete-only-pre-release-versions').toLowerCase(),
         token: (0, core_1.getInput)('token'),
-        deleteUntaggedVersions: (0, core_1.getInput)('delete-only-untagged-versions').toLowerCase()
+        deleteUntaggedVersions: (0, core_1.getInput)('delete-only-untagged-versions').toLowerCase(),
+        dryRun: (0, core_1.getBooleanInput)('dry-run')
     });
 }
 function run() {
