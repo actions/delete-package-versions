@@ -85,6 +85,11 @@ You are welcome to still raise bugs in this repo.
   # Cannot be used with `num-old-versions-to-delete`.
   delete-only-untagged-versions:
 
+  # If true it will also ignore tags matching the regex provided in `ignore-versions`
+  # Defaults to false.
+  # Can only be used with `ignore-versions`.
+  ignore-versions-include-tags:
+
   # The token used to authenticate with GitHub Packages.
   # Defaults to github.token.
   # Required if the repo running the workflow does not have access to delete the package.
@@ -108,6 +113,8 @@ You are welcome to still raise bugs in this repo.
   - `min-versions-to-keep` + `delete-only-pre-release-versions`
   - `delete-only-untagged-versions`
   - `min-versions-to-keep` + `delete-only-untagged-versions`
+  - `ignore-versions-include-tags` + `ignore-versions`
+  - `ignore-versions-include-tags` + `ignore-versions` + `min-versions-to-keep`
 
 # Scenarios
 
@@ -125,6 +132,8 @@ You are welcome to still raise bugs in this repo.
     - [Delete oldest version of a package](#delete-oldest-version-of-a-package)
     - [Delete a specific version of a package](#delete-a-specific-version-of-a-package)
     - [Delete multiple specific versions of a package](#delete-multiple-specific-versions-of-a-package)
+    - [Delete all while ignoring particular tags](#delete-all-while-ignoring-particular-tags)
+    - [Delete all except y latest versions while ignoring particular tags](#delete-all-except-y-latest-versions-while-ignoring-particular-tags)
 - [License](#license)
 
 
@@ -422,6 +431,44 @@ You are welcome to still raise bugs in this repo.
       package-name: 'test-package'
       package-type: 'npm'
       token: ${{ secrets.PAT }}
+  ```
+
+  <br>
+
+  ### Delete all while ignoring particular tags
+
+  To delete all while ignoring particular tags, the __package-name__, __ignore-versions-include-tags__ and __ignore-versions__ inputs are required.
+
+  __Example__
+
+  Deletes all versions of a package excluding package containing the `important-tag` tag.
+
+  ```yaml
+  - uses: actions/delete-package-version@v4
+    with:
+      package-name: 'test-package'
+      package-type: 'container'
+      ignore-versions: '^important-tag$'
+      ignore-versions-include-tags: 'true'
+      token: ${{ secrets.PAT }}
+  ```
+
+  ### Delete all except y latest versions while ignoring particular tags
+
+  To delete all except y latest versions while ignoring particular tags, the __package-name__, __min-versions-to-keep__, __ignore-versions-include-tags__  and __ignore-versions__ inputs are required.
+
+  __Example__
+
+  Delete all except latest 3 package versions excluding package containing the `important-tag` tag.
+
+  ```yaml
+  - uses: actions/delete-package-versions@v4
+    with: 
+      package-name: 'test-package'
+      package-type: 'container'
+      min-versions-to-keep: 3
+      ignore-versions: '^important-tag$'
+      ignore-versions-include-tags: 'true'
   ```
 
 # License

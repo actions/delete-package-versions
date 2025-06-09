@@ -114,8 +114,10 @@ describe('get versions tests -- mock rest', () => {
           expect(result.versions[i].created_at).toBe(resp[i].created_at)
           if (i < numTaggedVersions) {
             expect(result.versions[i].tagged).toBe(true)
+            expect(result.versions[i].tags.length).toBe(1)
           } else {
             expect(result.versions[i].tagged).toBe(false)
+            expect(result.versions[i].tags.length).toBe(0)
           }
         }
         expect(result.paginate).toBe(true)

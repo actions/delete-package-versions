@@ -341,6 +341,90 @@ describe('index tests -- call rest', () => {
     )
   })
 
+  it('finalIds test - no versions deleted if tags match ignore version and include tags is enabled', done => {
+    const numVersions = 10
+    let apiCalled = 0
+
+    const versions = getMockedVersionsResponse(
+      numVersions,
+      0,
+      'container',
+      true
+    )
+
+    server.use(
+      rest.get(
+        'https://api.github.com/users/test-owner/packages/container/test-package/versions',
+        (req, res, ctx) => {
+          apiCalled++
+          return res(ctx.status(200), ctx.json(versions))
+        }
+      )
+    )
+
+    finalIds(
+      getInput({
+        minVersionsToKeep: 2,
+        packageType: 'container',
+        ignoreVersions: RegExp('^(latest[1-3]{1})$'),
+        includeTags: 'true'
+      })
+    ).subscribe(ids => {
+      expect(apiCalled).toBe(1)
+      expect(ids).toStrictEqual(['4', '5', '6', '7', '8'])
+      done()
+    })
+  })
+
+  it('', done => {
+    const numVersions = 10
+    let apiCalled = 0
+
+    let date = new Date()
+    date.setUTCFullYear(2000, 1, 1)
+
+    const version = {
+      id: 1,
+      name: '1.0.0',
+      url: '',
+      created_at: date.toUTCString(),
+      package_html_url: '',
+      updated_at: '',
+      metadata: {
+        package_type: 'container',
+        container: {
+          tags: [
+            'test',
+            '9970186500fd471320e7340b256229209899bde5',
+            'my-first-pr'
+          ] as string[]
+        }
+      }
+    }
+
+    server.use(
+      rest.get(
+        'https://api.github.com/users/test-owner/packages/container/test-package/versions',
+        (req, res, ctx) => {
+          apiCalled++
+          return res(ctx.status(200), ctx.json([version]))
+        }
+      )
+    )
+
+    finalIds(
+      getInput({
+        packageType: 'container',
+        ignoreVersions: RegExp('^production|acceptance|test$'),
+        includeTags: 'true'
+      })
+    ).subscribe(ids => {
+      expect(apiCalled).toBe(1)
+      expect(ids.length).toBe(0)
+      done()
+    })
+  })
+
   it('deleteVersions test - missing token', done => {
     deleteVersions(getInput({token: ''})).subscribe({
       error: err => {
@@ -477,7 +561,8 @@ const defaultInput: InputParams = {
   numOldVersionsToDelete: RATE_LIMIT,
   minVersionsToKeep: -1,
   ignoreVersions: RegExp('^$'),
-  token: 'test-token'
+  token: 'test-token',
+  includeTags: 'false'
 }
 
 function getInput(params?: InputParams): Input {
