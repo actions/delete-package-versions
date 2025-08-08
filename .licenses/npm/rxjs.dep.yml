@@ -1,6 +1,6 @@
 ---
 name: rxjs
-version: 7.8.1
+version: 7.8.2
 type: npm
 summary: Reactive Extensions for modern JavaScript
 homepage: https://rxjs.dev

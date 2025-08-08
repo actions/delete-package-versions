@@ -16,11 +16,11 @@ jobs:
     name: Package
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       name: Checkout Delete Package Versions Repo
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 24
     - run: npm install
       name: NPM Install
     - run: npm run pack
@@ -30,11 +30,11 @@ jobs:
     name: Smoke Test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       name: Checkout Delete Package Versions Repo
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 24
     - uses: ./
       name: Smoke Test Delete Package Versions Action
       with:
