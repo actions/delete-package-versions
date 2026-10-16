@@ -80,7 +80,8 @@ You are welcome to still raise bugs in this repo.
   # If true it will delete only the untagged versions in case of container package.
   # Does not work for other package types and will be ignored.
   # The number of untagged versions to keep can be set by using `min-versions-to-keep` value with this.
-  # When `min-versions-to-keep` is 0, all untagged versions get deleted.
+  # Referenced image/attestation manifests are protected. The count applies only to unreferenced versions.
+  # When `min-versions-to-keep` is 0, all unreferenced untagged versions get deleted.
   # Defaults to false.
   # Cannot be used with `num-old-versions-to-delete`.
   delete-only-untagged-versions:
@@ -169,7 +170,15 @@ You are welcome to still raise bugs in this repo.
 
   __Example__
 
-  Delete all untagged versions except latest 10
+  For GHCR containers, automatic untagged cleanup protects every manifest reachable from a tagged image before applying retention. This includes nested OCI/Docker indexes, platform image manifests, and Buildx provenance attestations stored in the index. The count applies only to unreferenced, untagged versions; protected versions are kept in addition to that count. Tagged roots excluded by `ignore-versions` still protect their children.
+
+  Discovery reads all package-version pages and registry tag pages, verifies manifest digests, and checks that tags did not change during discovery. A missing manifest, failed request, unsupported manifest format, or incomplete metadata stops the action before deletion. The token needs permission to read the container in GHCR as well as delete package versions. Automatic reference-aware container cleanup currently supports `ghcr.io` on GitHub.com; it fails closed on GitHub Enterprise Server.
+
+  Serialize all publishers of a package with its cleanup, for example using the same workflow-level `concurrency.group` across every publishing workflow. Registry operations do not provide an atomic snapshot-and-delete transaction, so tag-change checks cannot replace this coordination.
+
+  Protection applies to `package-type: container` with `delete-only-untagged-versions: true` when versions are selected automatically. Explicit `package-version-ids` and other deletion modes retain their existing behavior. Attestations attached through image indexes and manifest `subject` references are included; discovery of independent OCI referrers is outside this mode's scope.
+
+  Delete all unreferenced untagged versions except latest 10
 
   ```yaml
   - uses: actions/delete-package-versions@v5
@@ -431,3 +440,10 @@ The scripts and documentation in this project are released under the [MIT Licens
 [api]: https://docs.github.com/en/rest/packages
 [token]: https://help.github.com/en/packages/publishing-and-managing-packages/about-github-packages#about-tokens
 [secret]: https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets
+
+
+### Optional integration workflows in forks
+
+The upstream integration-test dispatch is disabled by default in forks. To enable it, set the repository variable `INTEGRATION_TESTS_ENABLED` to `true` and configure the `ITS_PAT` and `ITS_REPO` secrets. The token must be able to send repository-dispatch events to the target repository named by `ITS_REPO` (`owner/repository`). The original upstream repository retains its existing behavior.
+
+The inherited immutable-action publishing workflow is also disabled by default in forks. Its action is currently documented as not ready for public use. Enable it with `IMMUTABLE_ACTION_PUBLISHING_ENABLED=true` only when your repository has access to that publishing feature; its job requires `contents: read`, `id-token: write`, and `packages: write`. Ordinary Git tags and GitHub releases can publish this JavaScript action without that optional OCI publishing workflow.

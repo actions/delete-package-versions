@@ -6,10 +6,11 @@ on:
 
 jobs:
   repository_dispatch_event:
+    if: github.repository == 'actions/delete-package-versions' || vars.INTEGRATION_TESTS_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch Event
-        uses: peter-evans/repository-dispatch@26b39ed245ab8f31526069329e112ab2fb224588
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.ITS_PAT }}
           repository: ${{ secrets.ITS_REPO }}

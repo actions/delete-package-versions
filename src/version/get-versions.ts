@@ -29,7 +29,8 @@ export function getOldestVersions(
   packageType: string,
   numVersions: number,
   page: number,
-  token: string
+  token: string,
+  requireContainerTagMetadata = false
 ): Observable<RestQueryInfo> {
   const octokit = new Octokit({
     auth: token,
@@ -57,6 +58,15 @@ export function getOldestVersions(
     map(response => {
       const resp = {
         versions: response.data.map((version: GetVersionsResponse[0]) => {
+          if (
+            requireContainerTagMetadata &&
+            package_type === 'container' &&
+            !Array.isArray(version.metadata?.container?.tags)
+          ) {
+            throw new Error(
+              'Container tag metadata is incomplete; refusing cleanup'
+            )
+          }
           let tagged = false
           if (
             package_type === 'container' &&

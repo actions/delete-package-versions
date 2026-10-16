@@ -57,8 +57,10 @@ inputs:
 
   delete-only-untagged-versions:
     description: >
-      Deletes only untagged versions in case of a container package. Does not work for other package types.
-      The number of untagged versions to keep can be specified by min-versions-to-keep.
+      Deletes only unreferenced untagged versions in case of a GHCR container package. Does not work for other package types.
+      Manifests reachable from tagged images, including platform images and provenance attestations, are protected.
+      The number of additional unreferenced untagged versions to keep can be specified by min-versions-to-keep.
+      Requires container read access and serialized publishing/cleanup. Fails closed on GHES.
       When this is set num-old-versions-to-delete will not be taken into account.
       By default this is set to false
     required: false
@@ -74,7 +76,7 @@ inputs:
     default: ${{ github.token }}
 
 runs:
-  using: node20
+  using: node24
   main: dist/index.js
 
 branding:

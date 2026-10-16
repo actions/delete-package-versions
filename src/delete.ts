@@ -1,6 +1,7 @@
 /* eslint-disable i18n-text/no-en */
 
 import {Input} from './input'
+import {protectedContainerDigests} from './version/container-references'
 import {EMPTY, Observable, of, throwError} from 'rxjs'
 import {reduce, concatMap, map, expand, tap} from 'rxjs/operators'
 import {
@@ -18,7 +19,8 @@ export function getVersionIds(
   packageType: string,
   numVersions: number,
   page: number,
-  token: string
+  token: string,
+  requireContainerTagMetadata = false
 ): Observable<RestVersionInfo[]> {
   return getOldestVersions(
     owner,
@@ -26,7 +28,8 @@ export function getVersionIds(
     packageType,
     numVersions,
     page,
-    token
+    token,
+    requireContainerTagMetadata
   ).pipe(
     expand(value =>
       value.paginate
@@ -36,7 +39,8 @@ export function getVersionIds(
             packageType,
             numVersions,
             value.page + 1,
-            token
+            token,
+            requireContainerTagMetadata
           )
         : EMPTY
     ),
@@ -57,10 +61,31 @@ export function finalIds(input: Input): Observable<string[]> {
       input.packageType,
       RATE_LIMIT,
       1,
-      input.token
+      input.token,
+      input.packageType === 'container' &&
+        input.deleteUntaggedVersions === 'true'
     ).pipe(
-      // This code block executes on all versions of a package starting from oldest
+      // Discover references before ignore/retention filters can hide tagged roots.
+      concatMap(async versions => {
+        if (
+          input.packageType === 'container' &&
+          input.deleteUntaggedVersions === 'true'
+        ) {
+          const protectedDigests = await protectedContainerDigests(
+            input,
+            versions
+          )
+          console.log(
+            `Protecting ${protectedDigests.size} tagged or referenced container manifests from deletion`
+          )
+          return versions.filter(
+            version => !protectedDigests.has(version.version)
+          )
+        }
+        return versions
+      }),
       map(value => {
+        // This code block executes on all versions of a package starting from oldest
         // we need to delete oldest versions first
         value.sort((a, b) => {
           if (a.created_at === b.created_at) {

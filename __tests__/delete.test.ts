@@ -2,6 +2,7 @@
 import {rest} from 'msw'
 import {setupServer} from 'msw/node'
 import {Input, InputParams} from '../src/input'
+import {image} from './version/container.mock'
 import {deleteVersions, finalIds, RATE_LIMIT} from '../src/delete'
 import {getMockedVersionsResponse} from './version/rest.mock'
 import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types'
@@ -271,6 +272,23 @@ describe('index tests -- call rest', () => {
       numTaggedVersions,
       'container',
       false
+    )
+    const root = image()
+    for (const version of taggedVersions) version.name = root.digest
+    for (const version of untaggedVersions)
+      version.name = `sha256:${version.id.toString(16).padStart(64, '0')}`
+    server.use(
+      rest.get('https://ghcr.io/token', (_req, res, ctx) =>
+        res(ctx.json({token: 'registry-test-token'}))
+      ),
+      rest.get(
+        'https://ghcr.io/v2/test-owner/test-package/tags/list',
+        (_req, res, ctx) => res(ctx.json({tags: []}))
+      ),
+      rest.get(
+        'https://ghcr.io/v2/test-owner/test-package/manifests/:ref',
+        (_req, res, ctx) => res(ctx.body(root.body))
+      )
     )
     const versions = taggedVersions.concat(untaggedVersions)
 

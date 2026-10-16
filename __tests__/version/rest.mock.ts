@@ -27,13 +27,13 @@ export function getMockedVersionsResponse(
       }
     } as GetVersionsResponseData[0]
 
-    if (packageType === 'container' && tagged) {
+    if (packageType === 'container') {
       version = {
         ...version,
         metadata: {
           package_type: packageType as PackageType,
           container: {
-            tags: [`latest${i}`] as string[]
+            tags: tagged ? [`latest${i}`] : []
           }
         }
       }
